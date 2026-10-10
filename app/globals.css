@@ -8,7 +8,7 @@
   --accent-deep: #111111;
   --accent-soft: #eeeeee;
   --warm: #b56c49;
-  --serif: "Yu Mincho", "Hiragino Mincho ProN", Georgia, serif;
+  --serif: "Hiragino Kaku Gothic ProN", "Yu Gothic", system-ui, sans-serif;
   --sans: "Hiragino Kaku Gothic ProN", "Yu Gothic", system-ui, sans-serif;
 }
 
