@@ -110,10 +110,10 @@ body {
   .site-header { display: none; }
 
   .diary-hero {
-    width: calc(100% - var(--sidebar-width));
+    width: 100%;
     max-width: none;
-    height: 102px;
-    margin-left: var(--sidebar-width);
+    height: 112px;
+    margin-left: 0;
   }
 
   .diary-hero-copy {
@@ -136,7 +136,7 @@ body {
   .left-column {
     position: fixed;
     z-index: 20;
-    inset: 0 auto 0 0;
+    inset: 112px auto 0 0;
     width: var(--sidebar-width);
     overflow-y: auto;
     padding: 28px 18px 32px !important;
