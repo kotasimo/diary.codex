@@ -7,7 +7,6 @@ import {
   ChevronLeft,
   ChevronRight,
   Edit3,
-  Eye,
   Feather,
   Footprints,
   Home,
@@ -226,16 +225,11 @@ function DetailView({ entry, onBack, onEdit }: { entry: Entry; onBack: () => voi
       <header className="detail-heading">
         <p>{entry.date}（{entry.day}）</p>
         {entry.title && <h1>{entry.title}</h1>}
-        <div className="detail-meta"><span>2026年</span><span>・</span><span>{entry.updatedAt} 更新</span><span>・</span><span><Eye size={14} /> {entry.views}</span></div>
       </header>
       <div className="detail-body">
         <p>{entry.content}</p>
       </div>
       <div className="detail-actions"><button className="secondary-button" onClick={onEdit}><Edit3 size={16} />編集する</button></div>
-      <footer className="author-block">
-        <div className="avatar avatar-me">K</div>
-        <div><strong>kotaro</strong><span>何でもない毎日を、忘れないために。</span></div>
-      </footer>
       <nav className="entry-pagination"><button><ChevronLeft size={17} />前の日記</button><button>次の日記<ChevronRight size={17} /></button></nav>
     </article>
   );
