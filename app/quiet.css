@@ -20,6 +20,15 @@ body {
   color: #fff;
 }
 
+.entry-heading-date {
+  flex: 0 0 auto;
+  margin-left: auto;
+  color: #858987;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
 @media (min-width: 1101px) {
   .diary-hero-copy {
     max-width: 1540px;
@@ -147,6 +156,7 @@ body {
   }
 
   .reading-copy { max-width: none; }
+  .reading-copy .entry-heading h2 { flex: 1; }
 
   .week-toolbar {
     justify-content: flex-end;
