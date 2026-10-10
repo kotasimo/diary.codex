@@ -1,4 +1,19 @@
 /* Final quiet-reader layout. Loaded after globals.css by design. */
+
+/* Keep the page visually uniform: the hero uses the same clean white canvas
+   as the reading area instead of introducing a separate image background. */
+.diary-hero {
+  background: #fff;
+}
+
+.diary-hero::after {
+  display: none;
+}
+
+.diary-hero-copy {
+  color: #1f2529;
+}
+
 @media (min-width: 1101px) {
   .diary-hero-copy {
     max-width: 1540px;
