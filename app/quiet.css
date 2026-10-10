@@ -125,19 +125,21 @@ body {
   }
 
   .app-layout {
-    width: calc(100% - var(--sidebar-width));
+    width: 100%;
     max-width: none;
-    margin-left: var(--sidebar-width);
+    margin-left: 0;
     margin-right: 0;
-    grid-template-columns: minmax(0, 1fr);
-    padding: 0 42px 90px;
+    grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
+    padding: 0 42px 90px 0;
   }
 
   .left-column {
-    position: fixed;
+    position: sticky;
     z-index: 20;
-    inset: 112px auto 0 0;
-    width: var(--sidebar-width);
+    top: 0;
+    align-self: start;
+    width: auto;
+    height: 100vh;
     overflow-y: auto;
     padding: 28px 18px 32px !important;
     border-right: 1px solid #ecebe7 !important;
