@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "./quiet.css";
 
 export const metadata: Metadata = {
   title: "Hibi — 日々を綴る",

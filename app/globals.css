@@ -251,6 +251,95 @@ button { color: inherit; }
 /* Keep the sidebar clean without a dividing rule. */
 .left-column { border-right: 0 !important; }
 
+/* Final PC sizing: intentionally last so legacy rules cannot narrow the reader. */
+@media (min-width: 1101px) {
+  .diary-hero-copy { max-width: 1540px; padding-left: 32px; padding-right: 32px; }
+  .app-layout { width: 100%; max-width: 1540px; grid-template-columns: 290px minmax(0, 1fr); column-gap: 42px !important; padding: 0 32px 90px; }
+  .left-column { padding: 38px 30px 0 0 !important; border-right: 1px solid #ecebe7 !important; }
+  .main-column, .content-panel, .entry-list { width: 100%; max-width: none; min-width: 0; }
+  .content-panel { border: 0; background: transparent; box-shadow: none; }
+  .week-toolbar { width: 100%; padding: 38px 0 20px; }
+  .entry-list { border: 0 !important; background: transparent; }
+  .reading-entry { width: 100%; grid-template-columns: 116px minmax(0, 1fr) auto; gap: 30px; padding: 36px 0; border: 0; border-bottom: 1px solid #e7e6e1; background: transparent; }
+  .reading-date { min-height: 108px; padding-right: 28px; border-right: 1px solid #e7e6e1; }
+  .reading-date strong { font-size: 30px; }
+  .reading-copy { width: 100%; max-width: 800px; }
+  .reading-copy .entry-heading { padding: 0; border: 0; background: transparent; }
+  .reading-copy .entry-heading h2 { font-size: 23px; }
+  .reading-copy .entry-content { padding: 12px 0 0; background: transparent; }
+  .reading-copy .entry-content > p { font-size: 15px; line-height: 1.85; }
+  .reading-copy .entry-meta { margin-top: 14px; }
+}
+
+/* Quiet diary layout — final cascade overrides legacy layout rules. */
+body { background: #fdfcf8; }
+.diary-hero { height: 170px; }
+.diary-hero-copy { max-width: 1540px; padding: 64px 32px 22px; }
+.diary-hero-copy h1 { font-size: 32px; }
+
+.app-layout { width: 100%; max-width: 1540px; grid-template-columns: 290px minmax(0, 1fr); column-gap: 42px !important; padding: 0 32px 90px; }
+.left-column { gap: 0; padding: 38px 30px 0 0 !important; border-right: 1px solid #ecebe7 !important; }
+.profile-card { padding: 0 0 30px; border: 0; }
+.profile-card .profile-bio { margin-top: 14px; line-height: 1.75; }
+.calendar-card { margin-top: 16px; padding-left: 0; padding-right: 0; border: 0 !important; box-shadow: none; }
+.desktop-nav { margin-top: 30px; gap: 8px; }
+.desktop-nav > button { padding: 9px 8px; }
+.main-column, .content-panel { width: 100%; min-width: 0; }
+.content-panel { border: 0; border-radius: 0; background: transparent; box-shadow: none; overflow: visible; }
+
+.week-toolbar { width: 100%; padding: 38px 0 20px; display: flex; justify-content: flex-start; gap: 12px; text-align: left; }
+.week-toolbar > div { order: 1; margin-right: auto; }
+.week-toolbar > button:first-child { order: 2; }
+.week-toolbar > button:last-child { order: 3; }
+.week-toolbar h1 { font-size: 28px; font-weight: 500; letter-spacing: .06em; }
+.week-arrow { width: 38px; height: 38px; border: 1px solid #deded9; background: #fff; }
+
+.entry-list { width: 100%; border: 0 !important; background: transparent; }
+.reading-entry { width: 100%; display: grid; grid-template-columns: 116px minmax(0, 1fr) auto; align-items: start; gap: 30px; padding: 36px 0; border: 0; border-bottom: 1px solid #e7e6e1; background: transparent; }
+.reading-entry:last-child { border-bottom: 0; }
+.reading-date { min-height: 108px; padding: 2px 28px 0 0; border-right: 1px solid #e7e6e1; text-align: center; }
+.reading-date strong { display: block; font-size: 30px; font-weight: 500; line-height: 1.2; }
+.reading-date span { display: block; margin-top: 10px; color: #6f7374; font-size: 13px; }
+.reading-copy { width: 100%; min-width: 0; max-width: 800px; }
+.reading-copy .entry-heading { min-height: 0; padding: 0; border: 0; background: transparent; align-items: flex-start; }
+.reading-copy .entry-heading h2 { font-size: 23px; font-weight: 600; line-height: 1.45; white-space: normal; }
+.entry-menu-button { width: 30px; height: 28px; margin: -2px 0 0 10px; border: 0; background: transparent; color: #9a9a96; font-size: 20px; line-height: 1; cursor: pointer; opacity: 0; transition: opacity .18s ease; }
+.reading-entry:hover .entry-menu-button, .entry-menu-button:focus-visible { opacity: 1; }
+.reading-copy .entry-content { width: 100%; padding: 12px 0 0; background: transparent; }
+.reading-copy .entry-content:hover { background: transparent; }
+.reading-copy .entry-content > p { color: #565a5a; font-size: 15px; line-height: 1.85; -webkit-line-clamp: 3; }
+.reading-copy .entry-meta { width: 100%; margin-top: 14px; }
+.reading-copy .read-more { margin-left: auto; color: #555b5c; font-size: 12px; font-weight: 500; }
+.reading-image { width: 280px; height: 150px; border-radius: 5px; background-position: center; background-size: cover; }
+.quiet-write-button { margin-top: 10px; padding: 0; border: 0; background: transparent; color: #858987; font-size: 12px; cursor: pointer; }
+.empty-entry { min-height: 116px; opacity: .72; }
+.empty-entry .entry-heading h2 { color: #777b79; font-size: 15px; font-weight: 500; }
+
+@media (max-width: 1100px) {
+  .app-layout { grid-template-columns: 250px minmax(0, 1fr); column-gap: 28px !important; padding-left: 24px; padding-right: 24px; }
+  .left-column { padding-right: 20px !important; }
+  .reading-entry { grid-template-columns: 94px minmax(0, 1fr); gap: 24px; }
+  .reading-date { padding-right: 20px; }
+  .reading-image { grid-column: 2; width: min(100%, 560px); height: 220px; margin-top: 10px; }
+}
+
+@media (max-width: 720px) {
+  .diary-hero { height: 138px; }
+  .app-layout { display: block; padding: 0 18px 90px; }
+  .left-column { display: none; }
+  .week-toolbar { padding: 26px 0 12px; }
+  .week-toolbar h1 { font-size: 21px; }
+  .reading-entry { display: block; padding: 30px 0; }
+  .reading-date { min-height: 0; margin-bottom: 15px; padding: 0; border-right: 0; text-align: left; }
+  .reading-date strong, .reading-date span { display: inline; }
+  .reading-date strong { font-size: 21px; }
+  .reading-date span { margin: 0 0 0 8px; }
+  .reading-copy .entry-heading h2 { font-size: 20px; }
+  .entry-menu-button { opacity: 1; }
+  .reading-image { width: 100%; height: 210px; margin-top: 18px; }
+  .empty-entry { min-height: 0; }
+}
+
 /* Quiet diary redesign */
 body { background: #fdfcf8; color: #25282a; }
 .site-header { background: #fff; }
