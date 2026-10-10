@@ -160,9 +160,14 @@ body {
   }
   .calendar-card .calendar-grid {
     grid-template-columns: repeat(7, 25px);
-    justify-content: space-between;
+    column-gap: 4px;
+    justify-content: start;
   }
-  .calendar-card { padding-right: 0 !important; }
+  .calendar-card {
+    width: 199px !important;
+    padding-right: 0 !important;
+  }
+  .calendar-card .calendar-heading { margin-bottom: 4px !important; }
 
   .profile-card .avatar-large {
     width: 57px;
@@ -195,7 +200,7 @@ body {
     position: relative;
     grid-template-columns: minmax(0, 4fr) minmax(180px, 1fr);
     gap: 30px;
-    padding-block: 18px;
+    padding-block: 6px;
   }
 
   .entry-list,
