@@ -184,9 +184,6 @@ function WeekView({ entries, onDetail, onEdit }: { entries: Entry[]; onDetail: (
     <div className="content-panel">
       <div className="week-toolbar">
         <button className="week-arrow" aria-label="前の週"><ChevronLeft size={20} /></button>
-        <div>
-          <h1>10月5日 <span>—</span> 10月11日</h1>
-        </div>
         <button className="week-arrow" aria-label="次の週"><ChevronRight size={20} /></button>
       </div>
 

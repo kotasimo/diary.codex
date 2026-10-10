@@ -141,10 +141,24 @@ body {
   .reading-entry {
     grid-template-columns: 116px minmax(0, 3fr) minmax(220px, 2fr);
     gap: 30px;
-    padding-block: 28px;
+    padding-block: 18px;
   }
 
   .reading-copy { max-width: none; }
+
+  .week-toolbar {
+    justify-content: flex-end;
+    padding-block: 12px 10px;
+  }
+
+  .reading-date { min-height: 72px; }
+  .reading-copy .entry-heading h2 { font-size: 20px; }
+  .reading-copy .entry-content { padding-top: 6px; }
+  .reading-copy .entry-content > p {
+    line-height: 1.55;
+    -webkit-line-clamp: 2;
+  }
+  .reading-copy .entry-meta { margin-top: 8px; }
 
   .reading-image {
     width: 100%;
@@ -152,6 +166,8 @@ body {
   }
 
   .reading-image-empty {
+    height: 0;
+    min-height: 0;
     background: transparent;
   }
 }
