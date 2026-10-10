@@ -272,9 +272,9 @@ button { color: inherit; }
 .calendar-heading { margin: 0 -8px 8px; padding: 7px 8px; background: transparent; color: #111; }
 .calendar-heading strong { color: #111; font-family: var(--sans); font-size: 15px; font-weight: 800; }
 .calendar-heading button { color: #111; }
-.calendar-labels { padding: 0 2px; color: #5d6262; font-size: 11px; }
-.calendar-days { gap: 2px; padding: 0 2px; }
-.calendar-days button, .calendar-days > span { width: 100%; aspect-ratio: 1; height: auto; border: 1px solid #9eafb5; border-radius: 3px; background: #fff; color: #111; font-size: 12px; font-weight: 800; line-height: 1; padding: 0; box-shadow: inset 0 1px 1px rgba(255,255,255,.9), 0 1px 1px rgba(45,67,74,.12); }
+.calendar-labels { grid-template-columns: repeat(7, 22px); justify-content: center; padding: 0; color: #5d6262; font-size: 11px; }
+.calendar-days { grid-template-columns: repeat(7, 22px); justify-content: center; gap: 2px; padding: 0; }
+.calendar-days button, .calendar-days > span { width: 22px; aspect-ratio: 1; height: 22px; border: 1px solid #9eafb5; border-radius: 3px; background: #fff; color: #111; font-size: 12px; font-weight: 800; line-height: 1; padding: 0; box-shadow: inset 0 1px 1px rgba(255,255,255,.9), 0 1px 1px rgba(45,67,74,.12); }
 .calendar-days button:hover { background: #edf6fa; }
 .calendar-days button.selected { background: var(--accent); border-color: var(--accent); color: #fff; }
 .calendar-days button.has-entry::after { left: 15%; right: 15%; bottom: 2px; translate: none; width: auto; height: 3px; border-radius: 0; background: #d66b4c; }
