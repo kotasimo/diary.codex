@@ -136,9 +136,10 @@ body {
   .left-column {
     position: static;
     z-index: auto;
-    align-self: start;
+    align-self: stretch;
     width: auto;
     height: auto;
+    min-height: calc(100vh - 112px);
     overflow: visible;
     padding: 28px 18px 32px !important;
     border-right: 1px solid #ecebe7 !important;
