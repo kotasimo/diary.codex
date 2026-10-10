@@ -157,7 +157,11 @@ body {
   }
 
   .entry-list {
-    width: 60%;
+    width: 72%;
+  }
+
+  .detail-panel {
+    width: 72%;
   }
 
   .reading-copy { max-width: none; }
