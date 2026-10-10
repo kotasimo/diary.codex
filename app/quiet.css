@@ -130,6 +130,7 @@ body {
     margin-left: 0;
     margin-right: 0;
     grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
+    column-gap: 21px !important;
     padding: 0 42px 90px 0;
   }
 
