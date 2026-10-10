@@ -51,7 +51,7 @@ body {
 
   .left-column {
     padding: 38px 30px 0 0 !important;
-    border-right: 1px solid #ecebe7 !important;
+    border-right: 0 !important;
   }
 
   .main-column,
