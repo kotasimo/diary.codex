@@ -268,7 +268,7 @@ function ComposeView({ entry, date, day, onCancel, onSave }: { entry?: Entry; da
         <button className="back-button" onClick={onCancel}><X size={18} />キャンセル</button>
       </div>
       <label className="field-label" htmlFor="title">タイトル <span>任意</span></label>
-      <input id="title" className="title-input" value={title} onChange={(event) => setTitle(event.target.value)} placeholder="今日をひとことで表すなら" maxLength={80} />
+      <input id="title" className="title-input" value={title} onChange={(event) => setTitle(event.target.value)} placeholder="記事タイトル" maxLength={80} />
       <div className="character-count">{title.length} / 80</div>
       <label className="field-label" htmlFor="body">本文</label>
       <textarea id="body" className="body-input" value={content} onChange={(event) => setContent(event.target.value)} placeholder="今日あったこと、感じたことを書いてみましょう。" />

@@ -237,7 +237,49 @@ body {
   }
 
   .compose-panel { padding: 18px 0 34px; }
-  .compose-heading { margin-bottom: 22px; }
+  .compose-panel {
+    border: 0;
+    background: #fff;
+    box-shadow: none;
+  }
+  .compose-heading { margin-bottom: 42px; }
+  .compose-panel .field-label,
+  .compose-panel .character-count { display: none; }
+  .compose-panel .title-input,
+  .compose-panel .body-input {
+    width: 100%;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+  .compose-panel .title-input {
+    padding: 0 0 14px;
+    border-bottom: 1px solid #ecece7;
+    font-size: 28px;
+    font-weight: 600;
+  }
+  .compose-panel .body-input {
+    min-height: 360px;
+    padding: 22px 0 0;
+    font-size: 16px;
+    line-height: 1.9;
+    resize: vertical;
+  }
+  .compose-panel .title-input:focus,
+  .compose-panel .body-input:focus { outline: none; }
+  .compose-panel #image {
+    margin-top: 18px;
+    padding: 10px 0;
+    border-bottom: 1px solid #ecece7;
+    font-size: 13px;
+    font-weight: 400;
+  }
+  .compose-footer {
+    justify-content: flex-end;
+    margin-top: 24px;
+  }
+  .compose-footer > span { display: none; }
 
 
   .reading-copy { max-width: none; }
