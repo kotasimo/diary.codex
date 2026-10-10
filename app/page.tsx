@@ -198,7 +198,6 @@ function WeekView({ entries, onDetail, onEdit }: { entries: Entry[]; onDetail: (
               <div className="reading-copy">
                 <header className="entry-heading">
                   <h2>{entry?.title ?? "この日はまだ記録がありません"}</h2>
-                  <time className="entry-heading-date">{date.replace("月", "/").replace("日", "")}（{day}）</time>
                   <button className="entry-menu-button" onClick={() => onEdit(date, day, entry)} aria-label={`${date}の日記を${entry ? "編集" : "作成"}`}>…</button>
                 </header>
                 {entry ? (
@@ -209,13 +208,16 @@ function WeekView({ entries, onDetail, onEdit }: { entries: Entry[]; onDetail: (
                   <button className="quiet-write-button" onClick={() => onEdit(date, day)}>書く</button>
                 )}
               </div>
-              <div
-                className={`reading-image${entry?.image ? "" : " reading-image-empty"}`}
-                role={entry?.image ? "img" : undefined}
-                aria-label={entry?.image ? `${entry.title ?? "日記"}の写真` : undefined}
-                aria-hidden={entry?.image ? undefined : true}
-                style={entry?.image ? { backgroundImage: `url(${entry.image})` } : undefined}
-              />
+              <div className="reading-media">
+                <time className="entry-heading-date">{date.replace("月", "/").replace("日", "")}（{day}）</time>
+                <div
+                  className={`reading-image${entry?.image ? "" : " reading-image-empty"}`}
+                  role={entry?.image ? "img" : undefined}
+                  aria-label={entry?.image ? `${entry.title ?? "日記"}の写真` : undefined}
+                  aria-hidden={entry?.image ? undefined : true}
+                  style={entry?.image ? { backgroundImage: `url(${entry.image})` } : undefined}
+                />
+              </div>
             </article>
           );
         })}

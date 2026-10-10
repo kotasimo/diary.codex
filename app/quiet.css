@@ -166,6 +166,16 @@ body {
 
   .reading-copy { max-width: none; }
   .reading-copy .entry-heading h2 { flex: 1; }
+  .reading-media {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .reading-media .entry-heading-date {
+    position: static;
+    margin: 0 0 0 auto;
+  }
   .entry-heading-date {
     position: absolute;
     top: 18px;
