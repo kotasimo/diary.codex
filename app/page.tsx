@@ -213,7 +213,13 @@ function WeekView({ entries, onDetail, onEdit }: { entries: Entry[]; onDetail: (
                   <button className="quiet-write-button" onClick={() => onEdit(date, day)}>書く</button>
                 )}
               </div>
-              {entry?.image ? <div className="reading-image" role="img" aria-label={`${entry.title ?? "日記"}の写真`} style={{ backgroundImage: `url(${entry.image})` }} /> : null}
+              <div
+                className={`reading-image${entry?.image ? "" : " reading-image-empty"}`}
+                role={entry?.image ? "img" : undefined}
+                aria-label={entry?.image ? `${entry.title ?? "日記"}の写真` : undefined}
+                aria-hidden={entry?.image ? undefined : true}
+                style={entry?.image ? { backgroundImage: `url(${entry.image})` } : undefined}
+              />
             </article>
           );
         })}
