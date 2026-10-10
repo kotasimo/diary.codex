@@ -18,7 +18,7 @@ body { margin: 0; background: #fff; color: var(--ink); font-family: var(--sans);
 button, input, textarea { font: inherit; }
 button { color: inherit; }
 
-.site-header { position: sticky; top: 0; z-index: 30; height: 68px; border-bottom: 1px solid rgba(52,58,53,.12); background: rgba(255,254,249,.94); backdrop-filter: blur(14px); }
+.site-header { position: relative; z-index: 30; height: 68px; border-bottom: 1px solid rgba(52,58,53,.12); background: #fff; }
 .header-inner { max-width: 1240px; height: 100%; margin: 0 auto; padding: 0 28px; display: flex; align-items: center; gap: 36px; }
 .brand { border: 0; background: none; display: flex; align-items: center; gap: 10px; cursor: pointer; font: 700 26px/1 var(--serif); letter-spacing: .03em; }
 .brand-mark { width: 35px; height: 35px; border-radius: 50%; display: grid; place-items: center; color: white; background: var(--accent); }
@@ -261,6 +261,13 @@ button { color: inherit; }
 .detail-body p { margin: 0; white-space: inherit; }
 .detail-heading { border-bottom: 0; }
 .entry-pagination { border-top: 0; }
+.detail-body { padding-top: 13px; padding-bottom: 17px; }
+.detail-heading { padding-top: 25px; padding-bottom: 12px; }
+.calendar-card { background: #fff; }
+.calendar-heading { margin-bottom: 9px; }
+.calendar-labels { margin-bottom: 4px; }
+.calendar-days { row-gap: 2px; }
+.calendar-days button, .calendar-days > span { height: 22px; }
 
 /* Personal diary layout: hero, left navigation, and a compact weekly stream. */
 .diary-hero { max-width: 100%; height: 190px; position: relative; overflow: hidden; background: linear-gradient(180deg, rgba(38,66,78,.08), rgba(38,66,78,.36)), url("https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=1800&q=85") center 58% / cover; }
