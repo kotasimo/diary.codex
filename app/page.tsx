@@ -266,7 +266,6 @@ function ComposeView({ entry, date, day, onCancel, onSave }: { entry?: Entry; da
     <section className="content-panel compose-panel">
       <div className="compose-heading">
         <button className="back-button" onClick={onCancel}><X size={18} />キャンセル</button>
-        <div><p className="eyebrow">{entry ? "EDIT ENTRY" : "NEW ENTRY"}</p><h1>{entry ? "日記を編集" : "日記を書く"}</h1><span>2026年{date}（{day}）</span></div>
       </div>
       <label className="field-label" htmlFor="title">タイトル <span>任意</span></label>
       <input id="title" className="title-input" value={title} onChange={(event) => setTitle(event.target.value)} placeholder="今日をひとことで表すなら" maxLength={80} />
