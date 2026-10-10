@@ -28,6 +28,7 @@ type Entry = {
   content: string;
   updatedAt: string;
   views: number;
+  image?: string;
 };
 
 const initialEntries: Entry[] = [
@@ -193,22 +194,26 @@ function WeekView({ entries, onDetail, onEdit }: { entries: Entry[]; onDetail: (
         {weekDays.map(([date, day]) => {
           const entry = entries.find((item) => item.date === date);
           return (
-            <article className={`entry-row ${!entry ? "empty-entry" : ""}`} key={date}>
-              <header className="entry-heading">
-                <h2>{entry?.title ?? ""}</h2>
-                <div className="entry-heading-actions">
-                  <time className={`entry-date day-${day}`}>2026年{date}（{day}）</time>
-                  <button className="edit-entry-button" onClick={() => onEdit(date, day, entry)} aria-label={`${date}の日記を${entry ? "編集" : "作成"}`}>
-                    <Edit3 size={14} />{entry ? "編集" : "書く"}
+            <article className={`entry-row reading-entry ${!entry ? "empty-entry" : ""} ${entry?.image ? "has-image" : ""}`} key={date}>
+              <div className="reading-date">
+                <strong>{date.replace("月", "/").replace("日", "")}</strong>
+                <span>{day}</span>
+              </div>
+              <div className="reading-copy">
+                <header className="entry-heading">
+                  <h2>{entry?.title ?? "この日はまだ記録がありません"}</h2>
+                  <button className="entry-menu-button" onClick={() => onEdit(date, day, entry)} aria-label={`${date}の日記を${entry ? "編集" : "作成"}`}>…</button>
+                </header>
+                {entry ? (
+                  <button className="entry-content" onClick={() => onDetail(entry)}>
+                    <p>{entry.content}</p>
+                    <div className="entry-meta"><span className="read-more">続きを読む <ChevronRight size={15} /></span></div>
                   </button>
-                </div>
-              </header>
-              {entry ? (
-                <button className="entry-content" onClick={() => onDetail(entry)}>
-                  <p>{entry.content}</p>
-                  <div className="entry-meta"><span className="read-more">続きを読む <ChevronRight size={15} /></span></div>
-                </button>
-              ) : <div className="empty-entry-space" aria-hidden="true" />}
+                ) : (
+                  <button className="quiet-write-button" onClick={() => onEdit(date, day)}>書く</button>
+                )}
+              </div>
+              {entry?.image ? <div className="reading-image" role="img" aria-label={`${entry.title ?? "日記"}の写真`} style={{ backgroundImage: `url(${entry.image})` }} /> : null}
             </article>
           );
         })}
