@@ -154,6 +154,10 @@ body {
     width: calc(100% / 1.1);
     padding-left: 0 !important;
   }
+  .calendar-card .calendar-heading {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
 
   .profile-card .avatar-large {
     width: 57px;
@@ -237,7 +241,7 @@ body {
   .week-toolbar > .week-range { order: initial; }
   .week-range {
     color: #252525;
-    font-size: 16px;
+    font-size: 19.2px;
     font-weight: 600;
     white-space: nowrap;
   }
