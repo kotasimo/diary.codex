@@ -200,16 +200,14 @@ function WeekView({ entries, onDetail, onEdit }: { entries: Entry[]; onDetail: (
             <article className={`entry-row reading-entry ${!entry ? "empty-entry" : ""} ${entry?.image ? "has-image" : ""}`} key={date}>
               <div className="reading-copy">
                 <header className="entry-heading">
-                  <h2>{entry?.title ?? "この日はまだ記録がありません"}</h2>
+                  <h2>{entry?.title ?? ""}</h2>
                   <button className="entry-menu-button" onClick={() => onEdit(date, day, entry)} aria-label={`${date}の日記を${entry ? "編集" : "作成"}`}>…</button>
                 </header>
                 {entry ? (
                   <button className="entry-content" onClick={() => onDetail(entry)}>
                     <p>{entry.content}</p>
                   </button>
-                ) : (
-                  <button className="quiet-write-button" onClick={() => onEdit(date, day)}>書く</button>
-                )}
+                ) : null}
               </div>
               <div className="reading-media">
                 <time className="entry-heading-date">{date.replace("月", "/").replace("日", "")}（{day}）</time>
