@@ -192,10 +192,6 @@ function WeekView({ entries, onDetail, onEdit }: { entries: Entry[]; onDetail: (
           const entry = entries.find((item) => item.date === date);
           return (
             <article className={`entry-row reading-entry ${!entry ? "empty-entry" : ""} ${entry?.image ? "has-image" : ""}`} key={date}>
-              <div className="reading-date">
-                <strong>{date.replace("月", "/").replace("日", "")}</strong>
-                <span>{day}</span>
-              </div>
               <div className="reading-copy">
                 <header className="entry-heading">
                   <h2>{entry?.title ?? "この日はまだ記録がありません"}</h2>
