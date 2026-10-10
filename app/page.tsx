@@ -168,15 +168,14 @@ function DiaryHero() {
   );
 }
 
-function ProfileCard({ onCompose }: { onCompose: () => void }) {
+function ProfileCard() {
   return (
     <section className="profile-card">
-      <div className="avatar avatar-large avatar-me">K</div>
-      <div>
+      <div className="profile-identity">
+        <div className="avatar avatar-large avatar-me">K</div>
         <p className="profile-name">kotaro</p>
       </div>
       <p className="profile-bio">何でもない毎日を、忘れないために。</p>
-      <button className="primary-button full-button" onClick={onCompose}><Edit3 size={17} />今日の日記を書く</button>
     </section>
   );
 }
@@ -211,7 +210,7 @@ function WeekView({ entries, onDetail, onEdit }: { entries: Entry[]; onDetail: (
                   <p>{entry.content}</p>
                   <div className="entry-meta"><span className="read-more">続きを読む <ChevronRight size={15} /></span></div>
                 </button>
-              ) : null}
+              ) : <div className="empty-entry-space" aria-hidden="true" />}
             </article>
           );
         })}
@@ -230,7 +229,7 @@ function DetailView({ entry, onBack, onEdit }: { entry: Entry; onBack: () => voi
         <div className="detail-meta"><span>2026年</span><span>・</span><span>{entry.updatedAt} 更新</span><span>・</span><span><Eye size={14} /> {entry.views}</span></div>
       </header>
       <div className="detail-body">
-        {entry.content.split("。").filter(Boolean).map((line) => <p key={line}>{line}。</p>)}
+        <p>{entry.content}</p>
       </div>
       <div className="detail-actions"><button className="secondary-button" onClick={onEdit}><Edit3 size={16} />編集する</button></div>
       <footer className="author-block">
@@ -299,7 +298,6 @@ function SideNavigation({ view, onView, open, onClose, mobileOnly = false }: { v
     <aside className={`mobile-drawer ${mobileOnly ? "mobile-nav" : "desktop-nav"} ${open ? "drawer-open" : ""}`}>
       <div className="drawer-head"><span>メニュー</span><button onClick={onClose}><X size={20} /></button></div>
       <button className={view === "week" || view === "detail" ? "active" : ""} onClick={() => onView("week")}><BookOpenText size={19} />自分の日記</button>
-      <button className={view === "compose" ? "active" : ""} onClick={() => onView("compose")}><Edit3 size={19} />日記を書く</button>
       <button className={view === "visitors" ? "active" : ""} onClick={() => onView("visitors")}><Footprints size={19} />足あと<span className="nav-badge">3</span></button>
       <button><UserRound size={19} />プロフィール</button>
       <button><Settings size={19} />設定</button>
@@ -353,7 +351,7 @@ export default function HomePage() {
       <DiaryHero />
       <main className="app-layout">
         <aside className="left-column">
-          <ProfileCard onCompose={() => openEditor("10月10日", "土", entries.find((entry) => entry.date === "10月10日"))} />
+          <ProfileCard />
           <MiniCalendar onPick={() => changeView("week")} />
           <SideNavigation
             view={view}

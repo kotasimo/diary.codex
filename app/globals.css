@@ -248,6 +248,18 @@ button { color: inherit; }
   .auth-form-card h2 { font-size: 27px; }
 }
 
+/* Final refinements from the diary review. */
+.left-column { border-right: 0; }
+.profile-card { padding-bottom: 12px; border-bottom: 0; }
+.profile-identity { display: flex; align-items: center; gap: 14px; }
+.profile-identity .profile-name { margin: 0; }
+.profile-card .profile-bio { margin: 10px 0 0; line-height: 1.5; }
+.profile-card .avatar-large { width: 82px; height: 82px; }
+.today-button { margin-top: 10px; border-top: 0; padding-top: 0; }
+.empty-entry-space { height: 46px; background: #fff; }
+.detail-body { font-family: var(--sans); white-space: pre-wrap; line-height: 1.9; }
+.detail-body p { margin: 0; white-space: inherit; }
+
 /* Personal diary layout: hero, left navigation, and a compact weekly stream. */
 .diary-hero { max-width: 100%; height: 190px; position: relative; overflow: hidden; background: linear-gradient(180deg, rgba(38,66,78,.08), rgba(38,66,78,.36)), url("https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=1800&q=85") center 58% / cover; }
 .diary-hero::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(16,30,38,.48), transparent 62%); }
