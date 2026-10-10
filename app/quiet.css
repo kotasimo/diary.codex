@@ -157,6 +157,7 @@ body {
   .calendar-card .calendar-heading {
     margin-left: 0 !important;
     margin-right: 0 !important;
+    width: 187px;
   }
   .calendar-card .calendar-grid {
     grid-template-columns: repeat(7, 25px);
@@ -251,9 +252,11 @@ body {
   .week-toolbar > .week-range { order: initial; }
   .week-range {
     color: #252525;
-    font-size: 19.2px;
+    font-size: 22px;
+    line-height: 1;
     font-weight: 600;
     white-space: nowrap;
+    transform: scale(1.08);
   }
 
   .reading-date { min-height: 72px; }
