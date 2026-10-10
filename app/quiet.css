@@ -335,7 +335,7 @@ body {
 
   .week-toolbar > .week-actions {
     order: initial;
-    margin-right: 0;
+    margin-right: 35px;
     display: flex;
     align-items: center;
     gap: 12px;
