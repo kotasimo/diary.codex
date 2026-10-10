@@ -156,6 +156,10 @@ body {
     padding-block: 18px;
   }
 
+  .entry-list {
+    width: 60%;
+  }
+
   .reading-copy { max-width: none; }
   .reading-copy .entry-heading h2 { flex: 1; }
   .entry-heading-date {
