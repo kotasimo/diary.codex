@@ -141,13 +141,13 @@ body {
     overflow-y: auto;
     padding: 28px 18px 32px !important;
     border-right: 1px solid #ecebe7 !important;
-    background: #fff;
+    background: #fafafa;
   }
 
   .profile-card .avatar-large {
-    width: 71px;
-    height: 71px;
-    font-size: 21px;
+    width: 57px;
+    height: 57px;
+    font-size: 17px;
   }
 
   .main-column { width: 100%; min-width: 0; }
