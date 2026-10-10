@@ -158,6 +158,17 @@ function Header({ onMenu }: { onMenu: () => void }) {
   );
 }
 
+function DiaryHero() {
+  return (
+    <section className="diary-hero" aria-label="プロフィール紹介">
+      <div className="diary-hero-copy">
+        <h1>kotaroの日記</h1>
+        <p>何でもない毎日を、忘れないために。</p>
+      </div>
+    </section>
+  );
+}
+
 function ProfileCard({ onCompose }: { onCompose: () => void }) {
   return (
     <section className="profile-card">
@@ -347,6 +358,7 @@ export default function HomePage() {
     <>
       <Header onMenu={() => setDrawerOpen(true)} />
       <div className="mobile-title">{title}</div>
+      <DiaryHero />
       <main className="app-layout">
         <aside className="left-column">
           <ProfileCard onCompose={() => openEditor("10月10日", "土", entries.find((entry) => entry.date === "10月10日"))} />
@@ -364,10 +376,6 @@ export default function HomePage() {
           {view === "compose" && <ComposeView entry={editingEntry} date={editingDate.date} day={editingDate.day} onCancel={() => changeView("week")} onSave={saveEntry} />}
           {view === "visitors" && <VisitorsView />}
         </section>
-        <aside className="right-column">
-          <div className="about-card"><p className="eyebrow">ABOUT HIBI</p><h3>日々を、残そう。</h3><p>大切なのは、特別な出来事だけじゃない。今日のあなたを、言葉にして残す場所です。</p></div>
-          <div className="recent-card"><h3>最近読みに来た人</h3>{visitors.slice(0, 3).map(v => <button key={v.name}><span className={`avatar avatar-${v.color}`}>{v.initial}</span><span><strong>{v.name}</strong><small>{v.time}</small></span></button>)}<button className="text-link" onClick={() => changeView("visitors")}>すべて見る <ChevronRight size={15} /></button></div>
-        </aside>
       </main>
 
       {drawerOpen && <button className="drawer-overlay" aria-label="メニューを閉じる" onClick={() => setDrawerOpen(false)} />}
