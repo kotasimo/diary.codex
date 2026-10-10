@@ -324,7 +324,13 @@ export default function HomePage() {
     if (!savedEntries) return;
 
     try {
-      setEntries(JSON.parse(savedEntries) as Entry[]);
+      const saved = JSON.parse(savedEntries) as Entry[];
+      const merged = saved.map((entry) => {
+        const seed = initialEntries.find((item) => item.date === entry.date);
+        return !entry.image && seed?.image ? { ...entry, image: seed.image } : entry;
+      });
+      setEntries(merged);
+      window.localStorage.setItem("hibi-diary-entries", JSON.stringify(merged));
     } catch {
       window.localStorage.removeItem("hibi-diary-entries");
     }
