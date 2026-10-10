@@ -287,7 +287,7 @@ body {
   .reading-image {
     width: 80%;
     height: 120px;
-    align-self: flex-end;
+    align-self: flex-start;
   }
 
   .reading-image-empty {
