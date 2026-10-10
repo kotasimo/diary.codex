@@ -248,6 +248,9 @@ button { color: inherit; }
   .auth-form-card h2 { font-size: 27px; }
 }
 
+/* Keep the sidebar clean without a dividing rule. */
+.left-column { border-right: 0 !important; }
+
 /* Final refinements from the diary review. */
 .left-column { border-right: 0; }
 .profile-card { padding-bottom: 12px; border-bottom: 0; }
@@ -325,3 +328,5 @@ button { color: inherit; }
   .week-toolbar { padding: 22px 17px 13px; }
   .entry-list { border-left: 0; border-right: 0; }
 }
+
+.left-column { border-right: 0 !important; }
