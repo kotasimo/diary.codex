@@ -91,7 +91,7 @@ body {
 
 @media (min-width: 1101px) {
   /* Keep the navigation rail fixed while the reading column scrolls. */
-  :root { --sidebar-width: 185px; }
+  :root { --sidebar-width: 220px; }
 
   .site-header { display: none; }
 
