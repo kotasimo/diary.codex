@@ -269,19 +269,22 @@ button { color: inherit; }
 .calendar-days { row-gap: 2px; }
 .calendar-days button, .calendar-days > span { height: 22px; }
 .calendar-card { padding: 0 8px 8px; border: 1px solid #83b8d0; background: #fff; box-shadow: inset 0 0 0 3px #d9edf5, 0 3px 8px rgba(38,91,116,.18); }
-.calendar-heading { margin: 0 -8px 8px; padding: 7px 8px; background: #2e83b6; color: #fff; }
-.calendar-heading strong { color: #fff; font-family: var(--sans); font-size: 15px; }
-.calendar-heading button { color: #fff; }
+.calendar-heading { margin: 0 -8px 8px; padding: 7px 8px; background: transparent; color: #111; }
+.calendar-heading strong { color: #111; font-family: var(--sans); font-size: 15px; font-weight: 800; }
+.calendar-heading button { color: #111; }
 .calendar-labels { padding: 0 2px; color: #5d6262; font-size: 11px; }
 .calendar-days { gap: 2px; padding: 0 2px; }
-.calendar-days button, .calendar-days > span { width: 100%; aspect-ratio: 1; height: auto; border: 1px solid #9eafb5; border-radius: 3px; background: #fff; color: #344047; box-shadow: inset 0 1px 1px rgba(255,255,255,.9), 0 1px 1px rgba(45,67,74,.12); }
+.calendar-days button, .calendar-days > span { width: 100%; aspect-ratio: 1; height: auto; border: 1px solid #9eafb5; border-radius: 3px; background: #fff; color: #111; font-size: 12px; font-weight: 800; line-height: 1; padding: 0; box-shadow: inset 0 1px 1px rgba(255,255,255,.9), 0 1px 1px rgba(45,67,74,.12); }
 .calendar-days button:hover { background: #edf6fa; }
 .calendar-days button.selected { background: var(--accent); border-color: var(--accent); color: #fff; }
 .calendar-days button.has-entry::after { left: 15%; right: 15%; bottom: 2px; translate: none; width: auto; height: 3px; border-radius: 0; background: #d66b4c; }
 .calendar-days button.selected::after { background: #fff; }
+.calendar-days button.selected { background: #fff; border-color: #111; color: #111; }
 .calendar-days button:nth-child(7n), .calendar-days button:nth-child(7n + 1) { color: #2679bd; }
 .calendar-days button:nth-child(7n) { color: #d84242; }
 .today-button { border-top: 0; margin-top: 6px; padding-top: 4px; }
+.calendar-labels span { color: #111; font-weight: 800; }
+.entry-list { border-color: #111; }
 
 /* Personal diary layout: hero, left navigation, and a compact weekly stream. */
 .diary-hero { max-width: 100%; height: 190px; position: relative; overflow: hidden; background: linear-gradient(180deg, rgba(38,66,78,.08), rgba(38,66,78,.36)), url("https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=1800&q=85") center 58% / cover; }

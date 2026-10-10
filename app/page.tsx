@@ -122,14 +122,13 @@ function MiniCalendar({ onPick }: { onPick: () => void }) {
         {days.map((day) => (
           <button
             key={day}
-            className={`${day === 10 ? "selected" : ""} ${[5, 6, 7, 9, 10, 11].includes(day) ? "has-entry" : ""}`}
+            className={`${[5, 6, 7, 9, 10, 11].includes(day) ? "has-entry" : ""}`}
             onClick={onPick}
           >
             {day}
           </button>
         ))}
       </div>
-      <button className="today-button" onClick={onPick}>今日へ戻る</button>
     </section>
   );
 }
