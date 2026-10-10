@@ -141,7 +141,7 @@ body {
     width: auto;
     height: auto;
     min-height: calc(100vh - 112px);
-    transform: translateX(max(0px, calc((100vw - 1269px) / 2)));
+    transform: translateX(calc(max(0px, calc((100vw - 1269px) / 2)) + 10.5px));
     overflow: visible;
     padding: 28px 18px 32px !important;
     border-right: 0 !important;
