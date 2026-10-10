@@ -159,7 +159,7 @@ body {
   .entry-list,
   .week-toolbar,
   .detail-panel {
-    width: min(700px, 100%);
+    width: min(685px, 100%);
   }
 
 
