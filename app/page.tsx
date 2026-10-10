@@ -6,7 +6,6 @@ import {
   BookOpenText,
   ChevronLeft,
   ChevronRight,
-  Clock3,
   Edit3,
   Eye,
   Feather,
@@ -175,13 +174,8 @@ function ProfileCard({ onCompose }: { onCompose: () => void }) {
       <div className="avatar avatar-large avatar-me">K</div>
       <div>
         <p className="profile-name">kotaro</p>
-        <p className="profile-handle">@kotaro_days</p>
       </div>
       <p className="profile-bio">何でもない毎日を、忘れないために。</p>
-      <div className="profile-stats">
-        <span><strong>128</strong>日記</span>
-        <span><strong>42</strong>読者</span>
-      </div>
       <button className="primary-button full-button" onClick={onCompose}><Edit3 size={17} />今日の日記を書く</button>
     </section>
   );
@@ -193,12 +187,10 @@ function WeekView({ entries, onDetail, onEdit }: { entries: Entry[]; onDetail: (
       <div className="week-toolbar">
         <button className="week-arrow" aria-label="前の週"><ChevronLeft size={20} /></button>
         <div>
-          <p className="eyebrow">MY DIARY</p>
           <h1>10月5日 <span>—</span> 10月11日</h1>
         </div>
         <button className="week-arrow" aria-label="次の週"><ChevronRight size={20} /></button>
       </div>
-      <button className="current-week">今週</button>
 
       <div className="entry-list">
         {weekDays.map(([date, day]) => {
@@ -217,7 +209,7 @@ function WeekView({ entries, onDetail, onEdit }: { entries: Entry[]; onDetail: (
               {entry ? (
                 <button className="entry-content" onClick={() => onDetail(entry)}>
                   <p>{entry.content}</p>
-                  <div className="entry-meta"><span><Clock3 size={14} />{entry.updatedAt}</span><span><Eye size={14} />{entry.views}</span><span className="read-more">続きを読む <ChevronRight size={15} /></span></div>
+                  <div className="entry-meta"><span className="read-more">続きを読む <ChevronRight size={15} /></span></div>
                 </button>
               ) : null}
             </article>
