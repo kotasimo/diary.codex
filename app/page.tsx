@@ -40,6 +40,7 @@ const initialEntries: Entry[] = [
       "仕事を少し早めに切り上げて、遠回りして帰った。角を曲がったところで金木犀の香りがして、ようやく秋が来た気がした。急がず歩くと、いつもの道にも知らない景色がある。",
     updatedAt: "21:42",
     views: 18,
+    image: "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=720&q=80",
   },
   {
     date: "10月6日",
@@ -49,6 +50,7 @@ const initialEntries: Entry[] = [
       "やりたいことがいくつもあるのに、どれも大きすぎて動けずにいた。でも今日、まずはノートを一冊買った。小さく始めれば、それでいい。",
     updatedAt: "08:16",
     views: 12,
+    image: "https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=720&q=80",
   },
   {
     date: "10月7日",
@@ -58,6 +60,7 @@ const initialEntries: Entry[] = [
       "雨の音で目が覚めた。窓を開けると、ひんやりとした空気。何をするでもない朝だったけれど、こういう時間も嫌いじゃない。",
     updatedAt: "23:08",
     views: 24,
+    image: "https://images.unsplash.com/photo-1519692933481-e162a57d6721?auto=format&fit=crop&w=720&q=80",
   },
   {
     date: "10月9日",
@@ -241,6 +244,7 @@ function DetailView({ entry, onBack, onEdit }: { entry: Entry; onBack: () => voi
 function ComposeView({ entry, date, day, onCancel, onSave }: { entry?: Entry; date: string; day: string; onCancel: () => void; onSave: (entry: Entry) => void }) {
   const [title, setTitle] = useState(entry?.title ?? "");
   const [content, setContent] = useState(entry?.content ?? "");
+  const [image, setImage] = useState(entry?.image ?? "");
 
   const saveEntry = () => {
     const now = new Date();
@@ -251,6 +255,7 @@ function ComposeView({ entry, date, day, onCancel, onSave }: { entry?: Entry; da
       content: content.trim(),
       updatedAt: `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`,
       views: entry?.views ?? 0,
+      image: image.trim() || undefined,
     });
   };
 
@@ -265,6 +270,8 @@ function ComposeView({ entry, date, day, onCancel, onSave }: { entry?: Entry; da
       <div className="character-count">{title.length} / 80</div>
       <label className="field-label" htmlFor="body">本文</label>
       <textarea id="body" className="body-input" value={content} onChange={(event) => setContent(event.target.value)} placeholder="今日あったこと、感じたことを書いてみましょう。" />
+      <label className="field-label" htmlFor="image">サムネイル画像URL <span>任意</span></label>
+      <input id="image" className="title-input" type="url" value={image} onChange={(event) => setImage(event.target.value)} placeholder="https://..." />
       <div className="compose-footer"><span>すべての人に公開されます</span><button className="primary-button" disabled={!content.trim()} onClick={saveEntry}>{entry ? "変更を保存" : "日記を公開する"}</button></div>
     </section>
   );
