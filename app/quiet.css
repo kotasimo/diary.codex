@@ -210,8 +210,19 @@ body {
   }
 
   .week-toolbar {
-    justify-content: flex-end;
+    justify-content: center;
+    gap: 14px;
     padding-block: 12px 10px;
+  }
+
+  .week-toolbar > button:first-child,
+  .week-toolbar > button:last-child,
+  .week-toolbar > .week-range { order: initial; }
+  .week-range {
+    color: #252525;
+    font-size: 16px;
+    font-weight: 600;
+    white-space: nowrap;
   }
 
   .reading-date { min-height: 72px; }
