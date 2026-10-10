@@ -256,9 +256,18 @@ body {
   }
 
   .week-toolbar {
+    position: relative;
     justify-content: center;
     gap: 14px;
     padding-block: 6px 8px;
+    border-bottom: 0;
+  }
+  .week-toolbar::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 35px;
+    bottom: 0;
     border-bottom: 1px solid #e7e6e1;
   }
 
