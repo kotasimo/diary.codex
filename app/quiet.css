@@ -217,6 +217,15 @@ body {
     grid-template-columns: minmax(0, 4fr) minmax(180px, 1fr);
     gap: 30px;
     padding-block: 12px;
+    border-bottom: 0;
+  }
+  .reading-entry::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 35px;
+    bottom: 0;
+    border-bottom: 1px solid #e7e6e1;
   }
 
   .entry-list,
