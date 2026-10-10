@@ -262,19 +262,26 @@ function ComposeView({ entry, date, day, onCancel, onSave }: { entry?: Entry; da
     });
   };
 
+  const selectImage = (file: File | undefined) => {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => setImage(String(reader.result));
+    reader.readAsDataURL(file);
+  };
+
   return (
     <section className="content-panel compose-panel">
       <div className="compose-heading">
         <button className="back-button" onClick={onCancel}><X size={18} />キャンセル</button>
+        <button className="primary-button compose-save-button" disabled={!content.trim()} onClick={saveEntry}>{entry ? "保存" : "公開"}</button>
       </div>
       <label className="field-label" htmlFor="title">タイトル <span>任意</span></label>
       <input id="title" className="title-input" value={title} onChange={(event) => setTitle(event.target.value)} placeholder="記事タイトル" maxLength={80} />
       <div className="character-count">{title.length} / 80</div>
       <label className="field-label" htmlFor="body">本文</label>
       <textarea id="body" className="body-input" value={content} onChange={(event) => setContent(event.target.value)} placeholder="今日あったこと、感じたことを書いてみましょう。" />
-      <label className="field-label" htmlFor="image">サムネイル画像URL <span>任意</span></label>
-      <input id="image" className="title-input" type="url" value={image} onChange={(event) => setImage(event.target.value)} placeholder="https://..." />
-      <div className="compose-footer"><span>すべての人に公開されます</span><button className="primary-button" disabled={!content.trim()} onClick={saveEntry}>{entry ? "変更を保存" : "日記を公開する"}</button></div>
+      <label className="image-upload-button" htmlFor="image-file">画像を追加</label>
+      <input id="image-file" type="file" accept="image/*" onChange={(event) => selectImage(event.target.files?.[0])} />
     </section>
   );
 }
