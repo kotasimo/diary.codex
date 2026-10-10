@@ -290,7 +290,7 @@ function SideNavigation({ view, onView, open, onClose, mobileOnly = false }: { v
   return (
     <aside className={`mobile-drawer ${mobileOnly ? "mobile-nav" : "desktop-nav"} ${open ? "drawer-open" : ""}`}>
       <div className="drawer-head"><span>メニュー</span><button onClick={onClose}><X size={20} /></button></div>
-      <button className={view === "visitors" ? "active" : ""} onClick={() => onView("visitors")}><Footprints size={19} />足あと<span className="nav-badge">3</span></button>
+      <button className={view === "visitors" ? "active" : ""} onClick={() => onView("visitors")}><Footprints size={19} />足あと</button>
       <button><UserRound size={19} />プロフィール</button>
       <button><Settings size={19} />設定</button>
       <div className="drawer-spacer" />
