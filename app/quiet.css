@@ -148,6 +148,12 @@ body {
     background: #fff;
   }
 
+  .calendar-card {
+    transform: scale(1.1);
+    transform-origin: top left;
+    width: calc(100% / 1.1);
+  }
+
   .profile-card .avatar-large {
     width: 57px;
     height: 57px;
@@ -212,7 +218,13 @@ body {
   .week-toolbar {
     justify-content: center;
     gap: 14px;
-    padding-block: 12px 10px;
+    padding-block: 12px 16px;
+    border-bottom: 1px solid #e7e6e1;
+  }
+
+  .week-arrow {
+    border: 0;
+    background: transparent;
   }
 
   .week-toolbar > button:first-child,
