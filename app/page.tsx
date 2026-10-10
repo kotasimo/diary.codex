@@ -28,6 +28,7 @@ type Entry = {
   content: string;
   updatedAt: string;
   views: number;
+  image?: string;
 };
 
 const initialEntries: Entry[] = [
@@ -179,6 +180,13 @@ function ProfileCard() {
 }
 
 function WeekView({ entries, onDetail, onEdit }: { entries: Entry[]; onDetail: (entry: Entry) => void; onEdit: (date: string, day: string, entry?: Entry) => void }) {
+  const imageByDate: Record<string, string> = {
+    "10月5日": "https://images.unsplash.com/photo-1501004318641-b39e6451bec6?auto=format&fit=crop&w=800&q=80",
+    "10月6日": "https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=800&q=80",
+    "10月7日": "https://images.unsplash.com/photo-1519692933481-e162a57d6721?auto=format&fit=crop&w=800&q=80",
+    "10月9日": "https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=800&q=80",
+    "10月10日": "https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=800&q=80",
+  };
   return (
     <div className="content-panel">
       <div className="week-toolbar">
@@ -192,8 +200,11 @@ function WeekView({ entries, onDetail, onEdit }: { entries: Entry[]; onDetail: (
       <div className="entry-list">
         {weekDays.map(([date, day]) => {
           const entry = entries.find((item) => item.date === date);
+          if (!entry) return null;
           return (
-            <article className={`entry-row ${!entry ? "empty-entry" : ""}`} key={date}>
+            <article className="entry-row inspiration-entry" key={date}>
+              <div className="entry-day-mark"><strong>{date.replace("月", "/")}</strong><span>{day}</span><span className="day-symbol">☼</span></div>
+              <div className="entry-inspiration-body">
               <header className="entry-heading">
                 <h2>{entry?.title ?? ""}</h2>
                 <div className="entry-heading-actions">
@@ -203,12 +214,14 @@ function WeekView({ entries, onDetail, onEdit }: { entries: Entry[]; onDetail: (
                   </button>
                 </div>
               </header>
-              {entry ? (
+              {
                 <button className="entry-content" onClick={() => onDetail(entry)}>
                   <p>{entry.content}</p>
                   <div className="entry-meta"><span className="read-more">続きを読む <ChevronRight size={15} /></span></div>
                 </button>
-              ) : <div className="empty-entry-space" aria-hidden="true" />}
+              }
+              </div>
+              <img className="entry-photo" src={imageByDate[date]} alt="" />
             </article>
           );
         })}

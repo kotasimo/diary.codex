@@ -252,6 +252,24 @@ button { color: inherit; }
 .left-column { border-right: 0 !important; }
 .app-layout { column-gap: 17px !important; }
 .left-column { padding-right: 15px !important; }
+
+/* Inspiration layout: date marker, journal text, and a quiet visual thumbnail. */
+.app-layout { grid-template-columns: 260px minmax(0, 1fr) !important; max-width: 1400px; gap: 42px !important; }
+.main-column { min-width: 0; }
+.content-panel { background: #fff; }
+.entry-list { border: 0; }
+.inspiration-entry { display: grid; grid-template-columns: 105px minmax(0, 1fr) 300px; gap: 28px; align-items: center; padding: 24px 0; border-bottom: 1px solid #dedede; background: #fff; }
+.entry-day-mark { display: flex; flex-direction: column; align-items: center; gap: 6px; color: #28313b; border-right: 1px solid #e1e1e1; min-height: 100px; padding-top: 8px; }
+.entry-day-mark strong { font-size: 27px; font-weight: 500; }
+.entry-day-mark span { font-size: 13px; }
+.entry-day-mark .day-symbol { margin-top: auto; font-size: 25px; color: #7d858b; }
+.entry-inspiration-body .entry-heading { padding: 0 0 8px; background: transparent; border: 0; }
+.entry-inspiration-body .entry-heading h2 { font-size: 22px; font-weight: 500; }
+.entry-inspiration-body .entry-date, .entry-inspiration-body .edit-entry-button { display: none; }
+.entry-inspiration-body .entry-content { padding: 0; background: transparent; }
+.entry-inspiration-body .entry-content > p { display: block; color: #4e555c; font-size: 16px; line-height: 1.8; -webkit-line-clamp: 3; }
+.entry-inspiration-body .read-more { margin-top: 8px; font-size: 14px; }
+.entry-photo { width: 300px; height: 150px; object-fit: cover; border-radius: 9px; }
 .profile-card { border-bottom: 0 !important; }
 .calendar-card { border: 1px solid #9a9a9a !important; border-radius: 9px !important; padding: 8px 10px 9px !important; box-shadow: 0 2px 7px rgba(0,0,0,.08); }
 .calendar-heading { margin: -8px -10px 4px; padding: 4px 10px; }
