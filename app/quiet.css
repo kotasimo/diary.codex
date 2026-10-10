@@ -309,9 +309,10 @@ body {
 
   .week-toolbar {
     position: relative;
-    justify-content: center;
-    gap: 14px;
-    padding-block: 6px 8px;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0;
+    padding-block: 16px 20px;
     border-bottom: 0;
   }
   .week-toolbar::after {
@@ -332,16 +333,19 @@ body {
     background: #fff;
   }
 
-  .week-toolbar > button:first-child,
-  .week-toolbar > button:last-child,
-  .week-toolbar > .week-range { order: initial; }
+  .week-toolbar > .week-actions {
+    order: initial;
+    margin-right: 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
   .week-range {
     color: #252525;
-    font-size: 22px;
+    font-size: 25px;
     line-height: 1;
     font-weight: 600;
     white-space: nowrap;
-    transform: scale(1.08);
   }
 
   .reading-date { min-height: 72px; }
