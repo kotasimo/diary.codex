@@ -143,7 +143,7 @@ body {
     transform: translateX(max(0px, calc((100vw - 1269px) / 2)));
     overflow: visible;
     padding: 28px 18px 32px !important;
-    border-right: 1px solid #ecebe7 !important;
+    border-right: 0 !important;
     background: #fff;
   }
 
