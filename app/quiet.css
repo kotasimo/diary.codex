@@ -158,6 +158,11 @@ body {
     margin-left: 0 !important;
     margin-right: 0 !important;
   }
+  .calendar-card .calendar-grid {
+    grid-template-columns: repeat(7, 25px);
+    justify-content: space-between;
+  }
+  .calendar-card { padding-right: 0 !important; }
 
   .profile-card .avatar-large {
     width: 57px;
