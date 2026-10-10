@@ -31,7 +31,7 @@ body {
 
 .reading-copy .entry-content > p {
   white-space: pre-line;
-  -webkit-line-clamp: 4;
+  -webkit-line-clamp: 6;
 }
 
 @media (min-width: 1101px) {
@@ -154,6 +154,18 @@ body {
     font-size: 17px;
   }
 
+  /* Keep the profile rail's type and icon rhythm close to a note-style sidebar. */
+  .profile-identity { gap: 12px; }
+  .profile-name { font-size: 16px; }
+  .profile-card .profile-bio { font-size: 13px; line-height: 1.7; }
+  .desktop-nav { gap: 6px; }
+  .desktop-nav > button {
+    min-height: 36px;
+    padding: 8px 6px;
+    font-size: 14px;
+  }
+  .desktop-nav > button svg { width: 18px; height: 18px; }
+
   .main-column { width: 100%; min-width: 0; }
 
   .calendar-card { width: 100%; }
@@ -202,7 +214,7 @@ body {
   .reading-copy .entry-content { padding-top: 6px; }
   .reading-copy .entry-content > p {
     line-height: 1.55;
-    -webkit-line-clamp: 4;
+    -webkit-line-clamp: 6;
     white-space: pre-line;
   }
   .reading-copy .entry-meta { margin-top: 8px; }
