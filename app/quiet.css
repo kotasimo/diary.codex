@@ -159,6 +159,11 @@ body {
     margin-right: 0 !important;
     width: 187px;
   }
+  .calendar-card .calendar-heading button:hover {
+    color: #111;
+    background: #f0f0ec;
+    border-radius: 4px;
+  }
   .calendar-card .calendar-grid {
     grid-template-columns: repeat(7, 25px);
     column-gap: 2px;
