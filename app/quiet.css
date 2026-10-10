@@ -233,7 +233,8 @@ body {
   .detail-panel,
   .compose-panel {
     width: min(685px, 100%);
-    margin-left: max(0px, calc((100vw - 1269px) / 2));
+    margin-left: max(0px, calc((100vw - 685px) / 2 - (var(--sidebar-width) + 21px)));
+    margin-right: 0;
   }
 
   .compose-panel { padding: 18px 0 34px; }
