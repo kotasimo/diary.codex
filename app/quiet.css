@@ -193,7 +193,7 @@ body {
 
   /* Keep the profile rail's type and icon rhythm close to a note-style sidebar. */
   .profile-identity { gap: 12px; }
-  .profile-name { font-size: 16px; }
+  .profile-name { font-size: 24px; }
   .profile-card .profile-bio {
     color: #000;
     font-size: 14.9px;
