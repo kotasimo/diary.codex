@@ -160,7 +160,7 @@ body {
   }
   .calendar-card .calendar-grid {
     grid-template-columns: repeat(7, 25px);
-    column-gap: 4px;
+    column-gap: 2px;
     justify-content: start;
   }
   .calendar-card {
@@ -200,7 +200,7 @@ body {
     position: relative;
     grid-template-columns: minmax(0, 4fr) minmax(180px, 1fr);
     gap: 30px;
-    padding-block: 6px;
+    padding-block: 12px;
   }
 
   .entry-list,
