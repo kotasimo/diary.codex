@@ -167,6 +167,7 @@ body {
   .week-toolbar,
   .detail-panel {
     width: min(685px, 100%);
+    margin-left: max(0px, calc((100vw - 1269px) / 2));
   }
 
 
