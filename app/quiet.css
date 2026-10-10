@@ -29,6 +29,11 @@ body {
   white-space: nowrap;
 }
 
+.reading-copy .entry-content > p {
+  white-space: pre-line;
+  -webkit-line-clamp: 4;
+}
+
 @media (min-width: 1101px) {
   .diary-hero-copy {
     max-width: 1540px;
