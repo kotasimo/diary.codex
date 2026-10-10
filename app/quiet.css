@@ -179,7 +179,8 @@ body {
   .reading-copy .entry-content { padding-top: 6px; }
   .reading-copy .entry-content > p {
     line-height: 1.55;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: 4;
+    white-space: pre-line;
   }
   .reading-copy .entry-meta { margin-top: 8px; }
 
