@@ -98,7 +98,7 @@ body {
   .diary-hero {
     width: calc(100% - var(--sidebar-width));
     max-width: none;
-    height: 128px;
+    height: 102px;
     margin-left: var(--sidebar-width);
   }
 
