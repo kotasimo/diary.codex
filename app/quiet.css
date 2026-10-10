@@ -156,17 +156,12 @@ body {
     padding-block: 18px;
   }
 
-  .entry-list {
-    width: 72%;
-  }
-
-  .week-toolbar {
-    width: 72%;
-  }
-
+  .entry-list,
+  .week-toolbar,
   .detail-panel {
-    width: 72%;
+    width: min(700px, 100%);
   }
+
 
   .reading-copy { max-width: none; }
   .reading-copy .entry-heading h2 { flex: 1; }
