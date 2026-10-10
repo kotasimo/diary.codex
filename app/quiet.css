@@ -1,17 +1,23 @@
 /* Final quiet-reader layout. Loaded after globals.css by design. */
 
-/* Keep the page visually uniform: the hero uses the same clean white canvas
-   as the reading area instead of introducing a separate image background. */
-.diary-hero {
+/* Keep the reading canvas white while retaining the photographic masthead. */
+body {
   background: #fff;
 }
 
+.diary-hero {
+  background:
+    linear-gradient(180deg, rgba(38, 66, 78, .08), rgba(38, 66, 78, .36)),
+    url("https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=1800&q=85")
+    center 58% / cover;
+}
+
 .diary-hero::after {
-  display: none;
+  display: block;
 }
 
 .diary-hero-copy {
-  color: #1f2529;
+  color: #fff;
 }
 
 @media (min-width: 1101px) {
