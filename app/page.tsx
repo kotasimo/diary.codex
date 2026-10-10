@@ -201,7 +201,6 @@ function WeekView({ entries, onDetail, onEdit }: { entries: Entry[]; onDetail: (
                 {entry ? (
                   <button className="entry-content" onClick={() => onDetail(entry)}>
                     <p>{entry.content}</p>
-                    <div className="entry-meta"><span className="read-more">続きを読む <ChevronRight size={15} /></span></div>
                   </button>
                 ) : (
                   <button className="quiet-write-button" onClick={() => onEdit(date, day)}>書く</button>
