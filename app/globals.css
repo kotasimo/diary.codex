@@ -250,6 +250,8 @@ button { color: inherit; }
 
 /* Keep the sidebar clean without a dividing rule. */
 .left-column { border-right: 0 !important; }
+.app-layout { column-gap: 17px !important; }
+.left-column { padding-right: 15px !important; }
 .profile-card { border-bottom: 0 !important; }
 .calendar-card { border: 1px solid #9a9a9a !important; border-radius: 9px !important; padding: 8px 10px 9px !important; box-shadow: 0 2px 7px rgba(0,0,0,.08); }
 .calendar-heading { margin: -8px -10px 4px; padding: 4px 10px; }
