@@ -211,6 +211,9 @@ body {
     box-shadow: 0 8px 20px rgba(40, 44, 39, .12);
     transform: translateX(-50%);
   }
+  .calendar-today-button,
+  .calendar-month-picker label,
+  .calendar-month-picker input { color: #252525; font-weight: 600; }
   .calendar-month-picker label { display: flex; align-items: center; gap: 3px; font-size: 12px; white-space: nowrap; }
   .calendar-month-picker input { width: 58px; padding: 3px 4px; border: 1px solid #d8d8d2; border-radius: 4px; background: #fff; font: inherit; }
   .calendar-month-picker input[type="number"] { appearance: textfield; }
