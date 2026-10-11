@@ -733,6 +733,12 @@ export default function HomePage() {
   const [, setSocialVersion] = useState(0);
   const [selectedAccount, setSelectedAccount] = useState<SocialAccount | undefined>();
   const visibleProfile = upgradeProfile(profile);
+  const publicProfile = view === "account" && selectedAccount ? upgradeProfile({
+    displayName: selectedAccount.displayName,
+    diaryTitle: `${selectedAccount.displayName}の日記`,
+    subtitle: selectedAccount.bio,
+    bio: selectedAccount.bio,
+  }) : visibleProfile;
   const title = useMemo(() => view === "visitors" ? "足あと" : view === "profile" ? "プロフィール設定" : view === "search" ? "アカウントを探す" : view === "account" ? selectedAccount?.displayName ?? "アカウント" : visibleProfile.diaryTitle, [selectedAccount?.displayName, visibleProfile.diaryTitle, view]);
   const socialAccounts = getSocialAccounts();
   const currentEmail = typeof window !== "undefined" ? window.localStorage.getItem(localSessionKey) ?? "" : "";
@@ -905,10 +911,10 @@ export default function HomePage() {
         onPost={() => openEditor("2026-10-10", "土", entries.find((entry) => normalizeDateValue(entry.date) === "2026-10-10"))}
       />
       <div className="mobile-title">{title}</div>
-      <DiaryHero profile={visibleProfile} />
+      <DiaryHero profile={publicProfile} />
       <main className="app-layout">
         <aside className="left-column">
-          <ProfileCard profile={visibleProfile} />
+          <ProfileCard profile={publicProfile} />
           <MiniCalendar month={calendarMonth} entries={entries} onMonthChange={(offset) => setCalendarMonth((current) => new Date(current.getFullYear(), current.getMonth() + offset, 1))} onSelectMonth={(year, month) => setCalendarMonth(new Date(year, month, 1))} onToday={() => { const today = new Date(); setCalendarMonth(new Date(today.getFullYear(), today.getMonth(), 1)); }} onPick={pickCalendarDay} />
           <SideNavigation
             view={view}
