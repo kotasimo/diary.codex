@@ -139,7 +139,6 @@ const visitors = [
 ];
 
 function MiniCalendar({ month, entries, onMonthChange, onSelectMonth, onPick }: { month: Date; entries: Entry[]; onMonthChange: (offset: number) => void; onSelectMonth: (year: number, month: number) => void; onPick: (day: number) => void }) {
-  const [pickerOpen, setPickerOpen] = useState(false);
   const year = month.getFullYear();
   const monthIndex = month.getMonth();
   const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
@@ -173,11 +172,10 @@ function MiniCalendar({ month, entries, onMonthChange, onSelectMonth, onPick }: 
         ))}
       </div>
       <div className="calendar-month-picker-wrap">
-        <button className="calendar-month-trigger" aria-expanded={pickerOpen} onClick={() => setPickerOpen((open) => !open)}>年月を指定</button>
-        {pickerOpen && <div className="calendar-month-picker">
+        <div className="calendar-month-picker">
           <label><input type="number" min="1900" max="2100" value={year} onChange={(event) => { const nextYear = Number(event.target.value); if (Number.isInteger(nextYear) && nextYear >= 1900 && nextYear <= 2100) onSelectMonth(nextYear, monthIndex); }} />年</label>
           <label><input type="number" min="1" max="12" value={monthIndex + 1} onChange={(event) => { const nextMonth = Number(event.target.value); if (Number.isInteger(nextMonth) && nextMonth >= 1 && nextMonth <= 12) onSelectMonth(year, nextMonth - 1); }} />月</label>
-        </div>}
+        </div>
       </div>
     </section>
   );
