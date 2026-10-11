@@ -386,11 +386,33 @@ export default function HomePage() {
       const supabase = getSupabaseClient();
       if (supabase) {
         const { data, error } = await supabase.from("diary_entries").select("*").order("date");
-        if (!cancelled && !error && data?.length) {
+        if (!cancelled && !error) {
           const byDate = new Map<string, Entry>();
-          for (const row of data) {
+          for (const row of data ?? []) {
             const date = normalizeDateValue(row.date);
             byDate.set(date, { ...row, date, updatedAt: row.updated_at } as Entry);
+          }
+
+          // Keep the current week's demo entries available after a reload without
+          // overwriting an entry the user has already saved for the same date.
+          for (const seed of initialEntries) {
+            const existing = byDate.get(seed.date);
+            if (!existing) {
+              const { error: seedError } = await supabase.from("diary_entries").insert({
+                ...seed,
+                updated_at: seed.updatedAt,
+              });
+              if (!seedError) byDate.set(seed.date, seed);
+            } else {
+              const metadata = {
+                title: existing.title || seed.title,
+                image: existing.image || seed.image,
+              };
+              if (metadata.title !== existing.title || metadata.image !== existing.image) {
+                const { error: metadataError } = await supabase.from("diary_entries").update(metadata).eq("date", existing.date);
+                if (!metadataError) byDate.set(seed.date, { ...existing, ...metadata });
+              }
+            }
           }
           setEntries([...byDate.values()]);
         }
