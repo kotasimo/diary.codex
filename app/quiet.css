@@ -419,9 +419,9 @@ body {
 @media (min-width: 1101px) {
   .entry-list,
   .reading-entry { width: 685px; max-width: 685px; }
-  .reading-entry::after { right: 135px; }
+  .reading-entry::after { right: 35px; }
   .reading-entry > .entry-heading,
-  .entry-body { width: calc(100% - 135px); }
+  .entry-body { width: calc(100% - 35px); }
   .entry-body { grid-template-columns: minmax(0, 4fr) minmax(140px, 1fr); }
   .entry-body .reading-image { width: 90%; }
 }
@@ -526,12 +526,12 @@ body {
 @media (min-width: 1101px) {
   .entry-list,
   .reading-entry { width: 685px; max-width: 685px; }
-  .reading-entry::after { right: 135px; }
+  .reading-entry::after { right: 35px; }
   .reading-entry > .entry-heading,
-  .entry-body { width: calc(100% - 135px); }
+  .entry-body { width: calc(100% - 35px); }
   .entry-body { grid-template-columns: minmax(0, 1fr) 100px; gap: 2px; }
   .entry-body .reading-image { width: 100%; height: 100px; aspect-ratio: 1 / 1; }
-  .week-toolbar { width: calc(100% - 135px); max-width: 550px; }
+  .week-toolbar { width: 650px; max-width: 650px; }
   .week-toolbar::after { right: 0; }
   .week-toolbar > .week-actions { margin-right: 0; }
   .entry-list {
