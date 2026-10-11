@@ -908,6 +908,10 @@ export default function HomePage() {
     const dateKey = toDateKey(new Date(calendarMonth.getFullYear(), calendarMonth.getMonth(), day));
     const calendarEntries = view === "account" ? publicEntries : entries;
     const entry = calendarEntries.find((item) => normalizeDateValue(item.date) === dateKey);
+    if (view === "account") {
+      setWeekStart(mondayOf(new Date(calendarMonth.getFullYear(), calendarMonth.getMonth(), day)));
+      return;
+    }
     if (entry) {
       openDetail(entry);
       return;
