@@ -217,6 +217,8 @@ body {
   .calendar-month-picker label { display: flex; align-items: center; gap: 3px; font-size: 12px; white-space: nowrap; }
   .calendar-month-picker input { width: 58px; padding: 3px 4px; border: 1px solid #d8d8d2; border-radius: 4px; background: #fff; font: inherit; }
   .calendar-month-picker input[type="number"] { appearance: textfield; }
+  .calendar-month-picker input[type="number"]::-webkit-inner-spin-button,
+  .calendar-month-picker input[type="number"]::-webkit-outer-spin-button { appearance: none; margin: 0; }
   .calendar-month-close { padding: 3px 6px !important; border: 0 !important; font-size: 11px; white-space: nowrap; }
   .calendar-month-picker {
     position: static;
