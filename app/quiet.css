@@ -456,7 +456,7 @@ body {
 .reading-entry > .entry-heading h2,
 .detail-heading h1,
 .compose-panel .title-input {
-  font-size: 23px;
+  font-size: 20px;
 }
 .reading-entry > .entry-heading h2 {
   flex: 1;
