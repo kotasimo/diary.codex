@@ -296,7 +296,6 @@ function SearchView({ query, currentEmail, accounts, onToggleFollow, onSelectAcc
   const following = new Set(getFollowing(currentEmail));
   return (
     <section className="content-panel search-panel">
-      <div className="page-heading"><p className="eyebrow">ACCOUNT SEARCH</p><h1>アカウントを探す</h1><p>{normalizedQuery ? `「${query}」の検索結果` : "仮のアカウントを含むユーザー一覧"}</p></div>
       <div className="search-result-list">
         {results.map((account) => {
           const isSelf = account.email === currentEmail;
