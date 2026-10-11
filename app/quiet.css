@@ -182,7 +182,7 @@ body {
     background: transparent;
   }
   .calendar-card .calendar-heading { position: relative; }
-  .calendar-month-picker-wrap { position: relative; display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 8px; }
+  .calendar-month-picker-wrap { position: relative; display: flex; align-items: center; justify-content: flex-start; gap: 6px; margin-top: 8px; }
   .calendar-today-button { flex: 0 0 auto; padding: 4px 7px; border: 1px solid #c9ccc5; border-radius: 5px; background: #f3f4f0; color: #3f4942; font-size: 11px; cursor: pointer; }
   .calendar-today-button:hover { border-color: #8d9a91; background: #e8ece8; }
   .calendar-card .calendar-month-trigger {

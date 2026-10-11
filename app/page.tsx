@@ -172,11 +172,11 @@ function MiniCalendar({ month, entries, onMonthChange, onSelectMonth, onToday, o
         ))}
       </div>
       <div className="calendar-month-picker-wrap">
-        <button className="calendar-today-button" onClick={onToday}>今月</button>
         <div className="calendar-month-picker">
           <label><input type="number" min="1900" max="2100" value={year} onChange={(event) => { const nextYear = Number(event.target.value); if (Number.isInteger(nextYear) && nextYear >= 1900 && nextYear <= 2100) onSelectMonth(nextYear, monthIndex); }} />年</label>
           <label><input type="number" min="1" max="12" value={monthIndex + 1} onChange={(event) => { const nextMonth = Number(event.target.value); if (Number.isInteger(nextMonth) && nextMonth >= 1 && nextMonth <= 12) onSelectMonth(year, nextMonth - 1); }} />月</label>
         </div>
+        <button className="calendar-today-button" onClick={onToday}>今月</button>
       </div>
     </section>
   );
