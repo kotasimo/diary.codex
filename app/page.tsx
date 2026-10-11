@@ -954,7 +954,7 @@ export default function HomePage() {
       />
       <div className="mobile-title">{title}</div>
       <DiaryHero profile={publicProfile} />
-      <main className="app-layout">
+      <main className={`app-layout${view === "account" ? " public-account-layout" : ""}`}>
         <aside className="left-column">
           <ProfileCard profile={publicProfile} socialEmail={view === "account" ? selectedAccount?.email ?? "" : view === "relationships" ? selectedAccount?.email ?? currentEmail : currentEmail} currentEmail={currentEmail} publicAccount={view === "account"} socialVersion={socialVersion} onToggleFollow={toggleAccountFollow} onRelationships={openRelationships} />
           <MiniCalendar month={calendarMonth} entries={entries} onMonthChange={(offset) => setCalendarMonth((current) => new Date(current.getFullYear(), current.getMonth() + offset, 1))} onSelectMonth={(year, month) => setCalendarMonth(new Date(year, month, 1))} onToday={() => { const today = new Date(); setCalendarMonth(new Date(today.getFullYear(), today.getMonth(), 1)); }} onPick={pickCalendarDay} />
