@@ -253,7 +253,7 @@ body {
   .compose-heading {
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 18px;
+    margin: 24px 0 0;
   }
   .compose-panel .field-label,
   .compose-panel .character-count { display: none; }

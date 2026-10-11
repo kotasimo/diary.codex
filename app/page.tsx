@@ -319,10 +319,6 @@ function ComposeView({ entry, date, day, onCancel, onSave }: { entry?: Entry; da
 
   return (
     <section className="content-panel compose-panel">
-      <div className="compose-heading">
-        <button className="back-button" onClick={onCancel}><X size={18} />キャンセル</button>
-        <button className="primary-button compose-save-button" disabled={!content.trim() || saving} onClick={() => void saveEntry()}>{saving ? "保存中…" : entry ? "保存" : "公開"}</button>
-      </div>
       <label className="field-label" htmlFor="title">タイトル <span>任意</span></label>
       <input id="title" className="title-input" value={title} onChange={(event) => setTitle(event.target.value)} placeholder="記事タイトル" maxLength={80} />
       <div className="character-count">{title.length} / 80</div>
@@ -330,6 +326,10 @@ function ComposeView({ entry, date, day, onCancel, onSave }: { entry?: Entry; da
       <textarea id="body" className="body-input" value={content} onChange={(event) => setContent(event.target.value)} placeholder="今日あったこと、感じたことを書いてみましょう。" />
       <label className="image-upload-button" htmlFor="image-file">画像を追加</label>
       <input id="image-file" type="file" accept="image/*" onChange={(event) => selectImage(event.target.files?.[0])} />
+      <div className="compose-heading">
+        <button className="back-button" onClick={onCancel}><X size={18} />キャンセル</button>
+        <button className="primary-button compose-save-button" disabled={!content.trim() || saving} onClick={() => void saveEntry()}>{saving ? "保存中…" : entry ? "保存" : "公開"}</button>
+      </div>
       {saveError && <p className="compose-save-error" role="alert">{saveError}</p>}
     </section>
   );
