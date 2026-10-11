@@ -18,9 +18,9 @@ import {
 import { useEffect, useMemo, useRef, useState } from "react";
 import { getSupabaseClient } from "./lib/supabase";
 import { localAuthEnabled, localSessionKey } from "./lib/auth";
-import { getFollowerCount, getFollowing, getFollowingCount, getSocialAccounts, toggleFollowing, type SocialAccount } from "./lib/social";
+import { getFollowerCount, getFollowing, getFollowingCount, getSocialAccounts, getSocialEntries, toggleFollowing, type SocialAccount } from "./lib/social";
 
-type View = "week" | "detail" | "compose" | "visitors" | "profile" | "search";
+type View = "week" | "detail" | "compose" | "visitors" | "profile" | "search" | "account";
 
 type Profile = {
   displayName: string;
@@ -278,7 +278,7 @@ function ProfileCard({ profile }: { profile: Profile }) {
   );
 }
 
-function SearchView({ query, currentEmail, accounts, onToggleFollow }: { query: string; currentEmail: string; accounts: SocialAccount[]; onToggleFollow: (email: string) => void }) {
+function SearchView({ query, currentEmail, accounts, onToggleFollow, onSelectAccount }: { query: string; currentEmail: string; accounts: SocialAccount[]; onToggleFollow: (email: string) => void; onSelectAccount: (account: SocialAccount) => void }) {
   const normalizedQuery = query.trim().toLowerCase();
   const results = accounts.filter((account) => !normalizedQuery || `${account.username} ${account.displayName} ${account.email}`.toLowerCase().includes(normalizedQuery));
   const following = new Set(getFollowing(currentEmail));
@@ -293,13 +293,31 @@ function SearchView({ query, currentEmail, accounts, onToggleFollow }: { query: 
           return (
             <article className="search-account-card" key={account.email}>
               <div className="search-account-avatar">{account.displayName.trim().charAt(0).toUpperCase() || "?"}</div>
-              <div className="search-account-copy"><strong>{account.displayName}</strong><span>@{account.username}</span><p>{account.bio}</p><small>{followerCount} フォロワー ・ {followingCount} フォロー中</small></div>
+              <div className="search-account-copy"><button type="button" className="search-account-link" onClick={() => onSelectAccount(account)}><strong>{account.displayName}</strong><span>@{account.username}</span></button><p>{account.bio}</p><small>{followerCount} フォロワー ・ {followingCount} フォロー中</small></div>
               {!isSelf && <button type="button" className={following.has(account.email) ? "secondary-button" : "primary-button"} onClick={() => onToggleFollow(account.email)}>{following.has(account.email) ? "フォロー中" : "フォロー"}</button>}
             </article>
           );
         })}
         {!results.length && <p className="search-empty">該当するアカウントが見つかりませんでした。</p>}
       </div>
+    </section>
+  );
+}
+
+function AccountView({ account, currentEmail, onBack, onToggleFollow }: { account: SocialAccount; currentEmail: string; onBack: () => void; onToggleFollow: (email: string) => void }) {
+  const following = getFollowing(currentEmail).includes(account.email);
+  const entries = getSocialEntries(account.email);
+  return (
+    <section className="content-panel account-panel">
+      <button type="button" className="back-button" onClick={onBack}><ArrowLeft size={16} />アカウント検索へ戻る</button>
+      <div className="account-profile-heading">
+        <div className="search-account-avatar account-avatar-large">{account.displayName.trim().charAt(0).toUpperCase() || "?"}</div>
+        <div><h1>{account.displayName}</h1><p>@{account.username}</p></div>
+        {account.email !== currentEmail && <button type="button" className={following ? "secondary-button" : "primary-button"} onClick={() => onToggleFollow(account.email)}>{following ? "フォロー中" : "フォロー"}</button>}
+      </div>
+      <p className="account-bio">{account.bio}</p>
+      <div className="account-stats"><span><strong>{getFollowerCount(account.email)}</strong>フォロワー</span><span><strong>{getFollowingCount(account.email)}</strong>フォロー中</span></div>
+      <div className="account-diary-list"><h2>日記</h2>{entries.length ? entries.map((entry) => <article key={`${account.email}-${entry.date}`}><time>{entry.date.replaceAll("-", "/")}</time><h3>{entry.title}</h3><p>{entry.content}</p></article>) : <p className="search-empty">公開されている日記はまだありません。</p>}</div>
     </section>
   );
 }
@@ -713,8 +731,9 @@ export default function HomePage() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [, setSocialVersion] = useState(0);
+  const [selectedAccount, setSelectedAccount] = useState<SocialAccount | undefined>();
   const visibleProfile = upgradeProfile(profile);
-  const title = useMemo(() => view === "visitors" ? "足あと" : view === "profile" ? "プロフィール設定" : view === "search" ? "アカウントを探す" : visibleProfile.diaryTitle, [visibleProfile.diaryTitle, view]);
+  const title = useMemo(() => view === "visitors" ? "足あと" : view === "profile" ? "プロフィール設定" : view === "search" ? "アカウントを探す" : view === "account" ? selectedAccount?.displayName ?? "アカウント" : visibleProfile.diaryTitle, [selectedAccount?.displayName, visibleProfile.diaryTitle, view]);
   const socialAccounts = getSocialAccounts();
   const currentEmail = typeof window !== "undefined" ? window.localStorage.getItem(localSessionKey) ?? "" : "";
 
@@ -814,6 +833,7 @@ export default function HomePage() {
 
   const changeView = (nextView: View) => { setView(nextView); setDrawerOpen(false); window.scrollTo({ top: 0, behavior: "smooth" }); };
   const searchAccounts = () => changeView("search");
+  const openAccount = (account: SocialAccount) => { setSelectedAccount(account); changeView("account"); };
   const toggleAccountFollow = (email: string) => {
     if (!currentEmail) return;
     toggleFollowing(currentEmail, email);
@@ -904,7 +924,8 @@ export default function HomePage() {
           {view === "compose" && <ComposeView entry={editingEntry} date={editingDate.date} day={editingDate.day} onCancel={() => changeView("week")} onSave={saveEntry} />}
           {view === "visitors" && <VisitorsView />}
           {view === "profile" && <ProfileSettingsView profile={visibleProfile} onCancel={() => changeView("week")} onSave={saveProfile} />}
-          {view === "search" && <SearchView query={searchQuery} currentEmail={currentEmail} accounts={socialAccounts} onToggleFollow={toggleAccountFollow} />}
+          {view === "search" && <SearchView query={searchQuery} currentEmail={currentEmail} accounts={socialAccounts} onToggleFollow={toggleAccountFollow} onSelectAccount={openAccount} />}
+          {view === "account" && selectedAccount && <AccountView account={selectedAccount} currentEmail={currentEmail} onBack={() => changeView("search")} onToggleFollow={toggleAccountFollow} />}
         </section>
       </main>
 

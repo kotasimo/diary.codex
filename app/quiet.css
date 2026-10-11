@@ -638,10 +638,27 @@ body {
 .search-account-copy { min-width: 0; flex: 1; }
 .search-account-copy strong { display: block; color: #242a29; font-size: 16px; }
 .search-account-copy > span { color: #858d89; font-size: 12px; }
+.search-account-link { display: block; padding: 0; border: 0; background: transparent; text-align: left; cursor: pointer; }
+.search-account-link:hover strong { text-decoration: underline; }
 .search-account-copy p { margin: 7px 0 5px; color: #59615e; font-size: 13px; line-height: 1.5; }
 .search-account-copy small { color: #8a918d; font-size: 11px; }
 .search-account-card > button { flex: 0 0 auto; min-width: 76px; padding: 8px 11px; font-size: 12px; }
 .search-empty { margin: 20px 0; color: var(--muted); text-align: center; }
+.account-panel { width: 685px; max-width: 685px; padding: 30px 36px 42px; }
+.account-profile-heading { display: flex; align-items: center; gap: 14px; margin-top: 30px; }
+.account-avatar-large { width: 70px; height: 70px; font-size: 25px; }
+.account-profile-heading h1 { margin: 0; font: 700 27px/1.3 var(--serif); }
+.account-profile-heading p { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+.account-profile-heading > button { margin-left: auto; min-width: 82px; padding: 9px 12px; font-size: 12px; }
+.account-bio { margin: 24px 0 14px; color: #505855; line-height: 1.8; }
+.account-stats { display: flex; gap: 20px; padding: 14px 0 22px; border-bottom: 1px solid #e5e7e3; color: #767e79; font-size: 12px; }
+.account-stats span { display: flex; gap: 4px; }
+.account-stats strong { color: #252c2a; }
+.account-diary-list h2 { margin: 28px 0 12px; font: 700 18px/1.3 var(--serif); }
+.account-diary-list article { padding: 17px 0; border-top: 1px solid #e7e8e4; }
+.account-diary-list time { color: #7b8580; font-size: 12px; }
+.account-diary-list h3 { margin: 6px 0 7px; font: 700 18px/1.4 var(--serif); }
+.account-diary-list p { margin: 0; color: #59615e; font-family: var(--serif); line-height: 1.8; }
 .entry-body {
   display: grid;
   width: calc(100% - 35px);
@@ -761,6 +778,9 @@ body {
   .search-account-card { align-items: flex-start; flex-wrap: wrap; }
   .search-account-copy { width: calc(100% - 62px); }
   .search-account-card > button { margin-left: 62px; }
+  .account-panel { padding: 26px 18px 34px; }
+  .account-profile-heading { align-items: flex-start; flex-wrap: wrap; }
+  .account-profile-heading > button { margin-left: 84px; }
 }
 
 /* Keep the reading canvas fixed while the viewport is narrower than it. */
