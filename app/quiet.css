@@ -393,6 +393,12 @@ body {
   }
 }
 
+/* Do not reserve thumbnail height when a diary has no image. */
+.entry-body .reading-image-empty {
+  height: 0;
+  min-height: 0;
+}
+
 @media (min-width: 721px) and (max-width: 1100px) {
   .app-layout {
     width: 100%;
