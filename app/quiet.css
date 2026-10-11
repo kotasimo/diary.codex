@@ -417,6 +417,8 @@ body {
 }
 
 @media (min-width: 1101px) {
+  .entry-list,
+  .reading-entry { width: 685px; max-width: 685px; }
   .reading-entry::after { right: 135px; }
   .reading-entry > .entry-heading,
   .entry-body { width: calc(100% - 135px); }
@@ -522,6 +524,8 @@ body {
 }
 
 @media (min-width: 1101px) {
+  .entry-list,
+  .reading-entry { width: 685px; max-width: 685px; }
   .reading-entry::after { right: 135px; }
   .reading-entry > .entry-heading,
   .entry-body { width: calc(100% - 135px); }
