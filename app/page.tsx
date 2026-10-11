@@ -398,9 +398,10 @@ export default function HomePage() {
           for (const seed of initialEntries) {
             const existing = byDate.get(seed.date);
             if (!existing) {
+              const { updatedAt, ...seedData } = seed;
               const { error: seedError } = await supabase.from("diary_entries").insert({
-                ...seed,
-                updated_at: seed.updatedAt,
+                ...seedData,
+                updated_at: updatedAt,
               });
               if (!seedError) byDate.set(seed.date, seed);
             } else {
