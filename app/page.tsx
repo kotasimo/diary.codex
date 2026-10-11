@@ -240,6 +240,7 @@ function WeekView({ entries, weekStart, onShift, onDetail, onEdit }: { entries: 
             <article className={`entry-row reading-entry ${!entry ? "empty-entry" : ""} ${entry?.image ? "has-image" : ""}`} key={iso}>
               <div className="reading-copy">
                 <header className="entry-heading">
+                  <time className="entry-heading-date">{label.replace("月", "/").replace("日", "")}（{day}）</time>
                   <h2>{entry?.title ?? ""}</h2>
                   <button className="entry-menu-button" onClick={() => onEdit(iso, day, entry)} aria-label={`${label}の日記を${entry ? "編集" : "作成"}`}>…</button>
                 </header>
@@ -250,7 +251,6 @@ function WeekView({ entries, weekStart, onShift, onDetail, onEdit }: { entries: 
                 ) : null}
               </div>
               <div className="reading-media">
-                <time className="entry-heading-date">{label.replace("月", "/").replace("日", "")}（{day}）</time>
                 <div
                   className={`reading-image${entry?.image ? "" : " reading-image-empty"}`}
                   role={entry?.image ? "img" : undefined}
