@@ -228,9 +228,7 @@ body {
     width: auto;
     height: auto;
     min-height: calc(100vh - 134px);
-    /* Keep the rail in its grid column. The previous viewport-based shift
-       moved it over the reading column on wide screens. */
-    transform: none;
+    transform: translateX(calc(max(0px, calc((100vw - 1269px) / 2)) + 10.5px + clamp(0px, calc((100vw - 1180px) / 2), 65px)));
     overflow: visible;
     padding: 28px 18px 32px !important;
     border-right: 0 !important;
@@ -630,6 +628,14 @@ body {
   width: 685px;
   max-width: 685px;
   padding: 34px 36px 40px;
+}
+@media (min-width: 1101px) {
+  /* Match the account search column to the diary content column while the
+     profile rail keeps its note-style wide-screen position. */
+  .search-panel {
+    margin-left: max(0px, calc((100vw - 685px) / 2 - (var(--sidebar-width) + 21px)));
+    transform: translateX(clamp(0px, calc((100vw - 1180px) / 2), 65px));
+  }
 }
 .search-panel .page-heading { margin-bottom: 26px; }
 .search-panel .page-heading h1 { margin: 0 0 7px; font: 700 27px/1.3 var(--serif); }
