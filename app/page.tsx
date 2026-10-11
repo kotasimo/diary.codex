@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { getSupabaseClient } from "./lib/supabase";
+import { localAuthEnabled, localSessionKey } from "./lib/auth";
 
 type View = "week" | "detail" | "compose" | "visitors" | "profile";
 
@@ -700,6 +701,10 @@ export default function HomePage() {
   }, []);
 
   useEffect(() => {
+    if (localAuthEnabled) {
+      if (!window.localStorage.getItem(localSessionKey)) window.location.assign("/login");
+      return;
+    }
     const supabase = getSupabaseClient();
     if (!supabase) return;
     let active = true;
@@ -821,6 +826,11 @@ export default function HomePage() {
     changeView("week");
   };
   const handleLogout = async () => {
+    if (localAuthEnabled) {
+      window.localStorage.removeItem(localSessionKey);
+      window.location.assign("/login");
+      return;
+    }
     const supabase = getSupabaseClient();
     if (supabase) await supabase.auth.signOut();
     window.location.assign("/login");

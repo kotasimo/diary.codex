@@ -4,6 +4,7 @@ import { ArrowRight, Feather, LockKeyhole, Mail } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { type FormEvent, useState } from "react";
+import { localAuthEnabled, localSessionKey, getLocalUsers, saveLocalUsers } from "../lib/auth";
 import { getSupabaseClient } from "../lib/supabase";
 
 export default function LoginPage() {
@@ -21,6 +22,23 @@ export default function LoginPage() {
     setError("");
     setNotice("");
     const supabase = getSupabaseClient();
+    if (localAuthEnabled) {
+      const normalizedEmail = email.trim().toLowerCase();
+      const users = getLocalUsers();
+      if (isSignup) {
+        if (users.some((user) => user.email === normalizedEmail)) {
+          setError("このメールアドレスはすでに登録されています。");
+          return;
+        }
+        saveLocalUsers([...users, { email: normalizedEmail, password, username: username.trim() }]);
+      } else if (!users.some((user) => user.email === normalizedEmail && user.password === password)) {
+        setError("メールアドレスまたはパスワードが違います。");
+        return;
+      }
+      window.localStorage.setItem(localSessionKey, normalizedEmail);
+      router.push("/");
+      return;
+    }
     if (!supabase) {
       setError("認証機能の接続設定がまだ完了していません。管理者にSupabaseの設定を確認してください。");
       return;
@@ -49,6 +67,10 @@ export default function LoginPage() {
       return;
     }
     const supabase = getSupabaseClient();
+    if (localAuthEnabled) {
+      setNotice("開発環境ではパスワード再設定メールは利用せず、登録したパスワードを使います。");
+      return;
+    }
     if (!supabase) {
       setError("認証機能の接続設定がまだ完了していません。");
       return;
