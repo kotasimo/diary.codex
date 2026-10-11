@@ -44,9 +44,11 @@ const index = Object.fromEntries(headers.map((header, i) => [header, i]));
 const entries = rows
   .map((row) => {
     const rawDate = row[index["日付"]] ?? "";
-    const dateMatch = rawDate.match(/^(\d{4})[\/-](\d{1,2})[\/-](\d{1,2})$/);
+    const dateMatch = rawDate.match(/^(\d{4})(?:[\/-](\d{1,2})[\/-](\d{1,2})|年(\d{1,2})月(\d{1,2})日)$/);
     if (!dateMatch) return null;
-    const date = `${dateMatch[1]}-${String(dateMatch[2]).padStart(2, "0")}-${String(dateMatch[3]).padStart(2, "0")}`;
+    const month = dateMatch[2] ?? dateMatch[4];
+    const day = dateMatch[3] ?? dateMatch[5];
+    const date = `${dateMatch[1]}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
     return {
       date,
       day: row[index["曜日"]] || "",
