@@ -175,9 +175,8 @@ function MiniCalendar({ month, entries, onMonthChange, onSelectMonth, onPick }: 
       <div className="calendar-month-picker-wrap">
         <button className="calendar-month-trigger" aria-expanded={pickerOpen} onClick={() => setPickerOpen((open) => !open)}>年月を指定</button>
         {pickerOpen && <div className="calendar-month-picker">
-          <label>年<select value={year} onChange={(event) => onSelectMonth(Number(event.target.value), monthIndex)}>{Array.from({ length: 11 }, (_, index) => year - 5 + index).map((optionYear) => <option key={optionYear} value={optionYear}>{optionYear}年</option>)}</select></label>
-          <label>月<select value={monthIndex} onChange={(event) => onSelectMonth(year, Number(event.target.value))}>{Array.from({ length: 12 }, (_, index) => <option key={index} value={index}>{index + 1}月</option>)}</select></label>
-          <button className="calendar-month-close" onClick={() => setPickerOpen(false)}>閉じる</button>
+          <label><select value={year} onChange={(event) => onSelectMonth(Number(event.target.value), monthIndex)}>{Array.from({ length: 11 }, (_, index) => year - 5 + index).map((optionYear) => <option key={optionYear} value={optionYear}>{optionYear}</option>)}</select>年</label>
+          <label><select value={monthIndex} onChange={(event) => onSelectMonth(year, Number(event.target.value))}>{Array.from({ length: 12 }, (_, index) => <option key={index} value={index}>{index + 1}</option>)}</select>月</label>
         </div>}
       </div>
     </section>
