@@ -97,6 +97,11 @@ function formatDate(date: Date) {
   return `${date.getMonth() + 1}月${date.getDate()}日`;
 }
 
+function parseDateLabel(label: string) {
+  const match = label.match(/(\d+)月(\d+)日/);
+  return match ? new Date(2026, Number(match[1]) - 1, Number(match[2])) : new Date(2026, 9, 5);
+}
+
 function mondayOf(date: Date) {
   const result = new Date(date.getFullYear(), date.getMonth(), date.getDate());
   const day = result.getDay();
@@ -410,7 +415,7 @@ export default function HomePage() {
         </aside>
         <section className="main-column">
           {view === "week" && <WeekView entries={entries} weekStart={weekStart} onShift={shiftWeek} onDetail={openDetail} onEdit={openEditor} />}
-          {view === "detail" && <DetailView entry={selectedEntry} onBack={() => changeView("week")} onEdit={() => openEditor(selectedEntry.date, selectedEntry.day, selectedEntry)} />}
+          {view === "detail" && <DetailView entry={selectedEntry} onBack={() => { setWeekStart(mondayOf(parseDateLabel(selectedEntry.date))); changeView("week"); }} onEdit={() => openEditor(selectedEntry.date, selectedEntry.day, selectedEntry)} />}
           {view === "compose" && <ComposeView entry={editingEntry} date={editingDate.date} day={editingDate.day} onCancel={() => changeView("week")} onSave={saveEntry} />}
           {view === "visitors" && <VisitorsView />}
         </section>
