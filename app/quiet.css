@@ -374,6 +374,7 @@ body {
   .reading-copy .entry-content { padding-top: 6px; }
   .reading-copy .entry-content > p {
     line-height: 1.55;
+    min-height: 3.1em;
     -webkit-line-clamp: 6;
     white-space: pre-line;
   }
