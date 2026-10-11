@@ -658,7 +658,7 @@ function VisitorsView() {
   );
 }
 
-function SideNavigation({ view, onView, open, onClose, mobileOnly = false }: { view: View; onView: (view: View) => void; open: boolean; onClose: () => void; mobileOnly?: boolean }) {
+function SideNavigation({ view, onView, open, onClose, onLogout, mobileOnly = false }: { view: View; onView: (view: View) => void; open: boolean; onClose: () => void; onLogout: () => void; mobileOnly?: boolean }) {
   return (
     <aside className={`mobile-drawer ${mobileOnly ? "mobile-nav" : "desktop-nav"} ${open ? "drawer-open" : ""}`}>
       <div className="drawer-head"><span>メニュー</span><button onClick={onClose}><X size={20} /></button></div>
@@ -666,7 +666,7 @@ function SideNavigation({ view, onView, open, onClose, mobileOnly = false }: { v
       <button className={view === "profile" ? "active" : ""} onClick={() => onView("profile")}><UserRound size={19} />プロフィール</button>
       <button><Settings size={19} />設定</button>
       <div className="drawer-spacer" />
-      <button><LogOut size={19} />ログアウト</button>
+      <button onClick={onLogout}><LogOut size={19} />ログアウト</button>
     </aside>
   );
 }
@@ -697,6 +697,24 @@ export default function HomePage() {
     } finally {
       setProfileReady(true);
     }
+  }, []);
+
+  useEffect(() => {
+    const supabase = getSupabaseClient();
+    if (!supabase) return;
+    let active = true;
+    const redirectIfSignedOut = async () => {
+      const { data } = await supabase.auth.getSession();
+      if (active && !data.session) window.location.assign("/login");
+    };
+    void redirectIfSignedOut();
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!session) window.location.assign("/login");
+    });
+    return () => {
+      active = false;
+      listener.subscription.unsubscribe();
+    };
   }, []);
 
   useEffect(() => {
@@ -802,6 +820,11 @@ export default function HomePage() {
     window.localStorage.setItem("hibi-diary-profile", JSON.stringify(upgradedProfile));
     changeView("week");
   };
+  const handleLogout = async () => {
+    const supabase = getSupabaseClient();
+    if (supabase) await supabase.auth.signOut();
+    window.location.assign("/login");
+  };
 
   return (
     <div className={`app-shell${profileReady ? "" : " profile-loading"}`}>
@@ -821,6 +844,7 @@ export default function HomePage() {
             onView={(nextView) => nextView === "compose" ? openEditor("2026-10-10", "土", entries.find((entry) => normalizeDateValue(entry.date) === "2026-10-10")) : changeView(nextView)}
             open={false}
             onClose={() => undefined}
+            onLogout={() => void handleLogout()}
           />
         </aside>
         <section className="main-column">
@@ -838,6 +862,7 @@ export default function HomePage() {
         onView={(nextView) => nextView === "compose" ? openEditor("2026-10-10", "土", entries.find((entry) => normalizeDateValue(entry.date) === "2026-10-10")) : changeView(nextView)}
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
+        onLogout={() => void handleLogout()}
         mobileOnly
       />
 

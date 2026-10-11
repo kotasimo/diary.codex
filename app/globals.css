@@ -183,6 +183,10 @@ button { color: inherit; }
 .auth-form-card label > input:focus, .input-with-icon:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(73,108,98,.1); }
 .forgot-link { display: block; margin: -8px 0 20px auto; border: 0; background: none; color: var(--accent); font-size: 11px; cursor: pointer; }
 .auth-submit { width: 100%; text-decoration: none; }
+.auth-submit:disabled { opacity: .6; cursor: wait; transform: none; }
+.auth-message { margin: -4px 0 16px; padding: 10px 12px; border-radius: 7px; font-size: 12px; line-height: 1.6; }
+.auth-error { color: #9b3f32; background: #fff1ee; border: 1px solid #f1c9c1; }
+.auth-notice { color: #356354; background: #eef8f2; border: 1px solid #cbe5d5; }
 .auth-divider { position: relative; margin: 27px 0 20px; border-top: 1px solid var(--line); text-align: center; }
 .auth-divider span { position: relative; top: -9px; padding: 0 12px; background: var(--paper); color: var(--muted); font-size: 10px; }
 .auth-switch { width: 100%; border: 0; background: none; color: var(--accent); font-weight: 700; cursor: pointer; }
