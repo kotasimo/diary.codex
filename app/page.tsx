@@ -141,6 +141,9 @@ const visitors = [
 function MiniCalendar({ month, entries, onMonthChange, onSelectMonth, onToday, onPick }: { month: Date; entries: Entry[]; onMonthChange: (offset: number) => void; onSelectMonth: (year: number, month: number) => void; onToday: () => void; onPick: (day: number) => void }) {
   const year = month.getFullYear();
   const monthIndex = month.getMonth();
+  const [yearInput, setYearInput] = useState(String(year));
+  const [monthInput, setMonthInput] = useState(String(monthIndex + 1));
+  useEffect(() => { setYearInput(String(year)); setMonthInput(String(monthIndex + 1)); }, [year, monthIndex]);
   const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
   const firstDay = new Date(year, monthIndex, 1).getDay();
   const leadingBlanks = firstDay === 0 ? 6 : firstDay - 1;
@@ -173,8 +176,8 @@ function MiniCalendar({ month, entries, onMonthChange, onSelectMonth, onToday, o
       </div>
       <div className="calendar-month-picker-wrap">
         <div className="calendar-month-picker">
-          <label><input type="number" min="1900" max="2100" value={year} onChange={(event) => { const nextYear = Number(event.target.value); if (Number.isInteger(nextYear) && nextYear >= 1900 && nextYear <= 2100) onSelectMonth(nextYear, monthIndex); }} />年</label>
-          <label><input type="number" min="1" max="12" value={monthIndex + 1} onChange={(event) => { const nextMonth = Number(event.target.value); if (Number.isInteger(nextMonth) && nextMonth >= 1 && nextMonth <= 12) onSelectMonth(year, nextMonth - 1); }} />月</label>
+          <label><input type="number" min="1900" max="2100" value={yearInput} onChange={(event) => { const value = event.target.value; setYearInput(value); const nextYear = Number(value); if (value.length === 4 && Number.isInteger(nextYear) && nextYear >= 1900 && nextYear <= 2100) onSelectMonth(nextYear, monthIndex); }} />年</label>
+          <label><input type="number" min="1" max="12" value={monthInput} onChange={(event) => { const value = event.target.value; setMonthInput(value); const nextMonth = Number(value); if (Number.isInteger(nextMonth) && nextMonth >= 1 && nextMonth <= 12) onSelectMonth(year, nextMonth - 1); }} />月</label>
         </div>
         <button className="calendar-today-button" onClick={onToday}>今月</button>
       </div>
