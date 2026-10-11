@@ -445,7 +445,7 @@ body {
   width: calc(100% - 35px);
   padding-top: 8px;
   grid-template-columns: minmax(0, 4fr) minmax(180px, 1fr);
-  gap: 30px;
+  gap: 15px;
 }
 .entry-body .reading-copy {
   min-width: 0;
@@ -457,12 +457,16 @@ body {
   flex-direction: column;
   gap: 8px;
 }
+.entry-body .reading-image {
+  width: 90%;
+}
 @media (min-width: 721px) and (max-width: 1100px) {
-  .entry-body { gap: 24px; }
+  .entry-body { gap: 12px; }
 }
 @media (max-width: 720px) {
   .entry-body { display: block; }
   .entry-body .reading-media { margin-top: 14px; }
+  .entry-body .reading-image { width: 100%; }
   .reading-entry > .entry-heading,
   .entry-body { width: 100%; }
 }
