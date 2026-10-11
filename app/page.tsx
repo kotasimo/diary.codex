@@ -359,7 +359,9 @@ export default function HomePage() {
       const supabase = getSupabaseClient();
       if (supabase) {
         const { data, error } = await supabase.from("diary_entries").select("*").order("date");
-        if (!cancelled && !error && data?.length) setEntries(data as Entry[]);
+        if (!cancelled && !error && data?.length) {
+          setEntries(data.map((row) => ({ ...row, updatedAt: row.updated_at })) as Entry[]);
+        }
         return;
       }
 
@@ -402,9 +404,10 @@ export default function HomePage() {
   const saveEntry = async (entry: Entry) => {
     const supabase = getSupabaseClient();
     if (supabase) {
-      const { error } = await supabase.from("diary_entries").upsert(entry, { onConflict: "date" });
+      const { updatedAt, ...entryData } = entry;
+      const { error } = await supabase.from("diary_entries").upsert({ ...entryData, updated_at: updatedAt }, { onConflict: "date" });
       if (error) {
-        console.error("Supabase save failed", error);
+        console.error("Supabase save failed", { message: error.message, details: error.details, hint: error.hint, code: error.code });
         return;
       }
     }
