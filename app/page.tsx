@@ -175,8 +175,8 @@ function MiniCalendar({ month, entries, onMonthChange, onSelectMonth, onPick }: 
       <div className="calendar-month-picker-wrap">
         <button className="calendar-month-trigger" aria-expanded={pickerOpen} onClick={() => setPickerOpen((open) => !open)}>年月を指定</button>
         {pickerOpen && <div className="calendar-month-picker">
-          <label><select value={year} onChange={(event) => onSelectMonth(Number(event.target.value), monthIndex)}>{Array.from({ length: 11 }, (_, index) => year - 5 + index).map((optionYear) => <option key={optionYear} value={optionYear}>{optionYear}</option>)}</select>年</label>
-          <label><select value={monthIndex} onChange={(event) => onSelectMonth(year, Number(event.target.value))}>{Array.from({ length: 12 }, (_, index) => <option key={index} value={index}>{index + 1}</option>)}</select>月</label>
+          <label><input type="number" min="1900" max="2100" value={year} onChange={(event) => { const nextYear = Number(event.target.value); if (Number.isInteger(nextYear) && nextYear >= 1900 && nextYear <= 2100) onSelectMonth(nextYear, monthIndex); }} />年</label>
+          <label><input type="number" min="1" max="12" value={monthIndex + 1} onChange={(event) => { const nextMonth = Number(event.target.value); if (Number.isInteger(nextMonth) && nextMonth >= 1 && nextMonth <= 12) onSelectMonth(year, nextMonth - 1); }} />月</label>
         </div>}
       </div>
     </section>
