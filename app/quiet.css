@@ -230,8 +230,8 @@ body {
     background: transparent;
     box-shadow: none;
   }
-  .calendar-month-picker label:first-child input { width: 48px; }
-  .calendar-month-picker label:nth-child(2) input { width: 30px; }
+  .calendar-month-picker label:first-child input { width: 46px; }
+  .calendar-month-picker label:nth-child(2) input { width: 28px; }
   .calendar-card .calendar-grid {
     grid-template-columns: repeat(7, 25px);
     column-gap: 2px;
