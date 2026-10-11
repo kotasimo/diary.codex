@@ -91,15 +91,25 @@ const initialEntries: Entry[] = [
   },
 ];
 
-const weekDays = [
-  ["10月5日", "月"],
-  ["10月6日", "火"],
-  ["10月7日", "水"],
-  ["10月8日", "木"],
-  ["10月9日", "金"],
-  ["10月10日", "土"],
-  ["10月11日", "日"],
-] as const;
+const dayNames = ["日", "月", "火", "水", "木", "金", "土"] as const;
+
+function formatDate(date: Date) {
+  return `${date.getMonth() + 1}月${date.getDate()}日`;
+}
+
+function mondayOf(date: Date) {
+  const result = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  const day = result.getDay();
+  result.setDate(result.getDate() - (day === 0 ? 6 : day - 1));
+  return result;
+}
+
+function buildWeek(start: Date) {
+  return Array.from({ length: 7 }, (_, index) => {
+    const date = new Date(start.getFullYear(), start.getMonth(), start.getDate() + index);
+    return [formatDate(date), dayNames[date.getDay()]] as const;
+  });
+}
 
 const visitors = [
   { name: "haru", initial: "H", color: "peach", time: "今日 14:32", entry: "静かな土曜日" },
@@ -109,25 +119,31 @@ const visitors = [
   { name: "ao", initial: "A", color: "purple", time: "10月8日 08:11", entry: "金木犀の帰り道" },
 ];
 
-function MiniCalendar({ onPick }: { onPick: () => void }) {
-  const days = Array.from({ length: 31 }, (_, index) => index + 1);
+function MiniCalendar({ month, entries, onMonthChange, onPick }: { month: Date; entries: Entry[]; onMonthChange: (offset: number) => void; onPick: (day: number) => void }) {
+  const year = month.getFullYear();
+  const monthIndex = month.getMonth();
+  const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
+  const firstDay = new Date(year, monthIndex, 1).getDay();
+  const leadingBlanks = firstDay === 0 ? 6 : firstDay - 1;
+  const days = Array.from({ length: daysInMonth }, (_, index) => index + 1);
+  const entryDates = new Set(entries.filter((entry) => entry.date.startsWith(`${monthIndex + 1}月`)).map((entry) => Number(entry.date.match(/月(\d+)日/)?.[1])));
   return (
     <section className="calendar-card">
       <div className="calendar-heading">
-        <button aria-label="前月"><ChevronLeft size={17} /></button>
-        <strong>2026年10月</strong>
-        <button aria-label="次月"><ChevronRight size={17} /></button>
+        <button aria-label="前月" onClick={() => onMonthChange(-1)}><ChevronLeft size={17} /></button>
+        <strong>{year}年{monthIndex + 1}月</strong>
+        <button aria-label="次月" onClick={() => onMonthChange(1)}><ChevronRight size={17} /></button>
       </div>
       <div className="calendar-grid calendar-labels">
         {['月', '火', '水', '木', '金', '土', '日'].map((day) => <span key={day}>{day}</span>)}
       </div>
       <div className="calendar-grid calendar-days">
-        <span /><span /><span />
+        {Array.from({ length: leadingBlanks }, (_, index) => <span key={`blank-${index}`} />)}
         {days.map((day) => (
           <button
             key={day}
-            className={`${[5, 6, 7, 9, 10, 11].includes(day) ? "has-entry" : ""}`}
-            onClick={onPick}
+            className={entryDates.has(day) ? "has-entry" : ""}
+            onClick={() => onPick(day)}
           >
             {day}
           </button>
@@ -182,14 +198,15 @@ function ProfileCard() {
   );
 }
 
-function WeekView({ entries, onDetail, onEdit }: { entries: Entry[]; onDetail: (entry: Entry) => void; onEdit: (date: string, day: string, entry?: Entry) => void }) {
+function WeekView({ entries, weekStart, onShift, onDetail, onEdit }: { entries: Entry[]; weekStart: Date; onShift: (days: number) => void; onDetail: (entry: Entry) => void; onEdit: (date: string, day: string, entry?: Entry) => void }) {
+  const weekDays = buildWeek(weekStart);
   return (
     <div className="content-panel">
       <div className="week-toolbar">
         <span className="week-range" aria-label="表示期間">{weekDays[0][0]} — {weekDays[weekDays.length - 1][0]}</span>
         <div className="week-actions">
-          <button className="week-arrow" aria-label="前の週"><ChevronLeft size={20} /></button>
-          <button className="week-arrow" aria-label="次の週"><ChevronRight size={20} /></button>
+          <button className="week-arrow" aria-label="前の週" onClick={() => onShift(-7)}><ChevronLeft size={20} /></button>
+          <button className="week-arrow" aria-label="次の週" onClick={() => onShift(7)}><ChevronRight size={20} /></button>
         </div>
       </div>
 
@@ -322,6 +339,8 @@ function SideNavigation({ view, onView, open, onClose, mobileOnly = false }: { v
 export default function HomePage() {
   const [entries, setEntries] = useState<Entry[]>(initialEntries);
   const [view, setView] = useState<View>("week");
+  const [weekStart, setWeekStart] = useState(() => new Date(2026, 9, 5));
+  const [calendarMonth, setCalendarMonth] = useState(() => new Date(2026, 9, 1));
   const [selectedEntry, setSelectedEntry] = useState(initialEntries[3]);
   const [editingEntry, setEditingEntry] = useState<Entry | undefined>();
   const [editingDate, setEditingDate] = useState({ date: "10月10日", day: "土" });
@@ -352,6 +371,11 @@ export default function HomePage() {
     setEditingEntry(entry);
     changeView("compose");
   };
+  const shiftWeek = (days: number) => setWeekStart((current) => new Date(current.getFullYear(), current.getMonth(), current.getDate() + days));
+  const pickCalendarDay = (day: number) => {
+    setWeekStart(mondayOf(new Date(calendarMonth.getFullYear(), calendarMonth.getMonth(), day)));
+    changeView("week");
+  };
   const saveEntry = (entry: Entry) => {
     setEntries((current) => {
       const nextEntries = [...current.filter((item) => item.date !== entry.date), entry];
@@ -370,7 +394,7 @@ export default function HomePage() {
       <main className="app-layout">
         <aside className="left-column">
           <ProfileCard />
-          <MiniCalendar onPick={() => changeView("week")} />
+          <MiniCalendar month={calendarMonth} entries={entries} onMonthChange={(offset) => setCalendarMonth((current) => new Date(current.getFullYear(), current.getMonth() + offset, 1))} onPick={pickCalendarDay} />
           <SideNavigation
             view={view}
             onView={(nextView) => nextView === "compose" ? openEditor("10月10日", "土", entries.find((entry) => entry.date === "10月10日")) : changeView(nextView)}
@@ -379,7 +403,7 @@ export default function HomePage() {
           />
         </aside>
         <section className="main-column">
-          {view === "week" && <WeekView entries={entries} onDetail={openDetail} onEdit={openEditor} />}
+          {view === "week" && <WeekView entries={entries} weekStart={weekStart} onShift={shiftWeek} onDetail={openDetail} onEdit={openEditor} />}
           {view === "detail" && <DetailView entry={selectedEntry} onBack={() => changeView("week")} onEdit={() => openEditor(selectedEntry.date, selectedEntry.day, selectedEntry)} />}
           {view === "compose" && <ComposeView entry={editingEntry} date={editingDate.date} day={editingDate.day} onCancel={() => changeView("week")} onSave={saveEntry} />}
           {view === "visitors" && <VisitorsView />}
