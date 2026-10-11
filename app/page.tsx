@@ -24,14 +24,17 @@ type View = "week" | "detail" | "compose" | "visitors" | "profile";
 type Profile = {
   displayName: string;
   diaryTitle: string;
+  subtitle: string;
   bio: string;
   avatar?: string;
+  headerImage?: string;
 };
 
 const defaultProfile: Profile = {
   displayName: "kotaro",
   diaryTitle: "kotaroの日記",
-  bio: "何でもない毎日を、忘れないために。",
+  subtitle: "何でもない毎日を、忘れないために。",
+  bio: "日々の出来事を、ゆっくり記録しています。",
 };
 
 type Entry = {
@@ -222,10 +225,14 @@ function Header({ onMenu }: { onMenu: () => void }) {
 
 function DiaryHero({ profile }: { profile: Profile }) {
   return (
-    <section className="diary-hero" aria-label="プロフィール紹介">
+    <section
+      className="diary-hero"
+      aria-label="日記の紹介"
+      style={profile.headerImage ? { backgroundImage: `linear-gradient(180deg, rgba(38, 66, 78, .08), rgba(38, 66, 78, .36)), url(${profile.headerImage})` } : undefined}
+    >
       <div className="diary-hero-copy">
         <h1>{profile.diaryTitle}</h1>
-        <p>{profile.bio}</p>
+        <p>{profile.subtitle}</p>
       </div>
     </section>
   );
@@ -371,43 +378,52 @@ function ComposeView({ entry, date, day, onCancel, onSave }: { entry?: Entry; da
   );
 }
 
-function ProfileSettingsView({ profile, onCancel, onSave }: { profile: Profile; onCancel: () => void; onSave: (profile: Profile) => void }) {
-  const [draft, setDraft] = useState(profile);
-  const [imageError, setImageError] = useState("");
-
-  const selectAvatar = (file: File | undefined) => {
-    if (!file) return;
+function resizeProfileImage(file: File, maxWidth: number, maxHeight: number) {
+  return new Promise<string>((resolve, reject) => {
     if (file.size > 10 * 1024 * 1024) {
-      setImageError("画像は10MB以下のものを選んでください。");
+      reject(new Error("画像は10MB以下のものを選んでください。"));
       return;
     }
-    setImageError("");
     const reader = new FileReader();
-    reader.onerror = () => setImageError("画像を読み込めませんでした。別の画像をお試しください。");
+    reader.onerror = () => reject(new Error("画像を読み込めませんでした。別の画像をお試しください。"));
     reader.onload = () => {
       const image = new Image();
-      image.onerror = () => setImageError("この画像形式には対応していません。");
+      image.onerror = () => reject(new Error("この画像形式には対応していません。"));
       image.onload = () => {
-        const maxSize = 512;
-        const scale = Math.min(1, maxSize / Math.max(image.naturalWidth, image.naturalHeight));
+        const scale = Math.min(1, maxWidth / image.naturalWidth, maxHeight / image.naturalHeight);
         const canvas = document.createElement("canvas");
         canvas.width = Math.max(1, Math.round(image.naturalWidth * scale));
         canvas.height = Math.max(1, Math.round(image.naturalHeight * scale));
         const context = canvas.getContext("2d");
         if (!context) {
-          setImageError("画像を処理できませんでした。別の画像をお試しください。");
+          reject(new Error("画像を処理できませんでした。別の画像をお試しください。"));
           return;
         }
         context.drawImage(image, 0, 0, canvas.width, canvas.height);
-        const resizedImage = canvas.toDataURL("image/webp", 0.84);
-        setDraft((current) => ({ ...current, avatar: resizedImage }));
+        resolve(canvas.toDataURL("image/webp", 0.84));
       };
       image.src = String(reader.result);
     };
     reader.readAsDataURL(file);
+  });
+}
+
+function ProfileSettingsView({ profile, onCancel, onSave }: { profile: Profile; onCancel: () => void; onSave: (profile: Profile) => void }) {
+  const [draft, setDraft] = useState(profile);
+  const [imageError, setImageError] = useState("");
+
+  const selectImage = async (file: File | undefined, kind: "avatar" | "header") => {
+    if (!file) return;
+    setImageError("");
+    try {
+      const resizedImage = await resizeProfileImage(file, kind === "avatar" ? 512 : 1800, kind === "avatar" ? 512 : 900);
+      setDraft((current) => ({ ...current, [kind === "avatar" ? "avatar" : "headerImage"]: resizedImage }));
+    } catch (error) {
+      setImageError(error instanceof Error ? error.message : "画像を処理できませんでした。");
+    }
   };
 
-  const canSave = draft.displayName.trim() && draft.diaryTitle.trim() && draft.bio.trim();
+  const canSave = draft.displayName.trim() && draft.diaryTitle.trim() && draft.subtitle.trim() && draft.bio.trim();
 
   return (
     <section className="content-panel profile-settings-panel">
@@ -430,11 +446,31 @@ function ProfileSettingsView({ profile, onCancel, onSave }: { profile: Profile; 
 
         <div className="profile-avatar-actions">
           <label className="secondary-button" htmlFor="profile-avatar-file">画像を選ぶ</label>
-          <input id="profile-avatar-file" type="file" accept="image/*" onChange={(event) => selectAvatar(event.target.files?.[0])} />
+          <input id="profile-avatar-file" type="file" accept="image/*" onChange={(event) => void selectImage(event.target.files?.[0], "avatar")} />
           {draft.avatar && <button type="button" className="profile-image-remove" onClick={() => setDraft((current) => ({ ...current, avatar: undefined }))}>画像を削除</button>}
           <span className="profile-image-hint">10MBまで・自動で縮小</span>
         </div>
         {imageError && <p className="profile-form-error" role="alert">{imageError}</p>}
+
+        <section className="profile-header-setting">
+          <div className="profile-setting-label">
+            <strong>ヘッダー画像</strong>
+            <span>日記上部に表示される画像です</span>
+          </div>
+          <div
+            className="profile-header-preview"
+            style={draft.headerImage ? { backgroundImage: `linear-gradient(180deg, rgba(38, 66, 78, .08), rgba(38, 66, 78, .36)), url(${draft.headerImage})` } : undefined}
+          >
+            <strong>{draft.diaryTitle.trim() || "日記タイトル"}</strong>
+            <span>{draft.subtitle.trim() || "日記のサブタイトル"}</span>
+          </div>
+          <div className="profile-header-actions">
+            <label className="secondary-button" htmlFor="profile-header-file">画像を選ぶ</label>
+            <input id="profile-header-file" type="file" accept="image/*" onChange={(event) => void selectImage(event.target.files?.[0], "header")} />
+            {draft.headerImage && <button type="button" className="profile-image-remove" onClick={() => setDraft((current) => ({ ...current, headerImage: undefined }))}>標準画像に戻す</button>}
+            <span className="profile-image-hint">10MBまで・自動で縮小</span>
+          </div>
+        </section>
 
         <div className="profile-form-grid">
           <label>
@@ -447,8 +483,13 @@ function ProfileSettingsView({ profile, onCancel, onSave }: { profile: Profile; 
             <input value={draft.diaryTitle} maxLength={60} onChange={(event) => setDraft((current) => ({ ...current, diaryTitle: event.target.value }))} />
             <small>{draft.diaryTitle.length} / 60</small>
           </label>
+          <label>
+            <span>日記のサブタイトル</span>
+            <input value={draft.subtitle} maxLength={80} onChange={(event) => setDraft((current) => ({ ...current, subtitle: event.target.value }))} />
+            <small>{draft.subtitle.length} / 80</small>
+          </label>
           <label className="profile-bio-field">
-            <span>紹介文</span>
+            <span>自己紹介文</span>
             <textarea value={draft.bio} maxLength={120} rows={4} onChange={(event) => setDraft((current) => ({ ...current, bio: event.target.value }))} />
             <small>{draft.bio.length} / 120</small>
           </label>
@@ -457,7 +498,7 @@ function ProfileSettingsView({ profile, onCancel, onSave }: { profile: Profile; 
 
       <div className="profile-settings-actions">
         <button type="button" className="secondary-button" onClick={onCancel}>キャンセル</button>
-        <button type="button" className="primary-button" disabled={!canSave} onClick={() => onSave({ ...draft, displayName: draft.displayName.trim(), diaryTitle: draft.diaryTitle.trim(), bio: draft.bio.trim() })}>保存する</button>
+        <button type="button" className="primary-button" disabled={!canSave} onClick={() => onSave({ ...draft, displayName: draft.displayName.trim(), diaryTitle: draft.diaryTitle.trim(), subtitle: draft.subtitle.trim(), bio: draft.bio.trim() })}>保存する</button>
       </div>
     </section>
   );
@@ -516,8 +557,10 @@ export default function HomePage() {
       setProfile({
         displayName: parsed.displayName?.trim() || defaultProfile.displayName,
         diaryTitle: parsed.diaryTitle?.trim() || defaultProfile.diaryTitle,
-        bio: parsed.bio?.trim() || defaultProfile.bio,
+        subtitle: parsed.subtitle?.trim() || parsed.bio?.trim() || defaultProfile.subtitle,
+        bio: parsed.subtitle ? parsed.bio?.trim() || defaultProfile.bio : defaultProfile.bio,
         avatar: parsed.avatar,
+        headerImage: parsed.headerImage,
       });
     } catch {
       window.localStorage.removeItem("hibi-diary-profile");
