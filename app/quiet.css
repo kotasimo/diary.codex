@@ -212,6 +212,12 @@ body {
   .calendar-month-picker label { display: flex; align-items: center; gap: 3px; font-size: 12px; white-space: nowrap; }
   .calendar-month-picker select { padding: 3px 4px; border: 1px solid #d8d8d2; border-radius: 4px; background: #fff; font: inherit; }
   .calendar-month-close { padding: 3px 6px !important; border: 0 !important; font-size: 11px; white-space: nowrap; }
+  .calendar-month-picker {
+    position: static;
+    width: max-content;
+    margin: 6px auto 0;
+    transform: none;
+  }
   .calendar-card .calendar-grid {
     grid-template-columns: repeat(7, 25px);
     column-gap: 2px;
