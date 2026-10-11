@@ -488,4 +488,6 @@ body {
   .week-toolbar { width: calc(100% - 135px); max-width: 550px; }
   .week-toolbar::after { right: 0; }
   .week-toolbar > .week-actions { margin-right: 0; }
+  .entry-list,
+  .week-toolbar { position: relative; left: clamp(0px, calc((100vw - 1180px) / 2), 65px); }
 }
