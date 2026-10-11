@@ -414,7 +414,9 @@ export default function HomePage() {
       const { updatedAt, ...entryData } = entry;
       const { error } = await supabase.from("diary_entries").upsert({ ...entryData, updated_at: updatedAt }, { onConflict: "date" });
       if (error) {
+        const reason = [error.message, error.details, error.hint, error.code && `code: ${error.code}`].filter(Boolean).join(" / ");
         console.error("Supabase save failed", { message: error.message, details: error.details, hint: error.hint, code: error.code });
+        window.alert(`Supabase保存エラー\n${reason || "接続設定またはテーブル設定を確認してください"}`);
         return false;
       }
     }
