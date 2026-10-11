@@ -5,12 +5,10 @@ import {
   Bell,
   ChevronLeft,
   ChevronRight,
-  ChevronDown,
   Edit3,
   Feather,
   Footprints,
   LogOut,
-  Mail,
   Menu,
   Search,
   Settings,
@@ -229,10 +227,9 @@ function Header({ profile, onMenu, onPost }: { profile: Profile; onMenu: () => v
           <input type="search" placeholder="キーワードや日記を検索" aria-label="キーワードや日記を検索" />
         </label>
         <div className="header-actions">
-          <button className="icon-button" aria-label="メッセージ"><Mail size={20} /></button>
           <button className="icon-button" aria-label="お知らせ"><Bell size={20} /><span className="notification-dot" /></button>
           <button className="header-profile-button" aria-label="プロフィール"><ProfileAvatar profile={profile} /></button>
-          <button className="header-post-button" onClick={onPost}><Edit3 size={15} />投稿<ChevronDown size={16} /></button>
+          <button className="header-post-button" onClick={onPost}><Edit3 size={15} />日記を書く</button>
         </div>
       </div>
     </header>
