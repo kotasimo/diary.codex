@@ -383,7 +383,12 @@ export default function HomePage() {
       if (supabase) {
         const { data, error } = await supabase.from("diary_entries").select("*").order("date");
         if (!cancelled && !error && data?.length) {
-          setEntries(data.map((row) => ({ ...row, date: normalizeDateValue(row.date), updatedAt: row.updated_at })) as Entry[]);
+          const byDate = new Map<string, Entry>();
+          for (const row of data) {
+            const date = normalizeDateValue(row.date);
+            byDate.set(date, { ...row, date, updatedAt: row.updated_at } as Entry);
+          }
+          setEntries([...byDate.values()]);
         }
         return;
       }
