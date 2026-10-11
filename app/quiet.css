@@ -846,6 +846,92 @@ body {
   padding-top: 20px;
   border-top: 1px solid #e7e6e1;
 }
+.compose-image-actions { display: flex; align-items: center; gap: 12px; margin-top: 18px; }
+.image-adjust-button {
+  padding: 6px 8px;
+  border: 0;
+  background: transparent;
+  color: #536f63;
+  font-size: 12px;
+  cursor: pointer;
+}
+.image-adjust-button:hover { text-decoration: underline; }
+.crop-modal-backdrop {
+  position: fixed;
+  z-index: 100;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(21, 25, 24, .72);
+}
+.crop-modal {
+  width: min(900px, 100%);
+  max-height: calc(100vh - 48px);
+  overflow: auto;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, .28);
+}
+.crop-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e7e6e1;
+}
+.crop-modal-header > div { display: flex; flex-direction: column; gap: 3px; }
+.crop-modal-header strong { font-size: 15px; }
+.crop-modal-header span { color: #7c837d; font-size: 11px; }
+.crop-modal-close { padding: 5px; border: 0; background: transparent; color: #616861; cursor: pointer; }
+.crop-frame {
+  position: relative;
+  width: min(100%, 820px);
+  max-height: 58vh;
+  margin: 24px auto 18px;
+  overflow: hidden;
+  background: #151918;
+  cursor: grab;
+  touch-action: none;
+}
+.crop-frame:active { cursor: grabbing; }
+.crop-frame > img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  user-select: none;
+  pointer-events: none;
+  transform-origin: center;
+}
+.crop-grid {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, transparent 33.2%, rgba(255,255,255,.65) 33.25%, rgba(255,255,255,.65) 33.4%, transparent 33.45%, transparent 66.55%, rgba(255,255,255,.65) 66.6%, rgba(255,255,255,.65) 66.75%, transparent 66.8%),
+    linear-gradient(0deg, transparent 33.2%, rgba(255,255,255,.65) 33.25%, rgba(255,255,255,.65) 33.4%, transparent 33.45%, transparent 66.55%, rgba(255,255,255,.65) 66.6%, rgba(255,255,255,.65) 66.75%, transparent 66.8%);
+}
+.crop-error { margin: 0 24px 12px; color: #b42318; text-align: center; font-size: 12px; }
+.crop-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: min(300px, calc(100% - 48px));
+  margin: 0 auto 20px;
+  color: #677069;
+}
+.crop-controls input { flex: 1; accent-color: #327cba; }
+.crop-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 16px 20px;
+  border-top: 1px solid #e7e6e1;
+  background: #f7f9fa;
+}
 
 @media (min-width: 1101px) {
   .profile-settings-panel {
@@ -857,4 +943,7 @@ body {
 @media (max-width: 720px) {
   .profile-settings-panel { padding: 26px 20px 28px; }
   .profile-settings-actions .primary-button { min-width: 120px; }
+  .crop-modal-backdrop { padding: 12px; }
+  .crop-modal { max-height: calc(100vh - 24px); }
+  .crop-frame { margin-top: 14px; }
 }

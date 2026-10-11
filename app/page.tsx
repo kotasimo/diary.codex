@@ -16,7 +16,7 @@ import {
   UserRound,
   X,
 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { getSupabaseClient } from "./lib/supabase";
 
 type View = "week" | "detail" | "compose" | "visitors" | "profile";
@@ -37,15 +37,16 @@ const defaultProfile: Profile = {
   bio: "日々の出来事を、ゆっくり記録しています。",
 };
 
-function upgradeProfile(profile: Partial<Profile>): Profile {
-  const isLegacyProfile = profile.subtitle === undefined;
+function upgradeProfile(profile?: Partial<Profile> | null): Profile {
+  const source = profile ?? {};
+  const isLegacyProfile = source.subtitle === undefined;
   return {
-    displayName: profile.displayName ?? defaultProfile.displayName,
-    diaryTitle: profile.diaryTitle ?? defaultProfile.diaryTitle,
-    subtitle: profile.subtitle ?? profile.bio ?? defaultProfile.subtitle,
-    bio: isLegacyProfile ? defaultProfile.bio : profile.bio ?? defaultProfile.bio,
-    avatar: profile.avatar,
-    headerImage: profile.headerImage,
+    displayName: source.displayName ?? defaultProfile.displayName,
+    diaryTitle: source.diaryTitle ?? defaultProfile.diaryTitle,
+    subtitle: source.subtitle ?? source.bio ?? defaultProfile.subtitle,
+    bio: isLegacyProfile ? defaultProfile.bio : source.bio ?? defaultProfile.bio,
+    avatar: source.avatar,
+    headerImage: source.headerImage,
   };
 }
 
@@ -345,6 +346,7 @@ function ComposeView({ entry, date, day, onCancel, onSave }: { entry?: Entry; da
   const [title, setTitle] = useState(entry?.title ?? "");
   const [content, setContent] = useState(entry?.content ?? "");
   const [image, setImage] = useState(entry?.image ?? "");
+  const [cropSource, setCropSource] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState("");
 
@@ -365,28 +367,37 @@ function ComposeView({ entry, date, day, onCancel, onSave }: { entry?: Entry; da
     if (!saved) setSaveError("保存できませんでした。Supabaseの設定とテーブルを確認してください。");
   };
 
-  const selectImage = (file: File | undefined) => {
+  const selectImage = async (file: File | undefined) => {
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => setImage(String(reader.result));
-    reader.readAsDataURL(file);
+    try {
+      setCropSource(await resizeProfileImage(file, 1800, 1200));
+      setSaveError("");
+    } catch (error) {
+      setSaveError(error instanceof Error ? error.message : "画像を処理できませんでした。");
+    }
   };
 
   return (
-    <section className="content-panel compose-panel">
-      <label className="field-label" htmlFor="title">タイトル <span>任意</span></label>
-      <input id="title" className="title-input" value={title} onChange={(event) => setTitle(event.target.value)} placeholder="記事タイトル" maxLength={80} />
-      <div className="character-count">{title.length} / 80</div>
-      <label className="field-label" htmlFor="body">本文</label>
-      <textarea id="body" className="body-input" value={content} onChange={(event) => setContent(event.target.value)} placeholder="今日あったこと、感じたことを書いてみましょう。" />
-      <label className="image-upload-button" htmlFor="image-file">画像を追加</label>
-      <input id="image-file" type="file" accept="image/*" onChange={(event) => selectImage(event.target.files?.[0])} />
-      <div className="compose-heading">
-        <button className="back-button" onClick={onCancel}><X size={18} />キャンセル</button>
-        <button className="primary-button compose-save-button" disabled={!content.trim() || saving} onClick={() => void saveEntry()}>{saving ? "保存中…" : entry ? "保存" : "公開"}</button>
-      </div>
-      {saveError && <p className="compose-save-error" role="alert">{saveError}</p>}
-    </section>
+    <>
+      <section className="content-panel compose-panel">
+        <label className="field-label" htmlFor="title">タイトル <span>任意</span></label>
+        <input id="title" className="title-input" value={title} onChange={(event) => setTitle(event.target.value)} placeholder="記事タイトル" maxLength={80} />
+        <div className="character-count">{title.length} / 80</div>
+        <label className="field-label" htmlFor="body">本文</label>
+        <textarea id="body" className="body-input" value={content} onChange={(event) => setContent(event.target.value)} placeholder="今日あったこと、感じたことを書いてみましょう。" />
+        <div className="compose-image-actions">
+          <label className="image-upload-button" htmlFor="image-file">画像を追加</label>
+          <input id="image-file" type="file" accept="image/*" onChange={(event) => void selectImage(event.target.files?.[0])} />
+          {image && <button type="button" className="image-adjust-button" onClick={() => setCropSource(image)}>画像の表示範囲を調整</button>}
+        </div>
+        <div className="compose-heading">
+          <button className="back-button" onClick={onCancel}><X size={18} />キャンセル</button>
+          <button className="primary-button compose-save-button" disabled={!content.trim() || saving} onClick={() => void saveEntry()}>{saving ? "保存中…" : entry ? "保存" : "公開"}</button>
+        </div>
+        {saveError && <p className="compose-save-error" role="alert">{saveError}</p>}
+      </section>
+      {cropSource && <ImageCropModal source={cropSource} aspect={1} outputWidth={800} onCancel={() => setCropSource(null)} onUse={(croppedImage) => { setImage(croppedImage); setCropSource(null); }} />}
+    </>
   );
 }
 
@@ -420,26 +431,124 @@ function resizeProfileImage(file: File, maxWidth: number, maxHeight: number) {
   });
 }
 
+function ImageCropModal({ source, aspect, outputWidth, onCancel, onUse }: { source: string; aspect: number; outputWidth: number; onCancel: () => void; onUse: (image: string) => void }) {
+  const [zoom, setZoom] = useState(1);
+  const [offset, setOffset] = useState({ x: 0, y: 0 });
+  const [imageSize, setImageSize] = useState({ width: 0, height: 0 });
+  const [cropError, setCropError] = useState("");
+  const dragStart = useRef<{ x: number; y: number; offsetX: number; offsetY: number } | null>(null);
+  const frameWidth = 1000;
+  const frameHeight = frameWidth / aspect;
+
+  const finishCrop = () => {
+    if (!imageSize.width || !imageSize.height) return;
+    const baseScale = Math.max(frameWidth / imageSize.width, frameHeight / imageSize.height);
+    const renderedScale = baseScale * zoom;
+    const cropWidth = Math.min(imageSize.width, frameWidth / renderedScale);
+    const cropHeight = Math.min(imageSize.height, frameHeight / renderedScale);
+    const cropX = Math.max(0, Math.min(imageSize.width - cropWidth, (imageSize.width - cropWidth) / 2 - offset.x / renderedScale));
+    const cropY = Math.max(0, Math.min(imageSize.height - cropHeight, (imageSize.height - cropHeight) / 2 - offset.y / renderedScale));
+    const canvas = document.createElement("canvas");
+    canvas.width = outputWidth;
+    canvas.height = Math.max(1, Math.round(outputWidth / aspect));
+    const context = canvas.getContext("2d");
+    if (!context) return;
+    const image = new Image();
+    image.crossOrigin = "anonymous";
+    image.onload = () => {
+      try {
+        context.drawImage(image, cropX, cropY, cropWidth, cropHeight, 0, 0, canvas.width, canvas.height);
+        onUse(canvas.toDataURL("image/webp", 0.86));
+      } catch {
+        setCropError("この画像は切り取れませんでした。画像を選び直してください。");
+      }
+    };
+    image.src = source;
+  };
+
+  const onPointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
+    event.currentTarget.setPointerCapture(event.pointerId);
+    dragStart.current = { x: event.clientX, y: event.clientY, offsetX: offset.x, offsetY: offset.y };
+  };
+  const onPointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (!dragStart.current) return;
+    const limitX = frameWidth * Math.max(0.12, (zoom - 1) / 2 + 0.12);
+    const limitY = frameHeight * Math.max(0.12, (zoom - 1) / 2 + 0.12);
+    setOffset({
+      x: Math.max(-limitX, Math.min(limitX, dragStart.current.offsetX + event.clientX - dragStart.current.x)),
+      y: Math.max(-limitY, Math.min(limitY, dragStart.current.offsetY + event.clientY - dragStart.current.y)),
+    });
+  };
+  const stopDragging = () => { dragStart.current = null; };
+
+  return (
+    <div className="crop-modal-backdrop" role="presentation">
+      <section className="crop-modal" role="dialog" aria-modal="true" aria-label="画像の表示範囲を調整">
+        <header className="crop-modal-header">
+          <div><strong>画像の表示範囲</strong><span>画像をドラッグして位置を調整できます</span></div>
+          <button type="button" className="crop-modal-close" onClick={onCancel} aria-label="閉じる"><X size={20} /></button>
+        </header>
+        <div
+          className="crop-frame"
+          style={{ aspectRatio: `${aspect}` }}
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={stopDragging}
+          onPointerCancel={stopDragging}
+          onPointerLeave={stopDragging}
+        >
+          <img
+            src={source}
+            crossOrigin="anonymous"
+            alt="切り取り範囲のプレビュー"
+            onLoad={(event) => setImageSize({ width: event.currentTarget.naturalWidth, height: event.currentTarget.naturalHeight })}
+            style={{ transform: `translate(${offset.x / zoom}px, ${offset.y / zoom}px) scale(${zoom})` }}
+          />
+          <div className="crop-grid" aria-hidden="true"><span /><span /><span /><span /></div>
+        </div>
+        {cropError && <p className="crop-error" role="alert">{cropError}</p>}
+        <div className="crop-controls">
+          <span aria-hidden="true">−</span>
+          <input aria-label="画像の拡大率" type="range" min="1" max="3" step="0.01" value={zoom} onChange={(event) => setZoom(Number(event.target.value))} />
+          <span aria-hidden="true">＋</span>
+        </div>
+        <footer className="crop-modal-actions">
+          <button type="button" className="secondary-button" onClick={onCancel}>キャンセル</button>
+          <button type="button" className="primary-button" disabled={!imageSize.width} onClick={finishCrop}>この範囲を使う</button>
+        </footer>
+      </section>
+    </div>
+  );
+}
+
 function ProfileSettingsView({ profile, onCancel, onSave }: { profile: Profile; onCancel: () => void; onSave: (profile: Profile) => void }) {
   const [draft, setDraft] = useState(profile);
   const [imageError, setImageError] = useState("");
+  const [cropSource, setCropSource] = useState<{ kind: "avatar" | "header"; source: string } | null>(null);
   const safeDraft = upgradeProfile(draft);
 
   const selectImage = async (file: File | undefined, kind: "avatar" | "header") => {
     if (!file) return;
     setImageError("");
     try {
-      const resizedImage = await resizeProfileImage(file, kind === "avatar" ? 512 : 1800, kind === "avatar" ? 512 : 900);
-      setDraft((current) => ({ ...current, [kind === "avatar" ? "avatar" : "headerImage"]: resizedImage }));
+      const resizedImage = await resizeProfileImage(file, kind === "avatar" ? 1800 : 2400, kind === "avatar" ? 1800 : 1400);
+      setCropSource({ kind, source: resizedImage });
     } catch (error) {
       setImageError(error instanceof Error ? error.message : "画像を処理できませんでした。");
     }
   };
 
+  const useCroppedImage = (image: string) => {
+    if (!cropSource) return;
+    setDraft((current) => cropSource.kind === "avatar" ? { ...current, avatar: image } : { ...current, headerImage: image });
+    setCropSource(null);
+  };
+
   const canSave = safeDraft.displayName.trim() && safeDraft.diaryTitle.trim() && safeDraft.subtitle.trim() && safeDraft.bio.trim();
 
   return (
-    <section className="content-panel profile-settings-panel">
+    <>
+      <section className="content-panel profile-settings-panel">
       <header className="profile-settings-heading">
         <div>
           <p className="eyebrow">PROFILE</p>
@@ -461,6 +570,7 @@ function ProfileSettingsView({ profile, onCancel, onSave }: { profile: Profile; 
           <label className="secondary-button" htmlFor="profile-avatar-file">画像を選ぶ</label>
           <input id="profile-avatar-file" type="file" accept="image/*" onChange={(event) => void selectImage(event.target.files?.[0], "avatar")} />
           {safeDraft.avatar && <button type="button" className="profile-image-remove" onClick={() => setDraft((current) => ({ ...current, avatar: undefined }))}>画像を削除</button>}
+          {safeDraft.avatar && <button type="button" className="image-adjust-button" onClick={() => setCropSource({ kind: "avatar", source: safeDraft.avatar! })}>表示範囲を調整</button>}
           <span className="profile-image-hint">10MBまで・自動で縮小</span>
         </div>
         {imageError && <p className="profile-form-error" role="alert">{imageError}</p>}
@@ -481,6 +591,7 @@ function ProfileSettingsView({ profile, onCancel, onSave }: { profile: Profile; 
             <label className="secondary-button" htmlFor="profile-header-file">画像を選ぶ</label>
             <input id="profile-header-file" type="file" accept="image/*" onChange={(event) => void selectImage(event.target.files?.[0], "header")} />
             {safeDraft.headerImage && <button type="button" className="profile-image-remove" onClick={() => setDraft((current) => ({ ...current, headerImage: undefined }))}>標準画像に戻す</button>}
+            {safeDraft.headerImage && <button type="button" className="image-adjust-button" onClick={() => setCropSource({ kind: "header", source: safeDraft.headerImage! })}>表示範囲を調整</button>}
             <span className="profile-image-hint">10MBまで・自動で縮小</span>
           </div>
         </section>
@@ -513,7 +624,9 @@ function ProfileSettingsView({ profile, onCancel, onSave }: { profile: Profile; 
         <button type="button" className="secondary-button" onClick={onCancel}>キャンセル</button>
         <button type="button" className="primary-button" disabled={!canSave} onClick={() => onSave({ ...safeDraft, displayName: safeDraft.displayName.trim(), diaryTitle: safeDraft.diaryTitle.trim(), subtitle: safeDraft.subtitle.trim(), bio: safeDraft.bio.trim() })}>保存する</button>
       </div>
-    </section>
+      </section>
+      {cropSource && <ImageCropModal source={cropSource.source} aspect={cropSource.kind === "header" ? 5 : 1} outputWidth={cropSource.kind === "header" ? 1600 : 512} onCancel={() => setCropSource(null)} onUse={useCroppedImage} />}
+    </>
   );
 }
 
