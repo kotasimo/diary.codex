@@ -5,11 +5,12 @@ import {
   Bell,
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
   Edit3,
   Feather,
   Footprints,
-  Home,
   LogOut,
+  Mail,
   Menu,
   Search,
   Settings,
@@ -214,7 +215,7 @@ function MiniCalendar({ month, entries, onMonthChange, onSelectMonth, onToday, o
   );
 }
 
-function Header({ onMenu }: { onMenu: () => void }) {
+function Header({ profile, onMenu, onPost }: { profile: Profile; onMenu: () => void; onPost: () => void }) {
   return (
     <header className="site-header">
       <div className="header-inner">
@@ -223,13 +224,15 @@ function Header({ onMenu }: { onMenu: () => void }) {
           <span className="brand-mark"><Feather size={19} /></span>
           <span>Hibi</span>
         </button>
-        <nav className="top-nav" aria-label="メインナビゲーション">
-          <button><Home size={17} />みんなの日記</button>
-          <button><Search size={17} />探す</button>
-        </nav>
+        <label className="header-search">
+          <Search size={20} aria-hidden="true" />
+          <input type="search" placeholder="キーワードや日記を検索" aria-label="キーワードや日記を検索" />
+        </label>
         <div className="header-actions">
-          <button className="icon-button" aria-label="お知らせ"><Bell size={19} /><span className="notification-dot" /></button>
-          <button className="avatar avatar-me">K</button>
+          <button className="icon-button" aria-label="メッセージ"><Mail size={20} /></button>
+          <button className="icon-button" aria-label="お知らせ"><Bell size={20} /><span className="notification-dot" /></button>
+          <button className="header-profile-button" aria-label="プロフィール"><ProfileAvatar profile={profile} /></button>
+          <button className="header-post-button" onClick={onPost}><Edit3 size={15} />投稿<ChevronDown size={16} /></button>
         </div>
       </div>
     </header>
@@ -805,7 +808,11 @@ export default function HomePage() {
 
   return (
     <div className={`app-shell${profileReady ? "" : " profile-loading"}`}>
-      <Header onMenu={() => setDrawerOpen(true)} />
+      <Header
+        profile={visibleProfile}
+        onMenu={() => setDrawerOpen(true)}
+        onPost={() => openEditor("2026-10-10", "土", entries.find((entry) => normalizeDateValue(entry.date) === "2026-10-10"))}
+      />
       <div className="mobile-title">{title}</div>
       <DiaryHero profile={visibleProfile} />
       <main className="app-layout">
