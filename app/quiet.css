@@ -280,7 +280,7 @@ body {
   }
   .compose-panel .body-input {
     width: calc(100% - 35px);
-    min-height: 360px;
+    min-height: 220px;
     padding: 13px 0 0;
     font-size: 16px;
     line-height: 1.9;
