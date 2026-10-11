@@ -416,6 +416,14 @@ body {
   .reading-image { width: 100%; height: 210px; margin-top: 18px; }
 }
 
+@media (min-width: 1101px) {
+  .reading-entry::after { right: 135px; }
+  .reading-entry > .entry-heading,
+  .entry-body { width: calc(100% - 135px); }
+  .entry-body { grid-template-columns: minmax(0, 4fr) minmax(140px, 1fr); }
+  .entry-body .reading-image { width: 90%; }
+}
+
 /* Each day is a full-width band followed by its text and thumbnail. */
 .reading-entry {
   display: block;
@@ -469,4 +477,11 @@ body {
   .entry-body .reading-image { width: 100%; }
   .reading-entry > .entry-heading,
   .entry-body { width: 100%; }
+}
+
+@media (min-width: 1101px) {
+  .reading-entry::after { right: 135px; }
+  .reading-entry > .entry-heading,
+  .entry-body { width: calc(100% - 135px); }
+  .entry-body { grid-template-columns: minmax(0, 4fr) minmax(140px, 1fr); }
 }
