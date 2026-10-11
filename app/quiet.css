@@ -435,7 +435,7 @@ body {
   width: calc(100% - 35px);
   min-height: 0;
   margin: 0;
-  padding: 8px 12px;
+  padding: 5px 12px;
   border-bottom: 1px solid #e4e1d8;
   background: #f3f1eb;
 }
