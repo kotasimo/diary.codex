@@ -19,7 +19,20 @@ import {
 import { useEffect, useMemo, useState } from "react";
 import { getSupabaseClient } from "./lib/supabase";
 
-type View = "week" | "detail" | "compose" | "visitors";
+type View = "week" | "detail" | "compose" | "visitors" | "profile";
+
+type Profile = {
+  displayName: string;
+  diaryTitle: string;
+  bio: string;
+  avatar?: string;
+};
+
+const defaultProfile: Profile = {
+  displayName: "kotaro",
+  diaryTitle: "kotaroの日記",
+  bio: "何でもない毎日を、忘れないために。",
+};
 
 type Entry = {
   date: string;
@@ -207,25 +220,38 @@ function Header({ onMenu }: { onMenu: () => void }) {
   );
 }
 
-function DiaryHero() {
+function DiaryHero({ profile }: { profile: Profile }) {
   return (
     <section className="diary-hero" aria-label="プロフィール紹介">
       <div className="diary-hero-copy">
-        <h1>kotaroの日記</h1>
-        <p>何でもない毎日を、忘れないために。</p>
+        <h1>{profile.diaryTitle}</h1>
+        <p>{profile.bio}</p>
       </div>
     </section>
   );
 }
 
-function ProfileCard() {
+function ProfileAvatar({ profile, large = false }: { profile: Profile; large?: boolean }) {
+  const initial = profile.displayName.trim().charAt(0).toUpperCase() || "K";
+  return (
+    <div
+      className={`avatar avatar-me${large ? " avatar-large" : ""}${profile.avatar ? " profile-avatar-image" : ""}`}
+      style={profile.avatar ? { backgroundImage: `url(${profile.avatar})` } : undefined}
+      aria-label={`${profile.displayName}のプロフィール画像`}
+    >
+      {profile.avatar ? null : initial}
+    </div>
+  );
+}
+
+function ProfileCard({ profile }: { profile: Profile }) {
   return (
     <section className="profile-card">
       <div className="profile-identity">
-        <div className="avatar avatar-large avatar-me">K</div>
-        <p className="profile-name">kotaro</p>
+        <ProfileAvatar profile={profile} large />
+        <p className="profile-name">{profile.displayName}</p>
       </div>
-      <p className="profile-bio">何でもない毎日を、忘れないために。</p>
+      <p className="profile-bio">{profile.bio}</p>
     </section>
   );
 }
@@ -345,6 +371,77 @@ function ComposeView({ entry, date, day, onCancel, onSave }: { entry?: Entry; da
   );
 }
 
+function ProfileSettingsView({ profile, onCancel, onSave }: { profile: Profile; onCancel: () => void; onSave: (profile: Profile) => void }) {
+  const [draft, setDraft] = useState(profile);
+  const [imageError, setImageError] = useState("");
+
+  const selectAvatar = (file: File | undefined) => {
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) {
+      setImageError("画像は2MB以下のものを選んでください。");
+      return;
+    }
+    setImageError("");
+    const reader = new FileReader();
+    reader.onload = () => setDraft((current) => ({ ...current, avatar: String(reader.result) }));
+    reader.readAsDataURL(file);
+  };
+
+  const canSave = draft.displayName.trim() && draft.diaryTitle.trim() && draft.bio.trim();
+
+  return (
+    <section className="content-panel profile-settings-panel">
+      <header className="profile-settings-heading">
+        <div>
+          <p className="eyebrow">PROFILE</p>
+          <h1>プロフィール設定</h1>
+          <p>日記に表示される名前や紹介文を編集できます。</p>
+        </div>
+      </header>
+
+      <div className="profile-settings-body">
+        <section className="profile-preview" aria-label="プロフィールのプレビュー">
+          <ProfileAvatar profile={draft} large />
+          <div>
+            <strong>{draft.displayName.trim() || "表示名"}</strong>
+            <span>{draft.bio.trim() || "紹介文がここに表示されます。"}</span>
+          </div>
+        </section>
+
+        <div className="profile-avatar-actions">
+          <label className="secondary-button" htmlFor="profile-avatar-file">画像を選ぶ</label>
+          <input id="profile-avatar-file" type="file" accept="image/*" onChange={(event) => selectAvatar(event.target.files?.[0])} />
+          {draft.avatar && <button type="button" className="profile-image-remove" onClick={() => setDraft((current) => ({ ...current, avatar: undefined }))}>画像を削除</button>}
+        </div>
+        {imageError && <p className="profile-form-error" role="alert">{imageError}</p>}
+
+        <div className="profile-form-grid">
+          <label>
+            <span>表示名</span>
+            <input value={draft.displayName} maxLength={24} onChange={(event) => setDraft((current) => ({ ...current, displayName: event.target.value }))} />
+            <small>{draft.displayName.length} / 24</small>
+          </label>
+          <label>
+            <span>日記タイトル</span>
+            <input value={draft.diaryTitle} maxLength={60} onChange={(event) => setDraft((current) => ({ ...current, diaryTitle: event.target.value }))} />
+            <small>{draft.diaryTitle.length} / 60</small>
+          </label>
+          <label className="profile-bio-field">
+            <span>紹介文</span>
+            <textarea value={draft.bio} maxLength={120} rows={4} onChange={(event) => setDraft((current) => ({ ...current, bio: event.target.value }))} />
+            <small>{draft.bio.length} / 120</small>
+          </label>
+        </div>
+      </div>
+
+      <div className="profile-settings-actions">
+        <button type="button" className="secondary-button" onClick={onCancel}>キャンセル</button>
+        <button type="button" className="primary-button" disabled={!canSave} onClick={() => onSave({ ...draft, displayName: draft.displayName.trim(), diaryTitle: draft.diaryTitle.trim(), bio: draft.bio.trim() })}>保存する</button>
+      </div>
+    </section>
+  );
+}
+
 function VisitorsView() {
   return (
     <section className="content-panel visitors-panel">
@@ -370,7 +467,7 @@ function SideNavigation({ view, onView, open, onClose, mobileOnly = false }: { v
     <aside className={`mobile-drawer ${mobileOnly ? "mobile-nav" : "desktop-nav"} ${open ? "drawer-open" : ""}`}>
       <div className="drawer-head"><span>メニュー</span><button onClick={onClose}><X size={20} /></button></div>
       <button className={view === "visitors" ? "active" : ""} onClick={() => onView("visitors")}><Footprints size={19} />足あと</button>
-      <button><UserRound size={19} />プロフィール</button>
+      <button className={view === "profile" ? "active" : ""} onClick={() => onView("profile")}><UserRound size={19} />プロフィール</button>
       <button><Settings size={19} />設定</button>
       <div className="drawer-spacer" />
       <button><LogOut size={19} />ログアウト</button>
@@ -380,6 +477,7 @@ function SideNavigation({ view, onView, open, onClose, mobileOnly = false }: { v
 
 export default function HomePage() {
   const [entries, setEntries] = useState<Entry[]>(initialEntries);
+  const [profile, setProfile] = useState<Profile>(defaultProfile);
   const [view, setView] = useState<View>("week");
   const [weekStart, setWeekStart] = useState(() => new Date(2026, 9, 5));
   const [calendarMonth, setCalendarMonth] = useState(() => new Date(2026, 9, 1));
@@ -387,7 +485,23 @@ export default function HomePage() {
   const [editingEntry, setEditingEntry] = useState<Entry | undefined>();
   const [editingDate, setEditingDate] = useState({ date: "2026-10-10", day: "土" });
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const title = useMemo(() => view === "visitors" ? "足あと" : "kotaroの日記", [view]);
+  const title = useMemo(() => view === "visitors" ? "足あと" : view === "profile" ? "プロフィール設定" : profile.diaryTitle, [profile.diaryTitle, view]);
+
+  useEffect(() => {
+    const savedProfile = window.localStorage.getItem("hibi-diary-profile");
+    if (!savedProfile) return;
+    try {
+      const parsed = JSON.parse(savedProfile) as Partial<Profile>;
+      setProfile({
+        displayName: parsed.displayName?.trim() || defaultProfile.displayName,
+        diaryTitle: parsed.diaryTitle?.trim() || defaultProfile.diaryTitle,
+        bio: parsed.bio?.trim() || defaultProfile.bio,
+        avatar: parsed.avatar,
+      });
+    } catch {
+      window.localStorage.removeItem("hibi-diary-profile");
+    }
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -486,15 +600,20 @@ export default function HomePage() {
     changeView("detail");
     return true;
   };
+  const saveProfile = (nextProfile: Profile) => {
+    setProfile(nextProfile);
+    window.localStorage.setItem("hibi-diary-profile", JSON.stringify(nextProfile));
+    changeView("week");
+  };
 
   return (
     <>
       <Header onMenu={() => setDrawerOpen(true)} />
       <div className="mobile-title">{title}</div>
-      <DiaryHero />
+      <DiaryHero profile={profile} />
       <main className="app-layout">
         <aside className="left-column">
-          <ProfileCard />
+          <ProfileCard profile={profile} />
           <MiniCalendar month={calendarMonth} entries={entries} onMonthChange={(offset) => setCalendarMonth((current) => new Date(current.getFullYear(), current.getMonth() + offset, 1))} onSelectMonth={(year, month) => setCalendarMonth(new Date(year, month, 1))} onToday={() => { const today = new Date(); setCalendarMonth(new Date(today.getFullYear(), today.getMonth(), 1)); }} onPick={pickCalendarDay} />
           <SideNavigation
             view={view}
@@ -508,6 +627,7 @@ export default function HomePage() {
           {view === "detail" && <DetailView entry={selectedEntry} onBack={() => { setWeekStart(mondayOf(parseDateValue(selectedEntry.date))); changeView("week"); }} onEdit={() => openEditor(normalizeDateValue(selectedEntry.date), selectedEntry.day, selectedEntry)} />}
           {view === "compose" && <ComposeView entry={editingEntry} date={editingDate.date} day={editingDate.day} onCancel={() => changeView("week")} onSave={saveEntry} />}
           {view === "visitors" && <VisitorsView />}
+          {view === "profile" && <ProfileSettingsView profile={profile} onCancel={() => changeView("week")} onSave={saveProfile} />}
         </section>
       </main>
 
