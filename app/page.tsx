@@ -12,6 +12,7 @@ import {
   Menu,
   Search,
   Settings,
+  UserRoundPlus,
   UserRound,
   X,
 } from "lucide-react";
@@ -266,7 +267,8 @@ function ProfileAvatar({ profile, large = false }: { profile: Profile; large?: b
   );
 }
 
-function ProfileCard({ profile }: { profile: Profile }) {
+function ProfileCard({ profile, socialEmail, currentEmail, publicAccount, onToggleFollow }: { profile: Profile; socialEmail: string; currentEmail: string; publicAccount: boolean; onToggleFollow: (email: string) => void }) {
+  const following = socialEmail ? getFollowing(currentEmail).includes(socialEmail) : false;
   return (
     <section className="profile-card">
       <div className="profile-identity">
@@ -274,6 +276,8 @@ function ProfileCard({ profile }: { profile: Profile }) {
         <p className="profile-name">{profile.displayName}</p>
       </div>
       <p className="profile-bio">{profile.bio}</p>
+      <div className="profile-follow-summary"><strong>{getFollowingCount(socialEmail)}</strong><span>フォロー</span><span className="profile-follow-divider">—</span><strong>{getFollowerCount(socialEmail)}</strong><span>フォロワー</span></div>
+      {publicAccount && socialEmail !== currentEmail && <button type="button" className={following ? "secondary-button profile-follow-button" : "primary-button profile-follow-button"} onClick={() => onToggleFollow(socialEmail)}>{following ? "フォロー中" : <><UserRoundPlus size={16} />フォロー</>}</button>}
     </section>
   );
 }
@@ -921,7 +925,7 @@ export default function HomePage() {
       <DiaryHero profile={publicProfile} />
       <main className="app-layout">
         <aside className="left-column">
-          <ProfileCard profile={publicProfile} />
+          <ProfileCard profile={publicProfile} socialEmail={view === "account" ? selectedAccount?.email ?? "" : currentEmail} currentEmail={currentEmail} publicAccount={view === "account"} onToggleFollow={toggleAccountFollow} />
           <MiniCalendar month={calendarMonth} entries={entries} onMonthChange={(offset) => setCalendarMonth((current) => new Date(current.getFullYear(), current.getMonth() + offset, 1))} onSelectMonth={(year, month) => setCalendarMonth(new Date(year, month, 1))} onToday={() => { const today = new Date(); setCalendarMonth(new Date(today.getFullYear(), today.getMonth(), 1)); }} onPick={pickCalendarDay} />
           {view !== "account" && <SideNavigation
             view={view}

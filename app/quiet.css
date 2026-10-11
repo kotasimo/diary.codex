@@ -644,6 +644,10 @@ body {
 .search-account-copy small { color: #8a918d; font-size: 11px; }
 .search-account-card > button { flex: 0 0 auto; min-width: 76px; padding: 8px 11px; font-size: 12px; }
 .search-empty { margin: 20px 0; color: var(--muted); text-align: center; }
+.profile-follow-summary { display: flex; align-items: baseline; gap: 4px; margin: 20px 0 12px; padding-top: 14px; border-top: 1px solid #e7e8e4; color: #707975; font-size: 12px; }
+.profile-follow-summary strong { color: #252c2a; font-size: 16px; }
+.profile-follow-divider { margin: 0 3px; color: #a0a7a3; }
+.profile-follow-button { width: 100%; min-height: 38px; padding: 9px 12px; font-size: 12px; }
 .public-account-back { margin: 28px 0 4px; }
 .account-panel { width: 685px; max-width: 685px; padding: 30px 36px 42px; }
 .account-profile-heading { display: flex; align-items: center; gap: 14px; margin-top: 30px; }
