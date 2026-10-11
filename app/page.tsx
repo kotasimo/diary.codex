@@ -107,6 +107,8 @@ function parseDateValue(value: string) {
   if (iso) return new Date(Number(iso[1]), Number(iso[2]) - 1, Number(iso[3]));
   const slash = value.match(/^(\d{4})\/(\d{1,2})\/(\d{1,2})$/);
   if (slash) return new Date(Number(slash[1]), Number(slash[2]) - 1, Number(slash[3]));
+  const japanese = value.match(/^(\d{4})年(\d{1,2})月(\d{1,2})日$/);
+  if (japanese) return new Date(Number(japanese[1]), Number(japanese[2]) - 1, Number(japanese[3]));
   const match = value.match(/(\d+)月(\d+)日/);
   return match ? new Date(2026, Number(match[1]) - 1, Number(match[2])) : new Date(2026, 9, 5);
 }
