@@ -483,5 +483,6 @@ body {
   .reading-entry::after { right: 135px; }
   .reading-entry > .entry-heading,
   .entry-body { width: calc(100% - 135px); }
-  .entry-body { grid-template-columns: minmax(0, 4fr) minmax(140px, 1fr); }
+  .entry-body { grid-template-columns: minmax(0, 1fr) 80px; }
+  .entry-body .reading-image { width: 100%; }
 }
