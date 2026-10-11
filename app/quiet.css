@@ -267,6 +267,8 @@ body {
   }
   .compose-panel .title-input {
     width: calc(100% - 35px);
+    height: 36px;
+    box-sizing: border-box;
     padding: 7px 10px;
     border: 0;
     border-bottom: 1px solid #e4e1d8;
@@ -488,6 +490,8 @@ body {
   align-items: center;
   gap: 14px;
   width: calc(100% - 35px);
+  height: 36px;
+  box-sizing: border-box;
   padding: 7px 10px;
   border-bottom: 1px solid #e4e1d8;
   background: #f3f1eb;
@@ -519,6 +523,10 @@ body {
 .detail-panel {
   padding-left: 0;
   padding-right: 0;
+}
+.reading-copy .entry-heading {
+  height: 36px;
+  box-sizing: border-box;
 }
 @media (min-width: 1101px) {
   .detail-panel {
