@@ -424,7 +424,7 @@ body {
   display: flex;
   align-items: center;
   gap: 14px;
-  width: 100%;
+  width: calc(100% - 35px);
   min-height: 0;
   margin: 0;
   padding: 8px 12px;
@@ -442,6 +442,7 @@ body {
 }
 .entry-body {
   display: grid;
+  width: calc(100% - 35px);
   grid-template-columns: minmax(0, 4fr) minmax(180px, 1fr);
   gap: 30px;
 }
@@ -461,4 +462,6 @@ body {
 @media (max-width: 720px) {
   .entry-body { display: block; }
   .entry-body .reading-media { margin-top: 14px; }
+  .reading-entry > .entry-heading,
+  .entry-body { width: 100%; }
 }
