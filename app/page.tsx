@@ -3,7 +3,6 @@
 import {
   ArrowLeft,
   Bell,
-  BookOpenText,
   ChevronLeft,
   ChevronRight,
   Edit3,
@@ -511,11 +510,6 @@ export default function HomePage() {
         mobileOnly
       />
 
-      <nav className="bottom-nav">
-        <button className={view === "week" || view === "detail" ? "active" : ""} onClick={() => changeView("week")}><BookOpenText size={20} /><span>日記</span></button>
-        <button className="write-button" onClick={() => openEditor("2026-10-10", "土", entries.find((entry) => normalizeDateValue(entry.date) === "2026-10-10"))}><Edit3 size={22} /><span>書く</span></button>
-        <button className={view === "visitors" ? "active" : ""} onClick={() => changeView("visitors")}><Footprints size={20} /><span>足あと</span></button>
-      </nav>
     </>
   );
 }
