@@ -18,6 +18,7 @@ import {
   X,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+import { getSupabaseClient } from "./lib/supabase";
 
 type View = "week" | "detail" | "compose" | "visitors";
 
@@ -353,20 +354,31 @@ export default function HomePage() {
   const title = useMemo(() => view === "visitors" ? "足あと" : "kotaroの日記", [view]);
 
   useEffect(() => {
-    const savedEntries = window.localStorage.getItem("hibi-diary-entries");
-    if (!savedEntries) return;
+    let cancelled = false;
+    const loadEntries = async () => {
+      const supabase = getSupabaseClient();
+      if (supabase) {
+        const { data, error } = await supabase.from("diary_entries").select("*").order("date");
+        if (!cancelled && !error && data?.length) setEntries(data as Entry[]);
+        return;
+      }
 
-    try {
-      const saved = JSON.parse(savedEntries) as Entry[];
-      const merged = saved.map((entry) => {
-        const seed = initialEntries.find((item) => item.date === entry.date);
-        return !entry.image && seed?.image ? { ...entry, image: seed.image } : entry;
-      });
-      setEntries(merged);
-      window.localStorage.setItem("hibi-diary-entries", JSON.stringify(merged));
-    } catch {
-      window.localStorage.removeItem("hibi-diary-entries");
-    }
+      const savedEntries = window.localStorage.getItem("hibi-diary-entries");
+      if (!savedEntries) return;
+      try {
+        const saved = JSON.parse(savedEntries) as Entry[];
+        const merged = saved.map((entry) => {
+          const seed = initialEntries.find((item) => item.date === entry.date);
+          return !entry.image && seed?.image ? { ...entry, image: seed.image } : entry;
+        });
+        if (!cancelled) setEntries(merged);
+        window.localStorage.setItem("hibi-diary-entries", JSON.stringify(merged));
+      } catch {
+        window.localStorage.removeItem("hibi-diary-entries");
+      }
+    };
+    void loadEntries();
+    return () => { cancelled = true; };
   }, []);
 
   const changeView = (nextView: View) => { setView(nextView); setDrawerOpen(false); window.scrollTo({ top: 0, behavior: "smooth" }); };
@@ -387,10 +399,18 @@ export default function HomePage() {
     setWeekStart(mondayOf(new Date(calendarMonth.getFullYear(), calendarMonth.getMonth(), day)));
     changeView("week");
   };
-  const saveEntry = (entry: Entry) => {
+  const saveEntry = async (entry: Entry) => {
+    const supabase = getSupabaseClient();
+    if (supabase) {
+      const { error } = await supabase.from("diary_entries").upsert(entry, { onConflict: "date" });
+      if (error) {
+        console.error("Supabase save failed", error);
+        return;
+      }
+    }
     setEntries((current) => {
       const nextEntries = [...current.filter((item) => item.date !== entry.date), entry];
-      window.localStorage.setItem("hibi-diary-entries", JSON.stringify(nextEntries));
+      if (!supabase) window.localStorage.setItem("hibi-diary-entries", JSON.stringify(nextEntries));
       return nextEntries;
     });
     setSelectedEntry(entry);
