@@ -3,6 +3,7 @@ import path from "node:path";
 import { createClient } from "@supabase/supabase-js";
 
 const inputPath = process.argv[2];
+const dryRun = process.argv.includes("--dry-run");
 if (!inputPath) {
   console.error("Usage: npm run import:diary -- /path/to/diary.csv");
   process.exit(1);
@@ -18,9 +19,6 @@ function loadEnv(file) {
 
 loadEnv(path.resolve(".env.local"));
 loadEnv(path.resolve(".env"));
-const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-if (!url || !key) throw new Error("NEXT_PUBLIC_SUPABASE_URL と NEXT_PUBLIC_SUPABASE_ANON_KEY が必要です。.env.local を確認してください。");
 
 function parseCsv(text) {
   const rows = [];
@@ -60,6 +58,15 @@ const entries = rows
     };
   })
   .filter(Boolean);
+
+if (dryRun) {
+  console.log(`読み込み確認: ${entries.length}件（${entries[0]?.date ?? "-"}〜${entries.at(-1)?.date ?? "-"}）`);
+  process.exit(0);
+}
+
+const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+if (!url || !key) throw new Error("NEXT_PUBLIC_SUPABASE_URL と NEXT_PUBLIC_SUPABASE_ANON_KEY が必要です。.env.local を確認してください。");
 
 const supabase = createClient(url, key);
 for (let offset = 0; offset < entries.length; offset += 100) {
