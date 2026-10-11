@@ -304,19 +304,11 @@ function SearchView({ query, currentEmail, accounts, onToggleFollow, onSelectAcc
   );
 }
 
-function AccountView({ account, currentEmail, onBack, onToggleFollow }: { account: SocialAccount; currentEmail: string; onBack: () => void; onToggleFollow: (email: string) => void }) {
-  const following = getFollowing(currentEmail).includes(account.email);
+function AccountView({ account, onBack }: { account: SocialAccount; onBack: () => void }) {
   const entries = getSocialEntries(account.email);
   return (
     <section className="content-panel account-panel">
       <button type="button" className="back-button" onClick={onBack}><ArrowLeft size={16} />アカウント検索へ戻る</button>
-      <div className="account-profile-heading">
-        <div className="search-account-avatar account-avatar-large">{account.displayName.trim().charAt(0).toUpperCase() || "?"}</div>
-        <div><h1>{account.displayName}</h1><p>@{account.username}</p></div>
-        {account.email !== currentEmail && <button type="button" className={following ? "secondary-button" : "primary-button"} onClick={() => onToggleFollow(account.email)}>{following ? "フォロー中" : "フォロー"}</button>}
-      </div>
-      <p className="account-bio">{account.bio}</p>
-      <div className="account-stats"><span><strong>{getFollowerCount(account.email)}</strong>フォロワー</span><span><strong>{getFollowingCount(account.email)}</strong>フォロー中</span></div>
       <div className="account-diary-list"><h2>日記</h2>{entries.length ? entries.map((entry) => <article key={`${account.email}-${entry.date}`}><time>{entry.date.replaceAll("-", "/")}</time><h3>{entry.title}</h3><p>{entry.content}</p></article>) : <p className="search-empty">公開されている日記はまだありません。</p>}</div>
     </section>
   );
@@ -931,7 +923,7 @@ export default function HomePage() {
           {view === "visitors" && <VisitorsView />}
           {view === "profile" && <ProfileSettingsView profile={visibleProfile} onCancel={() => changeView("week")} onSave={saveProfile} />}
           {view === "search" && <SearchView query={searchQuery} currentEmail={currentEmail} accounts={socialAccounts} onToggleFollow={toggleAccountFollow} onSelectAccount={openAccount} />}
-          {view === "account" && selectedAccount && <AccountView account={selectedAccount} currentEmail={currentEmail} onBack={() => changeView("search")} onToggleFollow={toggleAccountFollow} />}
+          {view === "account" && selectedAccount && <AccountView account={selectedAccount} onBack={() => changeView("search")} />}
         </section>
       </main>
 
