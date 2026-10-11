@@ -138,7 +138,8 @@ const visitors = [
   { name: "ao", initial: "A", color: "purple", time: "10月8日 08:11", entry: "金木犀の帰り道" },
 ];
 
-function MiniCalendar({ month, entries, onMonthChange, onPick }: { month: Date; entries: Entry[]; onMonthChange: (offset: number) => void; onPick: (day: number) => void }) {
+function MiniCalendar({ month, entries, onMonthChange, onSelectMonth, onPick }: { month: Date; entries: Entry[]; onMonthChange: (offset: number) => void; onSelectMonth: (year: number, month: number) => void; onPick: (day: number) => void }) {
+  const [pickerOpen, setPickerOpen] = useState(false);
   const year = month.getFullYear();
   const monthIndex = month.getMonth();
   const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
@@ -153,8 +154,13 @@ function MiniCalendar({ month, entries, onMonthChange, onPick }: { month: Date; 
     <section className="calendar-card">
       <div className="calendar-heading">
         <button aria-label="前月" onClick={() => onMonthChange(-1)}><ChevronLeft size={17} /></button>
-        <strong>{year}年{monthIndex + 1}月</strong>
+        <button className="calendar-month-trigger" aria-expanded={pickerOpen} onClick={() => setPickerOpen((open) => !open)}>{year}年{monthIndex + 1}月</button>
         <button aria-label="次月" onClick={() => onMonthChange(1)}><ChevronRight size={17} /></button>
+        {pickerOpen && <div className="calendar-month-picker">
+          <label>年<select value={year} onChange={(event) => onSelectMonth(Number(event.target.value), monthIndex)}>{Array.from({ length: 11 }, (_, index) => year - 5 + index).map((optionYear) => <option key={optionYear} value={optionYear}>{optionYear}年</option>)}</select></label>
+          <label>月<select value={monthIndex} onChange={(event) => onSelectMonth(year, Number(event.target.value))}>{Array.from({ length: 12 }, (_, index) => <option key={index} value={index}>{index + 1}月</option>)}</select></label>
+          <button className="calendar-month-close" onClick={() => setPickerOpen(false)}>閉じる</button>
+        </div>}
       </div>
       <div className="calendar-grid calendar-labels">
         {['月', '火', '水', '木', '金', '土', '日'].map((day) => <span key={day}>{day}</span>)}
@@ -485,7 +491,7 @@ export default function HomePage() {
       <main className="app-layout">
         <aside className="left-column">
           <ProfileCard />
-          <MiniCalendar month={calendarMonth} entries={entries} onMonthChange={(offset) => setCalendarMonth((current) => new Date(current.getFullYear(), current.getMonth() + offset, 1))} onPick={pickCalendarDay} />
+          <MiniCalendar month={calendarMonth} entries={entries} onMonthChange={(offset) => setCalendarMonth((current) => new Date(current.getFullYear(), current.getMonth() + offset, 1))} onSelectMonth={(year, month) => setCalendarMonth(new Date(year, month, 1))} onPick={pickCalendarDay} />
           <SideNavigation
             view={view}
             onView={(nextView) => nextView === "compose" ? openEditor("2026-10-10", "土", entries.find((entry) => normalizeDateValue(entry.date) === "2026-10-10")) : changeView(nextView)}

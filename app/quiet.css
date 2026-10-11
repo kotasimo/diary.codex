@@ -181,6 +181,36 @@ body {
     border-radius: 50%;
     background: transparent;
   }
+  .calendar-card .calendar-heading { position: relative; }
+  .calendar-card .calendar-month-trigger {
+    width: auto;
+    height: auto;
+    padding: 4px 8px;
+    border: 0;
+    border-radius: 6px;
+    font: inherit;
+    color: inherit;
+    white-space: nowrap;
+  }
+  .calendar-card .calendar-month-trigger:hover { background: #f0f0ec; }
+  .calendar-month-picker {
+    position: absolute;
+    z-index: 5;
+    top: calc(100% + 6px);
+    left: 50%;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px;
+    border: 1px solid #d8d8d2;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 8px 20px rgba(40, 44, 39, .12);
+    transform: translateX(-50%);
+  }
+  .calendar-month-picker label { display: flex; align-items: center; gap: 3px; font-size: 12px; white-space: nowrap; }
+  .calendar-month-picker select { padding: 3px 4px; border: 1px solid #d8d8d2; border-radius: 4px; background: #fff; font: inherit; }
+  .calendar-month-close { padding: 3px 6px !important; border: 0 !important; font-size: 11px; white-space: nowrap; }
   .calendar-card .calendar-grid {
     grid-template-columns: repeat(7, 25px);
     column-gap: 2px;
