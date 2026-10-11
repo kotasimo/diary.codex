@@ -674,6 +674,7 @@ function SideNavigation({ view, onView, open, onClose, mobileOnly = false }: { v
 export default function HomePage() {
   const [entries, setEntries] = useState<Entry[]>(initialEntries);
   const [profile, setProfile] = useState<Profile>(defaultProfile);
+  const [profileReady, setProfileReady] = useState(false);
   const [view, setView] = useState<View>("week");
   const [weekStart, setWeekStart] = useState(() => new Date(2026, 9, 5));
   const [calendarMonth, setCalendarMonth] = useState(() => new Date(2026, 9, 1));
@@ -685,13 +686,16 @@ export default function HomePage() {
   const title = useMemo(() => view === "visitors" ? "足あと" : view === "profile" ? "プロフィール設定" : visibleProfile.diaryTitle, [visibleProfile.diaryTitle, view]);
 
   useEffect(() => {
-    const savedProfile = window.localStorage.getItem("hibi-diary-profile");
-    if (!savedProfile) return;
     try {
-      const parsed = JSON.parse(savedProfile) as Partial<Profile>;
-      setProfile(upgradeProfile(parsed));
+      const savedProfile = window.localStorage.getItem("hibi-diary-profile");
+      if (savedProfile) {
+        const parsed = JSON.parse(savedProfile) as Partial<Profile>;
+        setProfile(upgradeProfile(parsed));
+      }
     } catch {
       window.localStorage.removeItem("hibi-diary-profile");
+    } finally {
+      setProfileReady(true);
     }
   }, []);
 
@@ -800,7 +804,7 @@ export default function HomePage() {
   };
 
   return (
-    <>
+    <div className={`app-shell${profileReady ? "" : " profile-loading"}`}>
       <Header onMenu={() => setDrawerOpen(true)} />
       <div className="mobile-title">{title}</div>
       <DiaryHero profile={visibleProfile} />
@@ -833,6 +837,6 @@ export default function HomePage() {
         mobileOnly
       />
 
-    </>
+    </div>
   );
 }

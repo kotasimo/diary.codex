@@ -5,6 +5,11 @@ body {
   background: #fff;
 }
 
+/* Wait for the saved profile to load so the default masthead never flashes on reload. */
+.app-shell.profile-loading {
+  visibility: hidden;
+}
+
 .diary-hero {
   background:
     linear-gradient(180deg, rgba(38, 66, 78, .08), rgba(38, 66, 78, .36)),
