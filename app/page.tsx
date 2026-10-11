@@ -304,17 +304,16 @@ function SearchView({ query, currentEmail, accounts, onToggleFollow, onSelectAcc
   );
 }
 
-function AccountView({ account, onBack }: { account: SocialAccount; onBack: () => void }) {
-  const entries = getSocialEntries(account.email);
+function AccountView({ entries, weekStart, onBack }: { entries: Entry[]; weekStart: Date; onBack: () => void }) {
   return (
-    <section className="content-panel account-panel">
+    <>
       <button type="button" className="back-button" onClick={onBack}><ArrowLeft size={16} />アカウント検索へ戻る</button>
-      <div className="account-diary-list"><h2>日記</h2>{entries.length ? entries.map((entry) => <article key={`${account.email}-${entry.date}`}><time>{entry.date.replaceAll("-", "/")}</time><h3>{entry.title}</h3><p>{entry.content}</p></article>) : <p className="search-empty">公開されている日記はまだありません。</p>}</div>
-    </section>
+      <WeekView entries={entries} weekStart={weekStart} onShift={() => undefined} onDetail={() => undefined} onEdit={() => undefined} readOnly />
+    </>
   );
 }
 
-function WeekView({ entries, weekStart, onShift, onDetail, onEdit }: { entries: Entry[]; weekStart: Date; onShift: (days: number) => void; onDetail: (entry: Entry) => void; onEdit: (date: string, day: string, entry?: Entry) => void }) {
+function WeekView({ entries, weekStart, onShift, onDetail, onEdit, readOnly = false }: { entries: Entry[]; weekStart: Date; onShift: (days: number) => void; onDetail: (entry: Entry) => void; onEdit: (date: string, day: string, entry?: Entry) => void; readOnly?: boolean }) {
   const weekDays = buildWeek(weekStart).map(([date, day]) => ({ iso: date, label: formatDate(parseDateValue(date)), day }));
   return (
     <div className="content-panel">
@@ -334,7 +333,7 @@ function WeekView({ entries, weekStart, onShift, onDetail, onEdit }: { entries: 
               <header className="entry-heading">
                 <time className="entry-heading-date">{label.replace("月", "/").replace("日", "")}（{day}）</time>
                 <h2>{entry?.title ?? ""}</h2>
-                <button
+                {!readOnly && <button
                   type="button"
                   className="entry-edit-button"
                   onClick={() => onEdit(iso, day, entry)}
@@ -342,12 +341,12 @@ function WeekView({ entries, weekStart, onShift, onDetail, onEdit }: { entries: 
                 >
                   <Edit3 size={14} aria-hidden="true" />
                   <span>{entry ? "編集" : "作成"}</span>
-                </button>
+                </button>}
               </header>
               <div className="entry-body">
                 <div className="reading-copy">
                   {entry ? (
-                    <button className="entry-content" onClick={() => onDetail(entry)}>
+                    <button className="entry-content" onClick={() => onDetail(entry)} disabled={readOnly}>
                       <p>{entry.content}</p>
                     </button>
                   ) : null}
@@ -732,8 +731,23 @@ export default function HomePage() {
     bio: selectedAccount.bio,
   }) : visibleProfile;
   const title = useMemo(() => view === "visitors" ? "足あと" : view === "profile" ? "プロフィール設定" : view === "search" ? "アカウントを探す" : view === "account" ? selectedAccount?.displayName ?? "アカウント" : visibleProfile.diaryTitle, [selectedAccount?.displayName, visibleProfile.diaryTitle, view]);
-  const socialAccounts = getSocialAccounts();
   const currentEmail = typeof window !== "undefined" ? window.localStorage.getItem(localSessionKey) ?? "" : "";
+  const socialAccounts = (() => {
+    const accounts = getSocialAccounts();
+    if (currentEmail && !accounts.some((account) => account.email === currentEmail)) {
+      accounts.unshift({ email: currentEmail, username: visibleProfile.displayName, displayName: visibleProfile.displayName, bio: visibleProfile.bio });
+    }
+    return accounts;
+  })();
+  const publicEntries = selectedAccount
+    ? selectedAccount.email === currentEmail
+      ? entries
+      : getSocialEntries(selectedAccount.email).map((entry) => {
+        const date = parseDateValue(entry.date);
+        const days = ["日", "月", "火", "水", "木", "金", "土"];
+        return { ...entry, day: days[date.getDay()], updatedAt: "", views: 0 };
+      })
+    : [];
 
   useEffect(() => {
     try {
@@ -923,7 +937,7 @@ export default function HomePage() {
           {view === "visitors" && <VisitorsView />}
           {view === "profile" && <ProfileSettingsView profile={visibleProfile} onCancel={() => changeView("week")} onSave={saveProfile} />}
           {view === "search" && <SearchView query={searchQuery} currentEmail={currentEmail} accounts={socialAccounts} onToggleFollow={toggleAccountFollow} onSelectAccount={openAccount} />}
-          {view === "account" && selectedAccount && <AccountView account={selectedAccount} onBack={() => changeView("search")} />}
+          {view === "account" && selectedAccount && <AccountView entries={publicEntries} weekStart={weekStart} onBack={() => changeView("search")} />}
         </section>
       </main>
 

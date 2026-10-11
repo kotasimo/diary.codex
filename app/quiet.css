@@ -644,6 +644,7 @@ body {
 .search-account-copy small { color: #8a918d; font-size: 11px; }
 .search-account-card > button { flex: 0 0 auto; min-width: 76px; padding: 8px 11px; font-size: 12px; }
 .search-empty { margin: 20px 0; color: var(--muted); text-align: center; }
+.public-account-back { margin: 28px 0 4px; }
 .account-panel { width: 685px; max-width: 685px; padding: 30px 36px 42px; }
 .account-profile-heading { display: flex; align-items: center; gap: 14px; margin-top: 30px; }
 .account-avatar-large { width: 70px; height: 70px; font-size: 25px; }
