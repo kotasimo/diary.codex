@@ -326,7 +326,7 @@ function RelationshipView({ kind, subjectEmail, currentEmail, accounts, onBack, 
   return (
     <section className="content-panel relationship-panel">
       <button type="button" className="back-button" onClick={onBack}><ArrowLeft size={16} />プロフィールへ戻る</button>
-      <div className="page-heading"><p className="eyebrow">{kind === "following" ? "FOLLOWING" : "FOLLOWERS"}</p><h1>{kind === "following" ? "フォロー" : "フォロワー"}<small>{listedAccounts.length}人</small></h1></div>
+      <div className="page-heading"><h1>{kind === "following" ? "フォロー" : "フォロワー"}<small>{listedAccounts.length}人</small></h1></div>
       <div className="relationship-list">
         {listedAccounts.map((account) => <article className="relationship-row" key={account.email}>
           <button type="button" className="relationship-person" onClick={() => onSelectAccount(account)}><span className="search-account-avatar">{account.displayName.trim().charAt(0).toUpperCase() || "?"}</span><span><strong>{account.displayName}</strong><small>@{account.username}</small><em>{account.bio}</em></span></button>
