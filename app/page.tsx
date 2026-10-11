@@ -315,10 +315,10 @@ function SearchView({ query, currentEmail, accounts, onToggleFollow, onSelectAcc
   );
 }
 
-function AccountView({ entries, weekStart }: { entries: Entry[]; weekStart: Date }) {
+function AccountView({ entries, weekStart, onShift }: { entries: Entry[]; weekStart: Date; onShift: (days: number) => void }) {
   return (
     <>
-      <WeekView entries={entries} weekStart={weekStart} onShift={() => undefined} onDetail={() => undefined} onEdit={() => undefined} readOnly />
+      <WeekView entries={entries} weekStart={weekStart} onShift={onShift} onDetail={() => undefined} onEdit={() => undefined} readOnly />
     </>
   );
 }
@@ -879,7 +879,19 @@ export default function HomePage() {
   const searchAccounts = () => changeView("search");
   const goHome = () => { setSelectedAccount(undefined); changeView("week"); };
   const openRelationships = (kind: RelationshipKind, email: string) => { setRelationshipKind(kind); setSelectedAccount(email === currentEmail ? undefined : socialAccounts.find((account) => account.email === email)); changeView("relationships"); };
-  const openAccount = (account: SocialAccount) => { setSelectedAccount(account); changeView("account"); };
+  const openAccount = (account: SocialAccount) => {
+    const accountEntries = account.email === currentEmail
+      ? entries
+      : getSocialEntries(account.email).map((entry) => ({ ...entry, day: ["日", "月", "火", "水", "木", "金", "土"][parseDateValue(entry.date).getDay()], updatedAt: "", views: 0 }));
+    const firstEntry = accountEntries[accountEntries.length - 1];
+    if (firstEntry) {
+      const firstDate = parseDateValue(firstEntry.date);
+      setCalendarMonth(new Date(firstDate.getFullYear(), firstDate.getMonth(), 1));
+      setWeekStart(mondayOf(firstDate));
+    }
+    setSelectedAccount(account);
+    changeView("account");
+  };
   const toggleAccountFollow = (email: string) => {
     if (!currentEmail) return;
     toggleFollowing(currentEmail, email);
@@ -894,7 +906,8 @@ export default function HomePage() {
   const shiftWeek = (days: number) => setWeekStart((current) => new Date(current.getFullYear(), current.getMonth(), current.getDate() + days));
   const pickCalendarDay = (day: number) => {
     const dateKey = toDateKey(new Date(calendarMonth.getFullYear(), calendarMonth.getMonth(), day));
-    const entry = entries.find((item) => normalizeDateValue(item.date) === dateKey);
+    const calendarEntries = view === "account" ? publicEntries : entries;
+    const entry = calendarEntries.find((item) => normalizeDateValue(item.date) === dateKey);
     if (entry) {
       openDetail(entry);
       return;
@@ -956,7 +969,7 @@ export default function HomePage() {
       <main className={`app-layout${view === "account" ? " public-account-layout" : ""}`}>
         <aside className="left-column">
           <ProfileCard profile={publicProfile} socialEmail={view === "account" ? selectedAccount?.email ?? "" : view === "relationships" ? selectedAccount?.email ?? currentEmail : currentEmail} currentEmail={currentEmail} publicAccount={view === "account"} socialVersion={socialVersion} onToggleFollow={toggleAccountFollow} onRelationships={openRelationships} />
-          <MiniCalendar month={calendarMonth} entries={entries} onMonthChange={(offset) => setCalendarMonth((current) => new Date(current.getFullYear(), current.getMonth() + offset, 1))} onSelectMonth={(year, month) => setCalendarMonth(new Date(year, month, 1))} onToday={() => { const today = new Date(); setCalendarMonth(new Date(today.getFullYear(), today.getMonth(), 1)); }} onPick={pickCalendarDay} />
+          <MiniCalendar month={calendarMonth} entries={view === "account" ? publicEntries : entries} onMonthChange={(offset) => setCalendarMonth((current) => new Date(current.getFullYear(), current.getMonth() + offset, 1))} onSelectMonth={(year, month) => setCalendarMonth(new Date(year, month, 1))} onToday={() => { const today = new Date(); setCalendarMonth(new Date(today.getFullYear(), today.getMonth(), 1)); }} onPick={pickCalendarDay} />
           {view !== "account" && <SideNavigation
             view={view}
             onView={(nextView) => nextView === "compose" ? openEditor("2026-10-10", "土", entries.find((entry) => normalizeDateValue(entry.date) === "2026-10-10")) : changeView(nextView)}
@@ -972,7 +985,7 @@ export default function HomePage() {
           {view === "visitors" && <VisitorsView />}
           {view === "profile" && <ProfileSettingsView profile={visibleProfile} onCancel={() => changeView("week")} onSave={saveProfile} />}
           {view === "search" && <SearchView query={searchQuery} currentEmail={currentEmail} accounts={socialAccounts} onToggleFollow={toggleAccountFollow} onSelectAccount={openAccount} />}
-          {view === "account" && selectedAccount && <AccountView entries={publicEntries} weekStart={weekStart} />}
+          {view === "account" && selectedAccount && <AccountView entries={publicEntries} weekStart={weekStart} onShift={shiftWeek} />}
           {view === "relationships" && <RelationshipView kind={relationshipKind} subjectEmail={selectedAccount?.email ?? currentEmail} currentEmail={currentEmail} accounts={socialAccounts} onBack={() => selectedAccount ? changeView("account") : changeView("week")} onToggleFollow={toggleAccountFollow} onSelectAccount={openAccount} />}
         </section>
       </main>
