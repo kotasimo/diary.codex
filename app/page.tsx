@@ -274,7 +274,7 @@ function DetailView({ entry, onBack, onEdit }: { entry: Entry; onBack: () => voi
     <article className="content-panel detail-panel">
       <button className="back-button" onClick={onBack}><ArrowLeft size={18} />週の一覧へ</button>
       <header className="detail-heading">
-        <p>{displayDate}（{entry.day}）</p>
+        <p>{displayDate.replace("月", "/").replace("日", "")}（{entry.day}）</p>
         {entry.title && <h1>{entry.title}</h1>}
       </header>
       <div className="detail-body">
