@@ -138,7 +138,7 @@ const visitors = [
   { name: "ao", initial: "A", color: "purple", time: "10月8日 08:11", entry: "金木犀の帰り道" },
 ];
 
-function MiniCalendar({ month, entries, onMonthChange, onSelectMonth, onPick }: { month: Date; entries: Entry[]; onMonthChange: (offset: number) => void; onSelectMonth: (year: number, month: number) => void; onPick: (day: number) => void }) {
+function MiniCalendar({ month, entries, onMonthChange, onSelectMonth, onToday, onPick }: { month: Date; entries: Entry[]; onMonthChange: (offset: number) => void; onSelectMonth: (year: number, month: number) => void; onToday: () => void; onPick: (day: number) => void }) {
   const year = month.getFullYear();
   const monthIndex = month.getMonth();
   const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
@@ -172,6 +172,7 @@ function MiniCalendar({ month, entries, onMonthChange, onSelectMonth, onPick }: 
         ))}
       </div>
       <div className="calendar-month-picker-wrap">
+        <button className="calendar-today-button" onClick={onToday}>今月</button>
         <div className="calendar-month-picker">
           <label><input type="number" min="1900" max="2100" value={year} onChange={(event) => { const nextYear = Number(event.target.value); if (Number.isInteger(nextYear) && nextYear >= 1900 && nextYear <= 2100) onSelectMonth(nextYear, monthIndex); }} />年</label>
           <label><input type="number" min="1" max="12" value={monthIndex + 1} onChange={(event) => { const nextMonth = Number(event.target.value); if (Number.isInteger(nextMonth) && nextMonth >= 1 && nextMonth <= 12) onSelectMonth(year, nextMonth - 1); }} />月</label>
@@ -491,7 +492,7 @@ export default function HomePage() {
       <main className="app-layout">
         <aside className="left-column">
           <ProfileCard />
-          <MiniCalendar month={calendarMonth} entries={entries} onMonthChange={(offset) => setCalendarMonth((current) => new Date(current.getFullYear(), current.getMonth() + offset, 1))} onSelectMonth={(year, month) => setCalendarMonth(new Date(year, month, 1))} onPick={pickCalendarDay} />
+          <MiniCalendar month={calendarMonth} entries={entries} onMonthChange={(offset) => setCalendarMonth((current) => new Date(current.getFullYear(), current.getMonth() + offset, 1))} onSelectMonth={(year, month) => setCalendarMonth(new Date(year, month, 1))} onToday={() => { const today = new Date(); setCalendarMonth(new Date(today.getFullYear(), today.getMonth(), 1)); }} onPick={pickCalendarDay} />
           <SideNavigation
             view={view}
             onView={(nextView) => nextView === "compose" ? openEditor("2026-10-10", "土", entries.find((entry) => normalizeDateValue(entry.date) === "2026-10-10")) : changeView(nextView)}

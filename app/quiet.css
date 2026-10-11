@@ -182,7 +182,9 @@ body {
     background: transparent;
   }
   .calendar-card .calendar-heading { position: relative; }
-  .calendar-month-picker-wrap { position: relative; margin-top: 8px; text-align: center; }
+  .calendar-month-picker-wrap { position: relative; display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 8px; }
+  .calendar-today-button { flex: 0 0 auto; padding: 4px 5px; border: 0; border-radius: 5px; background: transparent; color: #555a54; font-size: 11px; cursor: pointer; }
+  .calendar-today-button:hover { background: #f0f0ec; }
   .calendar-card .calendar-month-trigger {
     width: auto;
     height: auto;
@@ -216,7 +218,7 @@ body {
   .calendar-month-picker {
     position: static;
     width: max-content;
-    margin: 6px auto 0;
+    margin: 0;
     transform: none;
     padding: 0;
     border: 0;
