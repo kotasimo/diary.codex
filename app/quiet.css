@@ -453,6 +453,11 @@ body {
   flex: 0 0 auto;
   margin: 0;
 }
+.reading-entry > .entry-heading h2,
+.detail-heading h1,
+.compose-panel .title-input {
+  font-size: 23px;
+}
 .reading-entry > .entry-heading h2 {
   flex: 1;
   min-width: 0;
