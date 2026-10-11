@@ -21,7 +21,8 @@ import { getSupabaseClient } from "./lib/supabase";
 import { localAuthEnabled, localSessionKey } from "./lib/auth";
 import { getFollowerCount, getFollowing, getFollowingCount, getSocialAccounts, getSocialEntries, toggleFollowing, type SocialAccount } from "./lib/social";
 
-type View = "week" | "detail" | "compose" | "visitors" | "profile" | "search" | "account";
+type View = "week" | "detail" | "compose" | "visitors" | "profile" | "search" | "account" | "relationships";
+type RelationshipKind = "following" | "followers";
 
 type Profile = {
   displayName: string;
@@ -267,7 +268,7 @@ function ProfileAvatar({ profile, large = false }: { profile: Profile; large?: b
   );
 }
 
-function ProfileCard({ profile, socialEmail, currentEmail, publicAccount, onToggleFollow }: { profile: Profile; socialEmail: string; currentEmail: string; publicAccount: boolean; onToggleFollow: (email: string) => void }) {
+function ProfileCard({ profile, socialEmail, currentEmail, publicAccount, onToggleFollow, onRelationships }: { profile: Profile; socialEmail: string; currentEmail: string; publicAccount: boolean; onToggleFollow: (email: string) => void; onRelationships: (kind: RelationshipKind, email: string) => void }) {
   const following = socialEmail ? getFollowing(currentEmail).includes(socialEmail) : false;
   return (
     <section className="profile-card">
@@ -276,7 +277,7 @@ function ProfileCard({ profile, socialEmail, currentEmail, publicAccount, onTogg
         <p className="profile-name">{profile.displayName}</p>
       </div>
       <p className="profile-bio">{profile.bio}</p>
-      <div className="profile-follow-summary"><strong>{getFollowingCount(socialEmail)}</strong><span>フォロー</span><span className="profile-follow-divider">—</span><strong>{getFollowerCount(socialEmail)}</strong><span>フォロワー</span></div>
+      <div className="profile-follow-summary"><button type="button" onClick={() => onRelationships("following", socialEmail)}><strong>{getFollowingCount(socialEmail)}</strong><span>フォロー</span></button><button type="button" onClick={() => onRelationships("followers", socialEmail)}><strong>{getFollowerCount(socialEmail)}</strong><span>フォロワー</span></button></div>
       {publicAccount && socialEmail !== currentEmail && <button type="button" className={following ? "secondary-button profile-follow-button" : "primary-button profile-follow-button"} onClick={() => onToggleFollow(socialEmail)}>{following ? "フォロー中" : <><UserRoundPlus size={16} />フォロー</>}</button>}
     </section>
   );
@@ -313,6 +314,27 @@ function AccountView({ entries, weekStart }: { entries: Entry[]; weekStart: Date
     <>
       <WeekView entries={entries} weekStart={weekStart} onShift={() => undefined} onDetail={() => undefined} onEdit={() => undefined} readOnly />
     </>
+  );
+}
+
+function RelationshipView({ kind, subjectEmail, currentEmail, accounts, onBack, onToggleFollow, onSelectAccount }: { kind: RelationshipKind; subjectEmail: string; currentEmail: string; accounts: SocialAccount[]; onBack: () => void; onToggleFollow: (email: string) => void; onSelectAccount: (account: SocialAccount) => void }) {
+  const followingEmails = new Set(getFollowing(subjectEmail));
+  const listedAccounts = kind === "following"
+    ? accounts.filter((account) => followingEmails.has(account.email))
+    : accounts.filter((account) => getFollowing(account.email).includes(subjectEmail));
+  const followingByViewer = new Set(getFollowing(currentEmail));
+  return (
+    <section className="content-panel relationship-panel">
+      <button type="button" className="back-button" onClick={onBack}><ArrowLeft size={16} />プロフィールへ戻る</button>
+      <div className="page-heading"><p className="eyebrow">{kind === "following" ? "FOLLOWING" : "FOLLOWERS"}</p><h1>{kind === "following" ? "フォロー" : "フォロワー"}<small>{listedAccounts.length}人</small></h1></div>
+      <div className="relationship-list">
+        {listedAccounts.map((account) => <article className="relationship-row" key={account.email}>
+          <button type="button" className="relationship-person" onClick={() => onSelectAccount(account)}><span className="search-account-avatar">{account.displayName.trim().charAt(0).toUpperCase() || "?"}</span><span><strong>{account.displayName}</strong><small>@{account.username}</small><em>{account.bio}</em></span></button>
+          {account.email !== currentEmail && <button type="button" className={followingByViewer.has(account.email) ? "secondary-button" : "primary-button"} onClick={() => onToggleFollow(account.email)}>{followingByViewer.has(account.email) ? "フォロー中" : "フォロー"}</button>}
+        </article>)}
+        {!listedAccounts.length && <p className="search-empty">まだアカウントがありません。</p>}
+      </div>
+    </section>
   );
 }
 
@@ -726,14 +748,15 @@ export default function HomePage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [, setSocialVersion] = useState(0);
   const [selectedAccount, setSelectedAccount] = useState<SocialAccount | undefined>();
+  const [relationshipKind, setRelationshipKind] = useState<RelationshipKind>("following");
   const visibleProfile = upgradeProfile(profile);
-  const publicProfile = view === "account" && selectedAccount ? upgradeProfile({
+  const publicProfile = (view === "account" || view === "relationships") && selectedAccount ? upgradeProfile({
     displayName: selectedAccount.displayName,
     diaryTitle: `${selectedAccount.displayName}の日記`,
     subtitle: selectedAccount.bio,
     bio: selectedAccount.bio,
   }) : visibleProfile;
-  const title = useMemo(() => view === "visitors" ? "足あと" : view === "profile" ? "プロフィール設定" : view === "search" ? "アカウントを探す" : view === "account" ? selectedAccount?.displayName ?? "アカウント" : visibleProfile.diaryTitle, [selectedAccount?.displayName, visibleProfile.diaryTitle, view]);
+  const title = useMemo(() => view === "visitors" ? "足あと" : view === "profile" ? "プロフィール設定" : view === "search" ? "アカウントを探す" : view === "account" ? selectedAccount?.displayName ?? "アカウント" : view === "relationships" ? relationshipKind === "following" ? "フォロー" : "フォロワー" : visibleProfile.diaryTitle, [relationshipKind, selectedAccount?.displayName, visibleProfile.diaryTitle, view]);
   const currentEmail = typeof window !== "undefined" ? window.localStorage.getItem(localSessionKey) ?? "" : "";
   const socialAccounts = (() => {
     const accounts = getSocialAccounts();
@@ -849,6 +872,7 @@ export default function HomePage() {
   const changeView = (nextView: View) => { setView(nextView); setDrawerOpen(false); window.scrollTo({ top: 0, behavior: "smooth" }); };
   const searchAccounts = () => changeView("search");
   const goHome = () => { setSelectedAccount(undefined); changeView("week"); };
+  const openRelationships = (kind: RelationshipKind, email: string) => { setRelationshipKind(kind); setSelectedAccount(email === currentEmail ? undefined : socialAccounts.find((account) => account.email === email)); changeView("relationships"); };
   const openAccount = (account: SocialAccount) => { setSelectedAccount(account); changeView("account"); };
   const toggleAccountFollow = (email: string) => {
     if (!currentEmail) return;
@@ -925,7 +949,7 @@ export default function HomePage() {
       <DiaryHero profile={publicProfile} />
       <main className="app-layout">
         <aside className="left-column">
-          <ProfileCard profile={publicProfile} socialEmail={view === "account" ? selectedAccount?.email ?? "" : currentEmail} currentEmail={currentEmail} publicAccount={view === "account"} onToggleFollow={toggleAccountFollow} />
+          <ProfileCard profile={publicProfile} socialEmail={view === "account" ? selectedAccount?.email ?? "" : view === "relationships" ? selectedAccount?.email ?? currentEmail : currentEmail} currentEmail={currentEmail} publicAccount={view === "account"} onToggleFollow={toggleAccountFollow} onRelationships={openRelationships} />
           <MiniCalendar month={calendarMonth} entries={entries} onMonthChange={(offset) => setCalendarMonth((current) => new Date(current.getFullYear(), current.getMonth() + offset, 1))} onSelectMonth={(year, month) => setCalendarMonth(new Date(year, month, 1))} onToday={() => { const today = new Date(); setCalendarMonth(new Date(today.getFullYear(), today.getMonth(), 1)); }} onPick={pickCalendarDay} />
           {view !== "account" && <SideNavigation
             view={view}
@@ -943,6 +967,7 @@ export default function HomePage() {
           {view === "profile" && <ProfileSettingsView profile={visibleProfile} onCancel={() => changeView("week")} onSave={saveProfile} />}
           {view === "search" && <SearchView query={searchQuery} currentEmail={currentEmail} accounts={socialAccounts} onToggleFollow={toggleAccountFollow} onSelectAccount={openAccount} />}
           {view === "account" && selectedAccount && <AccountView entries={publicEntries} weekStart={weekStart} />}
+          {view === "relationships" && <RelationshipView kind={relationshipKind} subjectEmail={selectedAccount?.email ?? currentEmail} currentEmail={currentEmail} accounts={socialAccounts} onBack={() => selectedAccount ? changeView("account") : changeView("week")} onToggleFollow={toggleAccountFollow} onSelectAccount={openAccount} />}
         </section>
       </main>
 
