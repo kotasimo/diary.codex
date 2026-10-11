@@ -524,11 +524,15 @@ body {
   .detail-panel {
     width: 685px;
     max-width: 685px;
+    margin-left: max(0px, calc((100vw - 685px) / 2 - (var(--sidebar-width) + 21px)));
+    margin-right: 0;
     position: relative;
     left: 0;
     transform: translateX(clamp(0px, calc((100vw - 1180px) / 2), 65px));
   }
   .compose-panel {
+    margin-left: max(0px, calc((100vw - 685px) / 2 - (var(--sidebar-width) + 21px)));
+    margin-right: 0;
     position: relative;
     left: 0;
     transform: translateX(clamp(0px, calc((100vw - 1180px) / 2), 65px));
