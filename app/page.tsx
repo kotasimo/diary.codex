@@ -215,12 +215,12 @@ function MiniCalendar({ month, entries, onMonthChange, onSelectMonth, onToday, o
   );
 }
 
-function Header({ profile, searchQuery, onSearchQuery, onSearch, onMenu, onPost }: { profile: Profile; searchQuery: string; onSearchQuery: (query: string) => void; onSearch: () => void; onMenu: () => void; onPost: () => void }) {
+function Header({ profile, searchQuery, onSearchQuery, onSearch, onHome, onMenu, onPost }: { profile: Profile; searchQuery: string; onSearchQuery: (query: string) => void; onSearch: () => void; onHome: () => void; onMenu: () => void; onPost: () => void }) {
   return (
     <header className="site-header">
       <div className="header-inner">
         <button className="mobile-menu" onClick={onMenu} aria-label="メニュー"><Menu size={22} /></button>
-        <button className="brand" aria-label="Hibi ホーム">
+        <button className="brand" aria-label="Hibi ホーム" onClick={onHome}>
           <span className="brand-mark"><Feather size={19} /></span>
           <span>Hibi</span>
         </button>
@@ -304,10 +304,9 @@ function SearchView({ query, currentEmail, accounts, onToggleFollow, onSelectAcc
   );
 }
 
-function AccountView({ entries, weekStart, onBack }: { entries: Entry[]; weekStart: Date; onBack: () => void }) {
+function AccountView({ entries, weekStart }: { entries: Entry[]; weekStart: Date }) {
   return (
     <>
-      <button type="button" className="back-button" onClick={onBack}><ArrowLeft size={16} />アカウント検索へ戻る</button>
       <WeekView entries={entries} weekStart={weekStart} onShift={() => undefined} onDetail={() => undefined} onEdit={() => undefined} readOnly />
     </>
   );
@@ -845,6 +844,7 @@ export default function HomePage() {
 
   const changeView = (nextView: View) => { setView(nextView); setDrawerOpen(false); window.scrollTo({ top: 0, behavior: "smooth" }); };
   const searchAccounts = () => changeView("search");
+  const goHome = () => { setSelectedAccount(undefined); changeView("week"); };
   const openAccount = (account: SocialAccount) => { setSelectedAccount(account); changeView("account"); };
   const toggleAccountFollow = (email: string) => {
     if (!currentEmail) return;
@@ -913,6 +913,7 @@ export default function HomePage() {
         searchQuery={searchQuery}
         onSearchQuery={setSearchQuery}
         onSearch={searchAccounts}
+        onHome={goHome}
         onMenu={() => setDrawerOpen(true)}
         onPost={() => openEditor("2026-10-10", "土", entries.find((entry) => normalizeDateValue(entry.date) === "2026-10-10"))}
       />
@@ -922,13 +923,13 @@ export default function HomePage() {
         <aside className="left-column">
           <ProfileCard profile={publicProfile} />
           <MiniCalendar month={calendarMonth} entries={entries} onMonthChange={(offset) => setCalendarMonth((current) => new Date(current.getFullYear(), current.getMonth() + offset, 1))} onSelectMonth={(year, month) => setCalendarMonth(new Date(year, month, 1))} onToday={() => { const today = new Date(); setCalendarMonth(new Date(today.getFullYear(), today.getMonth(), 1)); }} onPick={pickCalendarDay} />
-          <SideNavigation
+          {view !== "account" && <SideNavigation
             view={view}
             onView={(nextView) => nextView === "compose" ? openEditor("2026-10-10", "土", entries.find((entry) => normalizeDateValue(entry.date) === "2026-10-10")) : changeView(nextView)}
             open={false}
             onClose={() => undefined}
             onLogout={() => void handleLogout()}
-          />
+          />}
         </aside>
         <section className="main-column">
           {view === "week" && <WeekView entries={entries} weekStart={weekStart} onShift={shiftWeek} onDetail={openDetail} onEdit={openEditor} />}
@@ -937,19 +938,19 @@ export default function HomePage() {
           {view === "visitors" && <VisitorsView />}
           {view === "profile" && <ProfileSettingsView profile={visibleProfile} onCancel={() => changeView("week")} onSave={saveProfile} />}
           {view === "search" && <SearchView query={searchQuery} currentEmail={currentEmail} accounts={socialAccounts} onToggleFollow={toggleAccountFollow} onSelectAccount={openAccount} />}
-          {view === "account" && selectedAccount && <AccountView entries={publicEntries} weekStart={weekStart} onBack={() => changeView("search")} />}
+          {view === "account" && selectedAccount && <AccountView entries={publicEntries} weekStart={weekStart} />}
         </section>
       </main>
 
       {drawerOpen && <button className="drawer-overlay" aria-label="メニューを閉じる" onClick={() => setDrawerOpen(false)} />}
-      <SideNavigation
-        view={view}
-        onView={(nextView) => nextView === "compose" ? openEditor("2026-10-10", "土", entries.find((entry) => normalizeDateValue(entry.date) === "2026-10-10")) : changeView(nextView)}
-        open={drawerOpen}
-        onClose={() => setDrawerOpen(false)}
-        onLogout={() => void handleLogout()}
-        mobileOnly
-      />
+      {view !== "account" && <SideNavigation
+          view={view}
+          onView={(nextView) => nextView === "compose" ? openEditor("2026-10-10", "土", entries.find((entry) => normalizeDateValue(entry.date) === "2026-10-10")) : changeView(nextView)}
+          open={drawerOpen}
+          onClose={() => setDrawerOpen(false)}
+          onLogout={() => void handleLogout()}
+          mobileOnly
+        />}
 
     </div>
   );
