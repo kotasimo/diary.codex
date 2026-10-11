@@ -521,6 +521,29 @@ body {
   min-width: 0;
   margin: 0;
 }
+.entry-edit-button {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-width: 56px;
+  margin-left: auto;
+  padding: 4px 8px;
+  border: 1px solid rgba(81, 85, 82, .24);
+  border-radius: 4px;
+  background: rgba(255, 255, 255, .38);
+  color: #555b58;
+  font: 600 12px/1 var(--sans);
+  cursor: pointer;
+  transition: background-color .18s ease, border-color .18s ease, color .18s ease;
+}
+.entry-edit-button:hover,
+.entry-edit-button:focus-visible {
+  border-color: rgba(81, 85, 82, .48);
+  background: #fff;
+  color: #252a28;
+}
 .entry-body {
   display: grid;
   width: calc(100% - 35px);
