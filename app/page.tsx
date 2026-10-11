@@ -473,7 +473,7 @@ export default function HomePage() {
       return nextEntries;
     });
     setSelectedEntry(entry);
-    changeView("week");
+    changeView("detail");
     return true;
   };
 
