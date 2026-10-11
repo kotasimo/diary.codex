@@ -253,7 +253,7 @@ body {
   .compose-heading {
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 42px;
+    margin-bottom: 18px;
   }
   .compose-panel .field-label,
   .compose-panel .character-count { display: none; }
@@ -266,14 +266,19 @@ body {
     box-shadow: none;
   }
   .compose-panel .title-input {
-    padding: 0 0 14px;
-    border-bottom: 1px solid #ecece7;
-    font-size: 28px;
+    width: calc(100% - 35px);
+    padding: 8px 12px;
+    border: 0;
+    border-bottom: 1px solid #e4e1d8;
+    border-radius: 0;
+    background: #f3f1eb;
+    font-size: 23px;
     font-weight: 600;
   }
   .compose-panel .body-input {
+    width: calc(100% - 35px);
     min-height: 360px;
-    padding: 22px 0 0;
+    padding: 13px 0 0;
     font-size: 16px;
     line-height: 1.9;
     resize: vertical;
