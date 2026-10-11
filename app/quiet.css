@@ -777,6 +777,7 @@ body {
   font-size: 12px;
   cursor: pointer;
 }
+.profile-image-hint { margin-left: auto; color: #92978f; font-size: 10px; }
 .profile-form-error { margin: -16px 0 20px; color: #b42318; font-size: 12px; }
 .profile-form-grid { display: grid; gap: 20px; }
 .profile-form-grid label { display: grid; grid-template-columns: 1fr auto; gap: 8px; }

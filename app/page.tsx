@@ -377,13 +377,33 @@ function ProfileSettingsView({ profile, onCancel, onSave }: { profile: Profile; 
 
   const selectAvatar = (file: File | undefined) => {
     if (!file) return;
-    if (file.size > 2 * 1024 * 1024) {
-      setImageError("画像は2MB以下のものを選んでください。");
+    if (file.size > 10 * 1024 * 1024) {
+      setImageError("画像は10MB以下のものを選んでください。");
       return;
     }
     setImageError("");
     const reader = new FileReader();
-    reader.onload = () => setDraft((current) => ({ ...current, avatar: String(reader.result) }));
+    reader.onerror = () => setImageError("画像を読み込めませんでした。別の画像をお試しください。");
+    reader.onload = () => {
+      const image = new Image();
+      image.onerror = () => setImageError("この画像形式には対応していません。");
+      image.onload = () => {
+        const maxSize = 512;
+        const scale = Math.min(1, maxSize / Math.max(image.naturalWidth, image.naturalHeight));
+        const canvas = document.createElement("canvas");
+        canvas.width = Math.max(1, Math.round(image.naturalWidth * scale));
+        canvas.height = Math.max(1, Math.round(image.naturalHeight * scale));
+        const context = canvas.getContext("2d");
+        if (!context) {
+          setImageError("画像を処理できませんでした。別の画像をお試しください。");
+          return;
+        }
+        context.drawImage(image, 0, 0, canvas.width, canvas.height);
+        const resizedImage = canvas.toDataURL("image/webp", 0.84);
+        setDraft((current) => ({ ...current, avatar: resizedImage }));
+      };
+      image.src = String(reader.result);
+    };
     reader.readAsDataURL(file);
   };
 
@@ -412,6 +432,7 @@ function ProfileSettingsView({ profile, onCancel, onSave }: { profile: Profile; 
           <label className="secondary-button" htmlFor="profile-avatar-file">画像を選ぶ</label>
           <input id="profile-avatar-file" type="file" accept="image/*" onChange={(event) => selectAvatar(event.target.files?.[0])} />
           {draft.avatar && <button type="button" className="profile-image-remove" onClick={() => setDraft((current) => ({ ...current, avatar: undefined }))}>画像を削除</button>}
+          <span className="profile-image-hint">10MBまで・自動で縮小</span>
         </div>
         {imageError && <p className="profile-form-error" role="alert">{imageError}</p>}
 
