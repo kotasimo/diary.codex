@@ -443,6 +443,7 @@ body {
 .entry-body {
   display: grid;
   width: calc(100% - 35px);
+  padding-top: 8px;
   grid-template-columns: minmax(0, 4fr) minmax(180px, 1fr);
   gap: 30px;
 }
