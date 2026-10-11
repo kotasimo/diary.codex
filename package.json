@@ -6,6 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "import:diary": "node scripts/import-diary.mjs",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit"
   },

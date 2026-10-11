@@ -34,7 +34,7 @@ type Entry = {
 
 const initialEntries: Entry[] = [
   {
-    date: "10月5日",
+    date: "2026-10-05",
     day: "月",
     title: "金木犀の帰り道",
     content:
@@ -44,7 +44,7 @@ const initialEntries: Entry[] = [
     image: "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=720&q=80",
   },
   {
-    date: "10月6日",
+    date: "2026-10-06",
     day: "火",
     title: "小さく始める",
     content:
@@ -54,7 +54,7 @@ const initialEntries: Entry[] = [
     image: "https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=720&q=80",
   },
   {
-    date: "10月7日",
+    date: "2026-10-07",
     day: "水",
     title: "雨の音で目が覚めた",
     content:
@@ -64,7 +64,7 @@ const initialEntries: Entry[] = [
     image: "https://images.unsplash.com/photo-1519692933481-e162a57d6721?auto=format&fit=crop&w=720&q=80",
   },
   {
-    date: "10月9日",
+    date: "2026-10-09",
     day: "金",
     title: "読みかけの本",
     content:
@@ -73,7 +73,7 @@ const initialEntries: Entry[] = [
     views: 20,
   },
   {
-    date: "10月10日",
+    date: "2026-10-10",
     day: "土",
     title: "静かな土曜日",
     content:
@@ -82,7 +82,7 @@ const initialEntries: Entry[] = [
     views: 31,
   },
   {
-    date: "10月11日",
+    date: "2026-10-11",
     day: "日",
     title: "来週に向けて",
     content:
@@ -98,9 +98,21 @@ function formatDate(date: Date) {
   return `${date.getMonth() + 1}月${date.getDate()}日`;
 }
 
-function parseDateLabel(label: string) {
-  const match = label.match(/(\d+)月(\d+)日/);
+function toDateKey(date: Date) {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+}
+
+function parseDateValue(value: string) {
+  const iso = value.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (iso) return new Date(Number(iso[1]), Number(iso[2]) - 1, Number(iso[3]));
+  const slash = value.match(/^(\d{4})\/(\d{1,2})\/(\d{1,2})$/);
+  if (slash) return new Date(Number(slash[1]), Number(slash[2]) - 1, Number(slash[3]));
+  const match = value.match(/(\d+)月(\d+)日/);
   return match ? new Date(2026, Number(match[1]) - 1, Number(match[2])) : new Date(2026, 9, 5);
+}
+
+function normalizeDateValue(value: string) {
+  return toDateKey(parseDateValue(value));
 }
 
 function mondayOf(date: Date) {
@@ -113,7 +125,7 @@ function mondayOf(date: Date) {
 function buildWeek(start: Date) {
   return Array.from({ length: 7 }, (_, index) => {
     const date = new Date(start.getFullYear(), start.getMonth(), start.getDate() + index);
-    return [formatDate(date), dayNames[date.getDay()]] as const;
+    return [toDateKey(date), dayNames[date.getDay()]] as const;
   });
 }
 
@@ -132,7 +144,10 @@ function MiniCalendar({ month, entries, onMonthChange, onPick }: { month: Date; 
   const firstDay = new Date(year, monthIndex, 1).getDay();
   const leadingBlanks = firstDay === 0 ? 6 : firstDay - 1;
   const days = Array.from({ length: daysInMonth }, (_, index) => index + 1);
-  const entryDates = new Set(entries.filter((entry) => entry.date.startsWith(`${monthIndex + 1}月`)).map((entry) => Number(entry.date.match(/月(\d+)日/)?.[1])));
+  const entryDates = new Set(entries.filter((entry) => {
+    const date = parseDateValue(entry.date);
+    return date.getFullYear() === year && date.getMonth() === monthIndex;
+  }).map((entry) => parseDateValue(entry.date).getDate()));
   return (
     <section className="calendar-card">
       <div className="calendar-heading">
@@ -205,11 +220,11 @@ function ProfileCard() {
 }
 
 function WeekView({ entries, weekStart, onShift, onDetail, onEdit }: { entries: Entry[]; weekStart: Date; onShift: (days: number) => void; onDetail: (entry: Entry) => void; onEdit: (date: string, day: string, entry?: Entry) => void }) {
-  const weekDays = buildWeek(weekStart);
+  const weekDays = buildWeek(weekStart).map(([date, day]) => ({ iso: date, label: formatDate(parseDateValue(date)), day }));
   return (
     <div className="content-panel">
       <div className="week-toolbar">
-        <span className="week-range" aria-label="表示期間">{weekDays[0][0]} — {weekDays[weekDays.length - 1][0]}</span>
+        <span className="week-range" aria-label="表示期間">{weekDays[0].label} — {weekDays[weekDays.length - 1].label}</span>
         <div className="week-actions">
           <button className="week-arrow" aria-label="前の週" onClick={() => onShift(-7)}><ChevronLeft size={20} /></button>
           <button className="week-arrow" aria-label="次の週" onClick={() => onShift(7)}><ChevronRight size={20} /></button>
@@ -217,14 +232,14 @@ function WeekView({ entries, weekStart, onShift, onDetail, onEdit }: { entries: 
       </div>
 
       <div className="entry-list">
-        {weekDays.map(([date, day]) => {
-          const entry = entries.find((item) => item.date === date);
+        {weekDays.map(({ iso, label, day }) => {
+          const entry = entries.find((item) => normalizeDateValue(item.date) === iso);
           return (
-            <article className={`entry-row reading-entry ${!entry ? "empty-entry" : ""} ${entry?.image ? "has-image" : ""}`} key={date}>
+            <article className={`entry-row reading-entry ${!entry ? "empty-entry" : ""} ${entry?.image ? "has-image" : ""}`} key={iso}>
               <div className="reading-copy">
                 <header className="entry-heading">
                   <h2>{entry?.title ?? ""}</h2>
-                  <button className="entry-menu-button" onClick={() => onEdit(date, day, entry)} aria-label={`${date}の日記を${entry ? "編集" : "作成"}`}>…</button>
+                  <button className="entry-menu-button" onClick={() => onEdit(iso, day, entry)} aria-label={`${label}の日記を${entry ? "編集" : "作成"}`}>…</button>
                 </header>
                 {entry ? (
                   <button className="entry-content" onClick={() => onDetail(entry)}>
@@ -233,7 +248,7 @@ function WeekView({ entries, weekStart, onShift, onDetail, onEdit }: { entries: 
                 ) : null}
               </div>
               <div className="reading-media">
-                <time className="entry-heading-date">{date.replace("月", "/").replace("日", "")}（{day}）</time>
+                <time className="entry-heading-date">{label.replace("月", "/").replace("日", "")}（{day}）</time>
                 <div
                   className={`reading-image${entry?.image ? "" : " reading-image-empty"}`}
                   role={entry?.image ? "img" : undefined}
@@ -251,11 +266,12 @@ function WeekView({ entries, weekStart, onShift, onDetail, onEdit }: { entries: 
 }
 
 function DetailView({ entry, onBack, onEdit }: { entry: Entry; onBack: () => void; onEdit: () => void }) {
+  const displayDate = formatDate(parseDateValue(entry.date));
   return (
     <article className="content-panel detail-panel">
       <button className="back-button" onClick={onBack}><ArrowLeft size={18} />週の一覧へ</button>
       <header className="detail-heading">
-        <p>{entry.date}（{entry.day}）</p>
+        <p>{displayDate}（{entry.day}）</p>
         {entry.title && <h1>{entry.title}</h1>}
       </header>
       <div className="detail-body">
@@ -356,7 +372,7 @@ export default function HomePage() {
   const [calendarMonth, setCalendarMonth] = useState(() => new Date(2026, 9, 1));
   const [selectedEntry, setSelectedEntry] = useState(initialEntries[3]);
   const [editingEntry, setEditingEntry] = useState<Entry | undefined>();
-  const [editingDate, setEditingDate] = useState({ date: "10月10日", day: "土" });
+  const [editingDate, setEditingDate] = useState({ date: "2026-10-10", day: "土" });
   const [drawerOpen, setDrawerOpen] = useState(false);
   const title = useMemo(() => view === "visitors" ? "足あと" : "kotaroの日記", [view]);
 
@@ -367,7 +383,7 @@ export default function HomePage() {
       if (supabase) {
         const { data, error } = await supabase.from("diary_entries").select("*").order("date");
         if (!cancelled && !error && data?.length) {
-          setEntries(data.map((row) => ({ ...row, updatedAt: row.updated_at })) as Entry[]);
+          setEntries(data.map((row) => ({ ...row, date: normalizeDateValue(row.date), updatedAt: row.updated_at })) as Entry[]);
         }
         return;
       }
@@ -399,8 +415,8 @@ export default function HomePage() {
   };
   const shiftWeek = (days: number) => setWeekStart((current) => new Date(current.getFullYear(), current.getMonth(), current.getDate() + days));
   const pickCalendarDay = (day: number) => {
-    const dateLabel = `${calendarMonth.getMonth() + 1}月${day}日`;
-    const entry = entries.find((item) => item.date === dateLabel);
+    const dateKey = toDateKey(new Date(calendarMonth.getFullYear(), calendarMonth.getMonth(), day));
+    const entry = entries.find((item) => normalizeDateValue(item.date) === dateKey);
     if (entry) {
       openDetail(entry);
       return;
@@ -412,7 +428,7 @@ export default function HomePage() {
     const supabase = getSupabaseClient();
     if (supabase) {
       const { updatedAt, ...entryData } = entry;
-      const { error } = await supabase.from("diary_entries").upsert({ ...entryData, updated_at: updatedAt }, { onConflict: "date" });
+      const { error } = await supabase.from("diary_entries").upsert({ ...entryData, date: normalizeDateValue(entry.date), updated_at: updatedAt }, { onConflict: "date" });
       if (error) {
         const reason = [error.message, error.details, error.hint, error.code && `code: ${error.code}`].filter(Boolean).join(" / ");
         console.error("Supabase save failed", { message: error.message, details: error.details, hint: error.hint, code: error.code });
@@ -441,14 +457,14 @@ export default function HomePage() {
           <MiniCalendar month={calendarMonth} entries={entries} onMonthChange={(offset) => setCalendarMonth((current) => new Date(current.getFullYear(), current.getMonth() + offset, 1))} onPick={pickCalendarDay} />
           <SideNavigation
             view={view}
-            onView={(nextView) => nextView === "compose" ? openEditor("10月10日", "土", entries.find((entry) => entry.date === "10月10日")) : changeView(nextView)}
+            onView={(nextView) => nextView === "compose" ? openEditor("2026-10-10", "土", entries.find((entry) => normalizeDateValue(entry.date) === "2026-10-10")) : changeView(nextView)}
             open={false}
             onClose={() => undefined}
           />
         </aside>
         <section className="main-column">
           {view === "week" && <WeekView entries={entries} weekStart={weekStart} onShift={shiftWeek} onDetail={openDetail} onEdit={openEditor} />}
-          {view === "detail" && <DetailView entry={selectedEntry} onBack={() => { setWeekStart(mondayOf(parseDateLabel(selectedEntry.date))); changeView("week"); }} onEdit={() => openEditor(selectedEntry.date, selectedEntry.day, selectedEntry)} />}
+          {view === "detail" && <DetailView entry={selectedEntry} onBack={() => { setWeekStart(mondayOf(parseDateValue(selectedEntry.date))); changeView("week"); }} onEdit={() => openEditor(normalizeDateValue(selectedEntry.date), selectedEntry.day, selectedEntry)} />}
           {view === "compose" && <ComposeView entry={editingEntry} date={editingDate.date} day={editingDate.day} onCancel={() => changeView("week")} onSave={saveEntry} />}
           {view === "visitors" && <VisitorsView />}
         </section>
@@ -457,7 +473,7 @@ export default function HomePage() {
       {drawerOpen && <button className="drawer-overlay" aria-label="メニューを閉じる" onClick={() => setDrawerOpen(false)} />}
       <SideNavigation
         view={view}
-        onView={(nextView) => nextView === "compose" ? openEditor("10月10日", "土", entries.find((entry) => entry.date === "10月10日")) : changeView(nextView)}
+        onView={(nextView) => nextView === "compose" ? openEditor("2026-10-10", "土", entries.find((entry) => normalizeDateValue(entry.date) === "2026-10-10")) : changeView(nextView)}
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
         mobileOnly
@@ -465,7 +481,7 @@ export default function HomePage() {
 
       <nav className="bottom-nav">
         <button className={view === "week" || view === "detail" ? "active" : ""} onClick={() => changeView("week")}><BookOpenText size={20} /><span>日記</span></button>
-        <button className="write-button" onClick={() => openEditor("10月10日", "土", entries.find((entry) => entry.date === "10月10日"))}><Edit3 size={22} /><span>書く</span></button>
+        <button className="write-button" onClick={() => openEditor("2026-10-10", "土", entries.find((entry) => normalizeDateValue(entry.date) === "2026-10-10"))}><Edit3 size={22} /><span>書く</span></button>
         <button className={view === "visitors" ? "active" : ""} onClick={() => changeView("visitors")}><Footprints size={20} /><span>足あと</span></button>
       </nav>
     </>
