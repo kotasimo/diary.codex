@@ -287,6 +287,11 @@ body {
   }
   .image-upload-button:hover { border-color: #999b93; color: #222; }
   .compose-panel #image-file { display: none; }
+  .compose-save-error {
+    margin: 12px 0 0;
+    color: #b42318;
+    font-size: 13px;
+  }
 
 
   .reading-copy { max-width: none; }

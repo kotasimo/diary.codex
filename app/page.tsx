@@ -267,14 +267,18 @@ function DetailView({ entry, onBack, onEdit }: { entry: Entry; onBack: () => voi
   );
 }
 
-function ComposeView({ entry, date, day, onCancel, onSave }: { entry?: Entry; date: string; day: string; onCancel: () => void; onSave: (entry: Entry) => void }) {
+function ComposeView({ entry, date, day, onCancel, onSave }: { entry?: Entry; date: string; day: string; onCancel: () => void; onSave: (entry: Entry) => Promise<boolean> }) {
   const [title, setTitle] = useState(entry?.title ?? "");
   const [content, setContent] = useState(entry?.content ?? "");
   const [image, setImage] = useState(entry?.image ?? "");
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState("");
 
-  const saveEntry = () => {
+  const saveEntry = async () => {
     const now = new Date();
-    onSave({
+    setSaving(true);
+    setSaveError("");
+    const saved = await onSave({
       date,
       day,
       title: title.trim() || undefined,
@@ -283,6 +287,8 @@ function ComposeView({ entry, date, day, onCancel, onSave }: { entry?: Entry; da
       views: entry?.views ?? 0,
       image: image.trim() || undefined,
     });
+    setSaving(false);
+    if (!saved) setSaveError("保存できませんでした。Supabaseの設定とテーブルを確認してください。");
   };
 
   const selectImage = (file: File | undefined) => {
@@ -296,7 +302,7 @@ function ComposeView({ entry, date, day, onCancel, onSave }: { entry?: Entry; da
     <section className="content-panel compose-panel">
       <div className="compose-heading">
         <button className="back-button" onClick={onCancel}><X size={18} />キャンセル</button>
-        <button className="primary-button compose-save-button" disabled={!content.trim()} onClick={saveEntry}>{entry ? "保存" : "公開"}</button>
+        <button className="primary-button compose-save-button" disabled={!content.trim() || saving} onClick={() => void saveEntry()}>{saving ? "保存中…" : entry ? "保存" : "公開"}</button>
       </div>
       <label className="field-label" htmlFor="title">タイトル <span>任意</span></label>
       <input id="title" className="title-input" value={title} onChange={(event) => setTitle(event.target.value)} placeholder="記事タイトル" maxLength={80} />
@@ -305,6 +311,7 @@ function ComposeView({ entry, date, day, onCancel, onSave }: { entry?: Entry; da
       <textarea id="body" className="body-input" value={content} onChange={(event) => setContent(event.target.value)} placeholder="今日あったこと、感じたことを書いてみましょう。" />
       <label className="image-upload-button" htmlFor="image-file">画像を追加</label>
       <input id="image-file" type="file" accept="image/*" onChange={(event) => selectImage(event.target.files?.[0])} />
+      {saveError && <p className="compose-save-error" role="alert">{saveError}</p>}
     </section>
   );
 }
@@ -401,14 +408,14 @@ export default function HomePage() {
     setWeekStart(mondayOf(new Date(calendarMonth.getFullYear(), calendarMonth.getMonth(), day)));
     changeView("week");
   };
-  const saveEntry = async (entry: Entry) => {
+  const saveEntry = async (entry: Entry): Promise<boolean> => {
     const supabase = getSupabaseClient();
     if (supabase) {
       const { updatedAt, ...entryData } = entry;
       const { error } = await supabase.from("diary_entries").upsert({ ...entryData, updated_at: updatedAt }, { onConflict: "date" });
       if (error) {
         console.error("Supabase save failed", { message: error.message, details: error.details, hint: error.hint, code: error.code });
-        return;
+        return false;
       }
     }
     setEntries((current) => {
@@ -418,6 +425,7 @@ export default function HomePage() {
     });
     setSelectedEntry(entry);
     changeView("week");
+    return true;
   };
 
   return (
