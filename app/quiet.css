@@ -228,7 +228,9 @@ body {
     width: auto;
     height: auto;
     min-height: calc(100vh - 134px);
-    transform: translateX(calc(max(0px, calc((100vw - 1269px) / 2)) + 10.5px + clamp(0px, calc((100vw - 1180px) / 2), 65px)));
+    /* Keep the rail in its grid column. The previous viewport-based shift
+       moved it over the reading column on wide screens. */
+    transform: none;
     overflow: visible;
     padding: 28px 18px 32px !important;
     border-right: 0 !important;
