@@ -182,6 +182,7 @@ body {
     background: transparent;
   }
   .calendar-card .calendar-heading { position: relative; }
+  .calendar-month-picker-wrap { position: relative; margin-top: 8px; text-align: center; }
   .calendar-card .calendar-month-trigger {
     width: auto;
     height: auto;

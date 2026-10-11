@@ -154,13 +154,8 @@ function MiniCalendar({ month, entries, onMonthChange, onSelectMonth, onPick }: 
     <section className="calendar-card">
       <div className="calendar-heading">
         <button aria-label="前月" onClick={() => onMonthChange(-1)}><ChevronLeft size={17} /></button>
-        <button className="calendar-month-trigger" aria-expanded={pickerOpen} onClick={() => setPickerOpen((open) => !open)}>{year}年{monthIndex + 1}月</button>
+        <strong>{year}年{monthIndex + 1}月</strong>
         <button aria-label="次月" onClick={() => onMonthChange(1)}><ChevronRight size={17} /></button>
-        {pickerOpen && <div className="calendar-month-picker">
-          <label>年<select value={year} onChange={(event) => onSelectMonth(Number(event.target.value), monthIndex)}>{Array.from({ length: 11 }, (_, index) => year - 5 + index).map((optionYear) => <option key={optionYear} value={optionYear}>{optionYear}年</option>)}</select></label>
-          <label>月<select value={monthIndex} onChange={(event) => onSelectMonth(year, Number(event.target.value))}>{Array.from({ length: 12 }, (_, index) => <option key={index} value={index}>{index + 1}月</option>)}</select></label>
-          <button className="calendar-month-close" onClick={() => setPickerOpen(false)}>閉じる</button>
-        </div>}
       </div>
       <div className="calendar-grid calendar-labels">
         {['月', '火', '水', '木', '金', '土', '日'].map((day) => <span key={day}>{day}</span>)}
@@ -176,6 +171,14 @@ function MiniCalendar({ month, entries, onMonthChange, onSelectMonth, onPick }: 
             {day}
           </button>
         ))}
+      </div>
+      <div className="calendar-month-picker-wrap">
+        <button className="calendar-month-trigger" aria-expanded={pickerOpen} onClick={() => setPickerOpen((open) => !open)}>年月を指定</button>
+        {pickerOpen && <div className="calendar-month-picker">
+          <label>年<select value={year} onChange={(event) => onSelectMonth(Number(event.target.value), monthIndex)}>{Array.from({ length: 11 }, (_, index) => year - 5 + index).map((optionYear) => <option key={optionYear} value={optionYear}>{optionYear}年</option>)}</select></label>
+          <label>月<select value={monthIndex} onChange={(event) => onSelectMonth(year, Number(event.target.value))}>{Array.from({ length: 12 }, (_, index) => <option key={index} value={index}>{index + 1}月</option>)}</select></label>
+          <button className="calendar-month-close" onClick={() => setPickerOpen(false)}>閉じる</button>
+        </div>}
       </div>
     </section>
   );
