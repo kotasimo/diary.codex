@@ -18,8 +18,9 @@ import {
 import { useEffect, useMemo, useRef, useState } from "react";
 import { getSupabaseClient } from "./lib/supabase";
 import { localAuthEnabled, localSessionKey } from "./lib/auth";
+import { getFollowerCount, getFollowing, getFollowingCount, getSocialAccounts, toggleFollowing, type SocialAccount } from "./lib/social";
 
-type View = "week" | "detail" | "compose" | "visitors" | "profile";
+type View = "week" | "detail" | "compose" | "visitors" | "profile" | "search";
 
 type Profile = {
   displayName: string;
@@ -214,7 +215,7 @@ function MiniCalendar({ month, entries, onMonthChange, onSelectMonth, onToday, o
   );
 }
 
-function Header({ profile, onMenu, onPost }: { profile: Profile; onMenu: () => void; onPost: () => void }) {
+function Header({ profile, searchQuery, onSearchQuery, onSearch, onMenu, onPost }: { profile: Profile; searchQuery: string; onSearchQuery: (query: string) => void; onSearch: () => void; onMenu: () => void; onPost: () => void }) {
   return (
     <header className="site-header">
       <div className="header-inner">
@@ -225,7 +226,7 @@ function Header({ profile, onMenu, onPost }: { profile: Profile; onMenu: () => v
         </button>
         <label className="header-search">
           <Search size={20} aria-hidden="true" />
-          <input type="search" placeholder="キーワードや日記を検索" aria-label="キーワードや日記を検索" />
+          <input type="search" value={searchQuery} onChange={(event) => onSearchQuery(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter") onSearch(); }} placeholder="アカウントを検索" aria-label="アカウントを検索" />
         </label>
         <div className="header-actions">
           <button className="icon-button" aria-label="お知らせ"><Bell size={20} /><span className="notification-dot" /></button>
@@ -273,6 +274,32 @@ function ProfileCard({ profile }: { profile: Profile }) {
         <p className="profile-name">{profile.displayName}</p>
       </div>
       <p className="profile-bio">{profile.bio}</p>
+    </section>
+  );
+}
+
+function SearchView({ query, currentEmail, accounts, onToggleFollow }: { query: string; currentEmail: string; accounts: SocialAccount[]; onToggleFollow: (email: string) => void }) {
+  const normalizedQuery = query.trim().toLowerCase();
+  const results = accounts.filter((account) => !normalizedQuery || `${account.username} ${account.displayName} ${account.email}`.toLowerCase().includes(normalizedQuery));
+  const following = new Set(getFollowing(currentEmail));
+  return (
+    <section className="content-panel search-panel">
+      <div className="page-heading"><p className="eyebrow">ACCOUNT SEARCH</p><h1>アカウントを探す</h1><p>{normalizedQuery ? `「${query}」の検索結果` : "仮のアカウントを含むユーザー一覧"}</p></div>
+      <div className="search-result-list">
+        {results.map((account) => {
+          const isSelf = account.email === currentEmail;
+          const followerCount = getFollowerCount(account.email);
+          const followingCount = getFollowingCount(account.email);
+          return (
+            <article className="search-account-card" key={account.email}>
+              <div className="search-account-avatar">{account.displayName.trim().charAt(0).toUpperCase() || "?"}</div>
+              <div className="search-account-copy"><strong>{account.displayName}</strong><span>@{account.username}</span><p>{account.bio}</p><small>{followerCount} フォロワー ・ {followingCount} フォロー中</small></div>
+              {!isSelf && <button type="button" className={following.has(account.email) ? "secondary-button" : "primary-button"} onClick={() => onToggleFollow(account.email)}>{following.has(account.email) ? "フォロー中" : "フォロー"}</button>}
+            </article>
+          );
+        })}
+        {!results.length && <p className="search-empty">該当するアカウントが見つかりませんでした。</p>}
+      </div>
     </section>
   );
 }
@@ -664,6 +691,7 @@ function SideNavigation({ view, onView, open, onClose, onLogout, mobileOnly = fa
     <aside className={`mobile-drawer ${mobileOnly ? "mobile-nav" : "desktop-nav"} ${open ? "drawer-open" : ""}`}>
       <div className="drawer-head"><span>メニュー</span><button onClick={onClose}><X size={20} /></button></div>
       <button className={view === "visitors" ? "active" : ""} onClick={() => onView("visitors")}><Footprints size={19} />足あと</button>
+      <button className={view === "search" ? "active" : ""} onClick={() => onView("search")}><Search size={19} />アカウント検索</button>
       <button className={view === "profile" ? "active" : ""} onClick={() => onView("profile")}><UserRound size={19} />プロフィール</button>
       <button><Settings size={19} />設定</button>
       <div className="drawer-spacer" />
@@ -683,8 +711,12 @@ export default function HomePage() {
   const [editingEntry, setEditingEntry] = useState<Entry | undefined>();
   const [editingDate, setEditingDate] = useState({ date: "2026-10-10", day: "土" });
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [, setSocialVersion] = useState(0);
   const visibleProfile = upgradeProfile(profile);
-  const title = useMemo(() => view === "visitors" ? "足あと" : view === "profile" ? "プロフィール設定" : visibleProfile.diaryTitle, [visibleProfile.diaryTitle, view]);
+  const title = useMemo(() => view === "visitors" ? "足あと" : view === "profile" ? "プロフィール設定" : view === "search" ? "アカウントを探す" : visibleProfile.diaryTitle, [visibleProfile.diaryTitle, view]);
+  const socialAccounts = getSocialAccounts();
+  const currentEmail = typeof window !== "undefined" ? window.localStorage.getItem(localSessionKey) ?? "" : "";
 
   useEffect(() => {
     try {
@@ -781,6 +813,12 @@ export default function HomePage() {
   }, []);
 
   const changeView = (nextView: View) => { setView(nextView); setDrawerOpen(false); window.scrollTo({ top: 0, behavior: "smooth" }); };
+  const searchAccounts = () => changeView("search");
+  const toggleAccountFollow = (email: string) => {
+    if (!currentEmail) return;
+    toggleFollowing(currentEmail, email);
+    setSocialVersion((version) => version + 1);
+  };
   const openDetail = (entry: Entry) => { setSelectedEntry(entry); changeView("detail"); };
   const openEditor = (date: string, day: string, entry?: Entry) => {
     setEditingDate({ date, day });
@@ -840,6 +878,9 @@ export default function HomePage() {
     <div className={`app-shell${profileReady ? "" : " profile-loading"}`}>
       <Header
         profile={visibleProfile}
+        searchQuery={searchQuery}
+        onSearchQuery={setSearchQuery}
+        onSearch={searchAccounts}
         onMenu={() => setDrawerOpen(true)}
         onPost={() => openEditor("2026-10-10", "土", entries.find((entry) => normalizeDateValue(entry.date) === "2026-10-10"))}
       />
@@ -863,6 +904,7 @@ export default function HomePage() {
           {view === "compose" && <ComposeView entry={editingEntry} date={editingDate.date} day={editingDate.day} onCancel={() => changeView("week")} onSave={saveEntry} />}
           {view === "visitors" && <VisitorsView />}
           {view === "profile" && <ProfileSettingsView profile={visibleProfile} onCancel={() => changeView("week")} onSave={saveProfile} />}
+          {view === "search" && <SearchView query={searchQuery} currentEmail={currentEmail} accounts={socialAccounts} onToggleFollow={toggleAccountFollow} />}
         </section>
       </main>
 

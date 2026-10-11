@@ -624,6 +624,24 @@ body {
   background: #fff;
   color: #252a28;
 }
+.search-panel {
+  width: 685px;
+  max-width: 685px;
+  padding: 34px 36px 40px;
+}
+.search-panel .page-heading { margin-bottom: 26px; }
+.search-panel .page-heading h1 { margin: 0 0 7px; font: 700 27px/1.3 var(--serif); }
+.search-panel .page-heading > p:last-child { margin: 0; color: var(--muted); }
+.search-result-list { display: grid; gap: 12px; }
+.search-account-card { display: flex; align-items: center; gap: 14px; padding: 16px; border: 1px solid #e5e7e3; border-radius: 10px; background: #fff; }
+.search-account-avatar { display: grid; place-items: center; flex: 0 0 auto; width: 48px; height: 48px; border-radius: 50%; background: #252b2d; color: #fff; font-weight: 700; font-size: 18px; }
+.search-account-copy { min-width: 0; flex: 1; }
+.search-account-copy strong { display: block; color: #242a29; font-size: 16px; }
+.search-account-copy > span { color: #858d89; font-size: 12px; }
+.search-account-copy p { margin: 7px 0 5px; color: #59615e; font-size: 13px; line-height: 1.5; }
+.search-account-copy small { color: #8a918d; font-size: 11px; }
+.search-account-card > button { flex: 0 0 auto; min-width: 76px; padding: 8px 11px; font-size: 12px; }
+.search-empty { margin: 20px 0; color: var(--muted); text-align: center; }
 .entry-body {
   display: grid;
   width: calc(100% - 35px);
@@ -739,6 +757,10 @@ body {
 @media (max-width: 720px) {
   .header-search,
   .header-post-button { display: none; }
+  .search-panel { padding: 26px 18px 34px; }
+  .search-account-card { align-items: flex-start; flex-wrap: wrap; }
+  .search-account-copy { width: calc(100% - 62px); }
+  .search-account-card > button { margin-left: 62px; }
 }
 
 /* Keep the reading canvas fixed while the viewport is narrower than it. */
