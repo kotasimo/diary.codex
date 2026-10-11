@@ -37,6 +37,18 @@ const defaultProfile: Profile = {
   bio: "日々の出来事を、ゆっくり記録しています。",
 };
 
+function upgradeProfile(profile: Partial<Profile>): Profile {
+  const isLegacyProfile = profile.subtitle === undefined;
+  return {
+    displayName: profile.displayName ?? defaultProfile.displayName,
+    diaryTitle: profile.diaryTitle ?? defaultProfile.diaryTitle,
+    subtitle: profile.subtitle ?? profile.bio ?? defaultProfile.subtitle,
+    bio: isLegacyProfile ? defaultProfile.bio : profile.bio ?? defaultProfile.bio,
+    avatar: profile.avatar,
+    headerImage: profile.headerImage,
+  };
+}
+
 type Entry = {
   date: string;
   day: string;
@@ -411,6 +423,7 @@ function resizeProfileImage(file: File, maxWidth: number, maxHeight: number) {
 function ProfileSettingsView({ profile, onCancel, onSave }: { profile: Profile; onCancel: () => void; onSave: (profile: Profile) => void }) {
   const [draft, setDraft] = useState(profile);
   const [imageError, setImageError] = useState("");
+  const safeDraft = upgradeProfile(draft);
 
   const selectImage = async (file: File | undefined, kind: "avatar" | "header") => {
     if (!file) return;
@@ -423,7 +436,7 @@ function ProfileSettingsView({ profile, onCancel, onSave }: { profile: Profile; 
     }
   };
 
-  const canSave = draft.displayName.trim() && draft.diaryTitle.trim() && draft.subtitle.trim() && draft.bio.trim();
+  const canSave = safeDraft.displayName.trim() && safeDraft.diaryTitle.trim() && safeDraft.subtitle.trim() && safeDraft.bio.trim();
 
   return (
     <section className="content-panel profile-settings-panel">
@@ -437,17 +450,17 @@ function ProfileSettingsView({ profile, onCancel, onSave }: { profile: Profile; 
 
       <div className="profile-settings-body">
         <section className="profile-preview" aria-label="プロフィールのプレビュー">
-          <ProfileAvatar profile={draft} large />
+          <ProfileAvatar profile={safeDraft} large />
           <div>
-            <strong>{draft.displayName.trim() || "表示名"}</strong>
-            <span>{draft.bio.trim() || "紹介文がここに表示されます。"}</span>
+            <strong>{safeDraft.displayName.trim() || "表示名"}</strong>
+            <span>{safeDraft.bio.trim() || "紹介文がここに表示されます。"}</span>
           </div>
         </section>
 
         <div className="profile-avatar-actions">
           <label className="secondary-button" htmlFor="profile-avatar-file">画像を選ぶ</label>
           <input id="profile-avatar-file" type="file" accept="image/*" onChange={(event) => void selectImage(event.target.files?.[0], "avatar")} />
-          {draft.avatar && <button type="button" className="profile-image-remove" onClick={() => setDraft((current) => ({ ...current, avatar: undefined }))}>画像を削除</button>}
+          {safeDraft.avatar && <button type="button" className="profile-image-remove" onClick={() => setDraft((current) => ({ ...current, avatar: undefined }))}>画像を削除</button>}
           <span className="profile-image-hint">10MBまで・自動で縮小</span>
         </div>
         {imageError && <p className="profile-form-error" role="alert">{imageError}</p>}
@@ -459,15 +472,15 @@ function ProfileSettingsView({ profile, onCancel, onSave }: { profile: Profile; 
           </div>
           <div
             className="profile-header-preview"
-            style={draft.headerImage ? { backgroundImage: `linear-gradient(180deg, rgba(38, 66, 78, .08), rgba(38, 66, 78, .36)), url(${draft.headerImage})` } : undefined}
+            style={safeDraft.headerImage ? { backgroundImage: `linear-gradient(180deg, rgba(38, 66, 78, .08), rgba(38, 66, 78, .36)), url(${safeDraft.headerImage})` } : undefined}
           >
-            <strong>{draft.diaryTitle.trim() || "日記タイトル"}</strong>
-            <span>{draft.subtitle.trim() || "日記のサブタイトル"}</span>
+            <strong>{safeDraft.diaryTitle.trim() || "日記タイトル"}</strong>
+            <span>{safeDraft.subtitle.trim() || "日記のサブタイトル"}</span>
           </div>
           <div className="profile-header-actions">
             <label className="secondary-button" htmlFor="profile-header-file">画像を選ぶ</label>
             <input id="profile-header-file" type="file" accept="image/*" onChange={(event) => void selectImage(event.target.files?.[0], "header")} />
-            {draft.headerImage && <button type="button" className="profile-image-remove" onClick={() => setDraft((current) => ({ ...current, headerImage: undefined }))}>標準画像に戻す</button>}
+            {safeDraft.headerImage && <button type="button" className="profile-image-remove" onClick={() => setDraft((current) => ({ ...current, headerImage: undefined }))}>標準画像に戻す</button>}
             <span className="profile-image-hint">10MBまで・自動で縮小</span>
           </div>
         </section>
@@ -475,30 +488,30 @@ function ProfileSettingsView({ profile, onCancel, onSave }: { profile: Profile; 
         <div className="profile-form-grid">
           <label>
             <span>表示名</span>
-            <input value={draft.displayName} maxLength={24} onChange={(event) => setDraft((current) => ({ ...current, displayName: event.target.value }))} />
-            <small>{draft.displayName.length} / 24</small>
+            <input value={safeDraft.displayName} maxLength={24} onChange={(event) => setDraft((current) => ({ ...current, displayName: event.target.value }))} />
+            <small>{safeDraft.displayName.length} / 24</small>
           </label>
           <label>
             <span>日記タイトル</span>
-            <input value={draft.diaryTitle} maxLength={60} onChange={(event) => setDraft((current) => ({ ...current, diaryTitle: event.target.value }))} />
-            <small>{draft.diaryTitle.length} / 60</small>
+            <input value={safeDraft.diaryTitle} maxLength={60} onChange={(event) => setDraft((current) => ({ ...current, diaryTitle: event.target.value }))} />
+            <small>{safeDraft.diaryTitle.length} / 60</small>
           </label>
           <label>
             <span>日記のサブタイトル</span>
-            <input value={draft.subtitle} maxLength={80} onChange={(event) => setDraft((current) => ({ ...current, subtitle: event.target.value }))} />
-            <small>{draft.subtitle.length} / 80</small>
+            <input value={safeDraft.subtitle} maxLength={80} onChange={(event) => setDraft((current) => ({ ...current, subtitle: event.target.value }))} />
+            <small>{safeDraft.subtitle.length} / 80</small>
           </label>
           <label className="profile-bio-field">
             <span>自己紹介文</span>
-            <textarea value={draft.bio} maxLength={120} rows={4} onChange={(event) => setDraft((current) => ({ ...current, bio: event.target.value }))} />
-            <small>{draft.bio.length} / 120</small>
+            <textarea value={safeDraft.bio} maxLength={120} rows={4} onChange={(event) => setDraft((current) => ({ ...current, bio: event.target.value }))} />
+            <small>{safeDraft.bio.length} / 120</small>
           </label>
         </div>
       </div>
 
       <div className="profile-settings-actions">
         <button type="button" className="secondary-button" onClick={onCancel}>キャンセル</button>
-        <button type="button" className="primary-button" disabled={!canSave} onClick={() => onSave({ ...draft, displayName: draft.displayName.trim(), diaryTitle: draft.diaryTitle.trim(), subtitle: draft.subtitle.trim(), bio: draft.bio.trim() })}>保存する</button>
+        <button type="button" className="primary-button" disabled={!canSave} onClick={() => onSave({ ...safeDraft, displayName: safeDraft.displayName.trim(), diaryTitle: safeDraft.diaryTitle.trim(), subtitle: safeDraft.subtitle.trim(), bio: safeDraft.bio.trim() })}>保存する</button>
       </div>
     </section>
   );
@@ -547,21 +560,15 @@ export default function HomePage() {
   const [editingEntry, setEditingEntry] = useState<Entry | undefined>();
   const [editingDate, setEditingDate] = useState({ date: "2026-10-10", day: "土" });
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const title = useMemo(() => view === "visitors" ? "足あと" : view === "profile" ? "プロフィール設定" : profile.diaryTitle, [profile.diaryTitle, view]);
+  const visibleProfile = upgradeProfile(profile);
+  const title = useMemo(() => view === "visitors" ? "足あと" : view === "profile" ? "プロフィール設定" : visibleProfile.diaryTitle, [visibleProfile.diaryTitle, view]);
 
   useEffect(() => {
     const savedProfile = window.localStorage.getItem("hibi-diary-profile");
     if (!savedProfile) return;
     try {
       const parsed = JSON.parse(savedProfile) as Partial<Profile>;
-      setProfile({
-        displayName: parsed.displayName?.trim() || defaultProfile.displayName,
-        diaryTitle: parsed.diaryTitle?.trim() || defaultProfile.diaryTitle,
-        subtitle: parsed.subtitle?.trim() || parsed.bio?.trim() || defaultProfile.subtitle,
-        bio: parsed.subtitle ? parsed.bio?.trim() || defaultProfile.bio : defaultProfile.bio,
-        avatar: parsed.avatar,
-        headerImage: parsed.headerImage,
-      });
+      setProfile(upgradeProfile(parsed));
     } catch {
       window.localStorage.removeItem("hibi-diary-profile");
     }
@@ -665,8 +672,9 @@ export default function HomePage() {
     return true;
   };
   const saveProfile = (nextProfile: Profile) => {
-    setProfile(nextProfile);
-    window.localStorage.setItem("hibi-diary-profile", JSON.stringify(nextProfile));
+    const upgradedProfile = upgradeProfile(nextProfile);
+    setProfile(upgradedProfile);
+    window.localStorage.setItem("hibi-diary-profile", JSON.stringify(upgradedProfile));
     changeView("week");
   };
 
@@ -674,10 +682,10 @@ export default function HomePage() {
     <>
       <Header onMenu={() => setDrawerOpen(true)} />
       <div className="mobile-title">{title}</div>
-      <DiaryHero profile={profile} />
+      <DiaryHero profile={visibleProfile} />
       <main className="app-layout">
         <aside className="left-column">
-          <ProfileCard profile={profile} />
+          <ProfileCard profile={visibleProfile} />
           <MiniCalendar month={calendarMonth} entries={entries} onMonthChange={(offset) => setCalendarMonth((current) => new Date(current.getFullYear(), current.getMonth() + offset, 1))} onSelectMonth={(year, month) => setCalendarMonth(new Date(year, month, 1))} onToday={() => { const today = new Date(); setCalendarMonth(new Date(today.getFullYear(), today.getMonth(), 1)); }} onPick={pickCalendarDay} />
           <SideNavigation
             view={view}
@@ -691,7 +699,7 @@ export default function HomePage() {
           {view === "detail" && <DetailView entry={selectedEntry} onBack={() => { setWeekStart(mondayOf(parseDateValue(selectedEntry.date))); changeView("week"); }} onEdit={() => openEditor(normalizeDateValue(selectedEntry.date), selectedEntry.day, selectedEntry)} />}
           {view === "compose" && <ComposeView entry={editingEntry} date={editingDate.date} day={editingDate.day} onCancel={() => changeView("week")} onSave={saveEntry} />}
           {view === "visitors" && <VisitorsView />}
-          {view === "profile" && <ProfileSettingsView profile={profile} onCancel={() => changeView("week")} onSave={saveProfile} />}
+          {view === "profile" && <ProfileSettingsView profile={visibleProfile} onCancel={() => changeView("week")} onSave={saveProfile} />}
         </section>
       </main>
 
