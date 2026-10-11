@@ -373,6 +373,12 @@ export default function HomePage() {
   };
   const shiftWeek = (days: number) => setWeekStart((current) => new Date(current.getFullYear(), current.getMonth(), current.getDate() + days));
   const pickCalendarDay = (day: number) => {
+    const dateLabel = `${calendarMonth.getMonth() + 1}月${day}日`;
+    const entry = entries.find((item) => item.date === dateLabel);
+    if (entry) {
+      openDetail(entry);
+      return;
+    }
     setWeekStart(mondayOf(new Date(calendarMonth.getFullYear(), calendarMonth.getMonth(), day)));
     changeView("week");
   };
