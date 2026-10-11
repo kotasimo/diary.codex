@@ -119,7 +119,7 @@ body {
   .diary-hero {
     width: 100%;
     max-width: none;
-    height: 112px;
+    height: 134px;
     margin-left: 0;
   }
 
@@ -147,7 +147,7 @@ body {
     align-self: stretch;
     width: auto;
     height: auto;
-    min-height: calc(100vh - 112px);
+    min-height: calc(100vh - 134px);
     transform: translateX(calc(max(0px, calc((100vw - 1269px) / 2)) + 10.5px + clamp(0px, calc((100vw - 1180px) / 2), 65px)));
     overflow: visible;
     padding: 28px 18px 32px !important;
