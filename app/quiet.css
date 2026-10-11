@@ -502,7 +502,10 @@ body {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.detail-body { font-size: 20px; }
+.detail-body {
+  font-size: 18px;
+  line-height: 2;
+}
 @media (min-width: 721px) and (max-width: 1100px) {
   .entry-body { gap: 12px; }
 }
