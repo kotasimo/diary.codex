@@ -194,12 +194,12 @@ button { color: inherit; }
 .auth-divider span { position: relative; top: -9px; padding: 0 12px; background: var(--paper); color: var(--muted); font-size: 10px; }
 .auth-switch { width: 100%; border: 0; background: none; color: var(--accent); font-weight: 700; cursor: pointer; }
 
-@media (max-width: 1050px) {
+@media (max-width: 0px) {
   .app-layout { grid-template-columns: 210px minmax(0, 1fr); max-width: 960px; }
   .right-column { display: none; }
 }
 
-@media (max-width: 720px) {
+@media (max-width: 0px) {
   body { background: var(--paper); }
   .site-header { height: 58px; }
   .header-inner { padding: 0 17px; justify-content: space-between; }
@@ -259,7 +259,7 @@ button { color: inherit; }
 .left-column { border-right: 0 !important; }
 
 /* Final PC sizing: intentionally last so legacy rules cannot narrow the reader. */
-@media (min-width: 1101px) {
+@media (min-width: 0px) {
   .diary-hero-copy { max-width: 1540px; padding-left: 32px; padding-right: 32px; }
   .app-layout { width: 100%; max-width: 1540px; grid-template-columns: 290px minmax(0, 1fr); column-gap: 42px !important; padding: 0 32px 90px; }
   .left-column { padding: 38px 30px 0 0 !important; border-right: 1px solid #ecebe7 !important; }
@@ -322,7 +322,7 @@ body { background: #fdfcf8; }
 .empty-entry { min-height: 116px; opacity: .72; }
 .empty-entry .entry-heading h2 { color: #777b79; font-size: 15px; font-weight: 500; }
 
-@media (max-width: 1100px) {
+@media (max-width: 0px) {
   .app-layout { grid-template-columns: 250px minmax(0, 1fr); column-gap: 28px !important; padding-left: 24px; padding-right: 24px; }
   .left-column { padding-right: 20px !important; }
   .reading-entry { grid-template-columns: 94px minmax(0, 1fr); gap: 24px; }
@@ -330,7 +330,7 @@ body { background: #fdfcf8; }
   .reading-image { grid-column: 2; width: min(100%, 560px); height: 220px; margin-top: 10px; }
 }
 
-@media (max-width: 720px) {
+@media (max-width: 0px) {
   .diary-hero { height: 138px; }
   .app-layout { display: block; padding: 0 18px 90px; }
   .left-column { display: none; }
@@ -393,13 +393,13 @@ body { background: #fdfcf8; color: #25282a; }
 .empty-entry { min-height: 112px; opacity: .72; }
 .empty-entry .entry-heading h2 { color: #777b79; font-size: 15px; font-weight: 500; }
 
-@media (max-width: 1100px) {
+@media (max-width: 0px) {
   .app-layout { grid-template-columns: 250px minmax(0, 1fr); gap: 28px !important; padding-left: 24px; padding-right: 24px; }
   .reading-entry { grid-template-columns: 78px minmax(0, 1fr); gap: 24px; }
   .reading-image { grid-column: 2; width: min(100%, 520px); height: 220px; margin-top: 10px; }
 }
 
-@media (max-width: 720px) {
+@media (max-width: 0px) {
   .diary-hero { height: 138px; }
   .app-layout { display: block; padding: 0 18px 90px; }
   .week-toolbar { padding: 26px 0 12px; }
@@ -499,12 +499,12 @@ body { background: #fdfcf8; color: #25282a; }
 .entry-meta { margin-top: 5px; }
 .mobile-title { display: none; }
 
-@media (max-width: 1050px) {
+@media (max-width: 0px) {
   .app-layout { grid-template-columns: 230px minmax(0, 1fr); max-width: 960px; padding-left: 24px; padding-right: 24px; }
   .diary-hero-copy { padding-left: 28px; }
 }
 
-@media (max-width: 720px) {
+@media (max-width: 0px) {
   .diary-hero { height: 145px; }
   .diary-hero-copy { padding: 58px 18px 18px; }
   .diary-hero-copy h1 { font-size: 28px; }
