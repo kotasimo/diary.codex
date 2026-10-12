@@ -448,7 +448,6 @@ function DetailView({ entry, onBack, onEdit, readOnly, interaction, currentEmail
         <span><MessageCircle size={17} />{interaction.comments.length}</span>
       </div>
       <section className="article-comments" aria-label="コメント">
-        <h2>コメント</h2>
         <div className="comment-list">
           {interaction.comments.map((item) => <article key={item.id}><strong>{item.author}</strong><p>{item.text}</p></article>)}
         </div>
