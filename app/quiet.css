@@ -1260,3 +1260,15 @@ body {
   justify-content: center;
 }
 
+/* Keep the left rail and the diary canvas as one stable layout group while
+   the viewport is resized. */
+.entry-list,
+.week-toolbar,
+.detail-panel,
+.compose-panel,
+.search-panel,
+.profile-settings-panel {
+  margin-left: 0 !important;
+  transform: none !important;
+}
+
