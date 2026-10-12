@@ -934,12 +934,19 @@ export default function HomePage() {
   }));
   const openDetail = (entry: Entry) => { setSelectedEntry(entry); changeView("detail"); };
   const moveDetail = (direction: -1 | 1) => {
-    const availableEntries = (selectedAccount ? publicEntries : entries).filter((entry) => entry.content.trim()).sort((a, b) => parseDateValue(a.date).getTime() - parseDateValue(b.date).getTime());
-    const currentIndex = availableEntries.findIndex((entry) => normalizeDateValue(entry.date) === normalizeDateValue(selectedEntry.date));
-    const nextEntry = availableEntries[currentIndex + direction];
-    if (!nextEntry) return;
+    const availableEntries = selectedAccount ? publicEntries : entries;
+    const currentDate = parseDateValue(selectedEntry.date);
+    const targetDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() + direction);
+    const targetIso = toDateKey(targetDate);
+    const nextEntry = availableEntries.find((entry) => normalizeDateValue(entry.date) === targetIso) ?? {
+      date: targetIso,
+      day: ["日", "月", "火", "水", "木", "金", "土"][targetDate.getDay()],
+      content: "",
+      updatedAt: "",
+      views: 0,
+    };
     setSelectedEntry(nextEntry);
-    setWeekStart(mondayOf(parseDateValue(nextEntry.date)));
+    setWeekStart(mondayOf(targetDate));
   };
   const openEditor = (date: string, day: string, entry?: Entry) => {
     setEditingDate({ date, day });
