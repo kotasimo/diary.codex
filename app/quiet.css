@@ -852,12 +852,14 @@ body {
     box-sizing: border-box;
     height: 36px;
     margin-top: 68px;
+    background: #e7e3d7;
   }
   .compose-title-row .title-input {
-    width: auto;
+    width: auto !important;
     flex: 1;
     min-width: 0;
     margin-top: 0;
+    background: transparent;
   }
   .compose-title-row .compose-save-button {
     display: inline-flex;
