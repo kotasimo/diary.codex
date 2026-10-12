@@ -726,7 +726,7 @@ body {
   background: #e7e3d7;
 }
 .detail-heading > p {
-  display: none;
+  display: block;
   flex: 0 0 auto;
   margin: 0;
   color: #252525;
@@ -830,9 +830,9 @@ body {
   .detail-panel > .entry-pagination {
     position: absolute;
     top: 28px;
-    left: 0;
-    width: 650px;
-    max-width: 650px;
+    right: 35px;
+    width: 220px;
+    max-width: 220px;
     padding-top: 0;
   }
   .compose-panel {
