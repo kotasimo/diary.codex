@@ -37,6 +37,8 @@ body {
   white-space: nowrap;
 }
 
+.compose-entry-date { display: none; }
+
 .reading-copy .entry-content > p {
   white-space: pre-line;
   -webkit-line-clamp: 6;
@@ -854,6 +856,16 @@ body {
     margin-top: 0;
     padding-right: 12px;
     background: #e7e3d7;
+  }
+  .compose-entry-date {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    padding: 0 0 0 10px;
+    color: #252525;
+    font-size: 15px;
+    font-weight: 600;
+    white-space: nowrap;
   }
   .compose-title-row .title-input {
     width: auto !important;
