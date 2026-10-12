@@ -845,6 +845,33 @@ body {
   .compose-panel .title-input {
     margin-top: 68px;
   }
+  .compose-title-row {
+    display: flex;
+    align-items: stretch;
+    width: calc(100% - 35px);
+    height: 36px;
+    margin-top: 68px;
+  }
+  .compose-title-row .title-input {
+    width: auto;
+    flex: 1;
+    margin-top: 0;
+  }
+  .compose-title-row .compose-save-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 56px;
+    padding: 4px 8px;
+    border: 1px solid rgba(81, 85, 82, .24);
+    border-radius: 0 4px 4px 0;
+    background: #e7e3d7;
+    color: #555b58;
+    font: 600 12px/1 var(--sans);
+    cursor: pointer;
+  }
+  .compose-title-row .compose-save-button:hover { background: #fff; }
+  .compose-title-row .compose-save-button:disabled { opacity: .5; cursor: not-allowed; }
   .detail-heading,
   .detail-body,
   .detail-actions,
