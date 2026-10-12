@@ -865,19 +865,21 @@ body {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    align-self: center;
-    min-width: 42px;
-    height: 27px;
+    flex: 0 0 auto;
+    min-width: 56px;
+    height: auto;
+    margin-left: auto;
     margin-right: 0;
-    padding: 3px 6px;
-    border: 0;
+    padding: 4px 8px;
+    border: 1px solid rgba(81, 85, 82, .24);
     border-radius: 4px;
-    background: #101a1e;
-    color: #fff;
-    font: 600 9px/1 var(--sans);
+    background: rgba(255, 255, 255, .38);
+    color: #555b58;
+    font: 600 12px/1 var(--sans);
     cursor: pointer;
   }
-  .compose-title-row .compose-save-button:hover { background: #2f3d41; }
+  .compose-title-row .compose-save-button:hover,
+  .compose-title-row .compose-save-button:focus-visible { border-color: rgba(81, 85, 82, .48); background: #fff; color: #252a28; }
   .compose-title-row .compose-save-button:disabled { opacity: .5; cursor: not-allowed; }
   .detail-heading,
   .detail-body,
