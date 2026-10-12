@@ -495,6 +495,9 @@ function ComposeView({ entry, date, day, onCancel, onSave }: { entry?: Entry; da
   return (
     <>
       <section className="content-panel compose-panel">
+        <div className="compose-heading">
+          <button className="back-button" onClick={onCancel}><X size={18} />キャンセル</button>
+        </div>
         <label className="field-label" htmlFor="title">タイトル <span>任意</span></label>
         <div className="compose-title-row">
           <input id="title" className="title-input" value={title} onChange={(event) => setTitle(event.target.value)} placeholder="記事タイトル" maxLength={80} />
@@ -507,9 +510,6 @@ function ComposeView({ entry, date, day, onCancel, onSave }: { entry?: Entry; da
           <label className="image-upload-button" htmlFor="image-file">画像を追加</label>
           <input id="image-file" type="file" accept="image/*" onChange={(event) => void selectImage(event.target.files?.[0])} />
           {image && <button type="button" className="image-adjust-button" onClick={() => setCropSource(image)}>画像の表示範囲を調整</button>}
-        </div>
-        <div className="compose-heading">
-          <button className="back-button" onClick={onCancel}><X size={18} />キャンセル</button>
         </div>
         {saveError && <p className="compose-save-error" role="alert">{saveError}</p>}
       </section>
