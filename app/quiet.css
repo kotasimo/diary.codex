@@ -1244,3 +1244,69 @@ body {
   .crop-modal { max-height: calc(100vh - 24px); }
   .crop-frame { margin-top: 14px; }
 }
+
+/* Mobile reader: let the profile and diary use the full viewport like a
+   single-column publication, without the desktop canvas forcing horizontal
+   scrolling. */
+@media (max-width: 720px) {
+  html, body { overflow-x: hidden; }
+  .app-layout {
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+    padding: 0 0 86px;
+  }
+  .left-column {
+    display: block !important;
+    width: 100%;
+    min-width: 0;
+    padding: 18px 18px 0 !important;
+    border: 0 !important;
+  }
+  .left-column > .calendar-card,
+  .left-column > .desktop-nav { display: none !important; }
+  .profile-card {
+    width: 100%;
+    padding: 0 0 18px;
+    border-bottom: 1px solid #e7e6e1;
+  }
+  .profile-card .profile-identity { gap: 12px; }
+  .profile-card .avatar-large { width: 64px; height: 64px; font-size: 22px; }
+  .profile-card .profile-name { margin: 0; font-size: 20px; }
+  .profile-card .profile-bio { margin: 12px 0 10px; font-size: 14px; line-height: 1.7; }
+  .profile-follow-summary { margin-top: 8px; }
+  .main-column,
+  .content-panel,
+  .entry-list,
+  .week-toolbar,
+  .detail-panel,
+  .compose-panel {
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+    margin: 0;
+    transform: none;
+  }
+  .week-toolbar { padding: 20px 18px 14px; }
+  .week-toolbar h1 { font-size: 20px; }
+  .reading-entry {
+    display: block;
+    width: 100%;
+    padding: 0;
+    border-bottom: 1px solid #e7e6e1;
+  }
+  .reading-entry > .entry-heading,
+  .entry-body { width: 100%; }
+  .reading-entry > .entry-heading { min-height: 44px; padding: 8px 18px; }
+  .entry-body { display: block; padding: 0; }
+  .entry-body .reading-copy { width: 100%; }
+  .entry-content { padding: 12px 18px 14px; }
+  .entry-body .reading-media { margin: 0 18px 14px; }
+  .entry-body .reading-image { width: 100%; height: 170px; aspect-ratio: 16 / 9; }
+  .detail-panel, .compose-panel { padding: 20px 18px 30px; }
+  .detail-heading { width: 100%; margin-top: 24px; }
+  .detail-body, .detail-actions, .entry-pagination { width: 100%; max-width: none; }
+  .compose-panel .compose-heading { margin: 0 0 18px; }
+  .compose-title-row { width: 100%; margin-top: 0; }
+  .compose-entry-date { display: none; }
+}
