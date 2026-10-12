@@ -1244,3 +1244,7 @@ body {
   .crop-modal { max-height: calc(100vh - 24px); }
   .crop-frame { margin-top: 14px; }
 }
+
+@media (max-width: 900px) {
+  .header-post-button { display: none !important; }
+}
