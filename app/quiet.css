@@ -1276,3 +1276,21 @@ body {
   transform: none !important;
 }
 
+/* Center the 685px diary canvas on wide screens while keeping the sidebar
+   attached to it. The empty third track is the space that collapses first
+   when the viewport becomes narrower. */
+.app-layout {
+  width: 100%;
+  max-width: calc((var(--sidebar-width) * 2) + 685px + 42px);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 0;
+  padding-right: 0;
+  grid-template-columns: var(--sidebar-width) 685px minmax(0, var(--sidebar-width));
+  column-gap: 21px !important;
+}
+
+.main-column {
+  width: 685px;
+}
+
