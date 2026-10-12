@@ -849,12 +849,14 @@ body {
     display: flex;
     align-items: stretch;
     width: calc(100% - 35px);
+    box-sizing: border-box;
     height: 36px;
     margin-top: 68px;
   }
   .compose-title-row .title-input {
     width: auto;
     flex: 1;
+    min-width: 0;
     margin-top: 0;
   }
   .compose-title-row .compose-save-button {
@@ -864,7 +866,7 @@ body {
     align-self: center;
     min-width: 42px;
     height: 27px;
-    margin-right: 5px;
+    margin-right: 0;
     padding: 3px 6px;
     border: 0;
     border-radius: 4px;
