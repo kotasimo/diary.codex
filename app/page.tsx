@@ -426,6 +426,7 @@ function DetailView({ entry, onBack, onEdit, readOnly, interaction, currentEmail
   return (
     <article className="content-panel detail-panel">
       <button className="back-button" onClick={onBack}><ArrowLeft size={18} />週の一覧へ</button>
+      <nav className="entry-pagination"><button><ChevronLeft size={17} />前の日記</button><button>次の日記<ChevronRight size={17} /></button></nav>
       <header className="detail-heading">
         <p>{displayDate.replace("月", "/").replace("日", "")}（{entry.day}）</p>
         {entry.title && <h1>{entry.title}</h1>}
@@ -437,7 +438,6 @@ function DetailView({ entry, onBack, onEdit, readOnly, interaction, currentEmail
       <div className="article-reactions">
         <button type="button" className={interaction.likes.includes(currentEmail) ? "reaction-button liked" : "reaction-button"} onClick={onToggleLike}><Heart size={17} fill={interaction.likes.includes(currentEmail) ? "currentColor" : "none"} />いいね {interaction.likes.length}</button>
       </div>
-      <nav className="entry-pagination"><button><ChevronLeft size={17} />前の日記</button><button>次の日記<ChevronRight size={17} /></button></nav>
     </article>
   );
 }

@@ -823,6 +823,14 @@ body {
     left: 0;
     transform: translateX(clamp(0px, calc((100vw - 1180px) / 2), 65px));
   }
+  .detail-panel > .entry-pagination {
+    position: absolute;
+    top: 28px;
+    left: 0;
+    width: 650px;
+    max-width: 650px;
+    padding-top: 0;
+  }
   .compose-panel {
     margin-left: max(0px, calc((100vw - 685px) / 2 - (var(--sidebar-width) + 21px)));
     margin-right: 0;
