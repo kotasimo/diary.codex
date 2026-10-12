@@ -183,13 +183,28 @@ function buildWeek(start: Date) {
   });
 }
 
-const visitors = [
-  { name: "haru", initial: "H", color: "peach", time: "今日 14:32", entry: "静かな土曜日" },
-  { name: "sora_note", initial: "S", color: "blue", time: "今日 10:15", entry: "静かな土曜日" },
-  { name: "mugi", initial: "M", color: "yellow", time: "昨日 21:04", entry: "小さく始める" },
-  { name: "凪", initial: "凪", color: "green", time: "昨日 18:47", entry: "小さく始める" },
-  { name: "ao", initial: "A", color: "purple", time: "10月8日 08:11", entry: "金木犀の帰り道" },
-];
+type VisitorRecord = { visitorEmail: string; visitedAt: string; entryDate?: string; entryTitle?: string };
+const visitorsKey = "hibi-page-visitors";
+
+function getVisitorRecords(ownerEmail: string): VisitorRecord[] {
+  if (typeof window === "undefined" || !ownerEmail) return [];
+  try {
+    const saved = JSON.parse(window.localStorage.getItem(visitorsKey) ?? "{}") as Record<string, VisitorRecord[]>;
+    return Array.isArray(saved[ownerEmail]) ? saved[ownerEmail] : [];
+  } catch {
+    return [];
+  }
+}
+
+function recordPageVisit(ownerEmail: string, visitorEmail: string, entry?: Entry) {
+  if (typeof window === "undefined" || !ownerEmail || !visitorEmail || ownerEmail === visitorEmail) return;
+  const saved = JSON.parse(window.localStorage.getItem(visitorsKey) ?? "{}") as Record<string, VisitorRecord[]>;
+  const records = Array.isArray(saved[ownerEmail]) ? saved[ownerEmail] : [];
+  const next: VisitorRecord = { visitorEmail, visitedAt: new Date().toISOString(), entryDate: entry?.date, entryTitle: entry?.title };
+  const withoutRecentDuplicate = records.filter((record) => !(record.visitorEmail === visitorEmail && Date.now() - new Date(record.visitedAt).getTime() < 30 * 60 * 1000));
+  saved[ownerEmail] = [next, ...withoutRecentDuplicate].slice(0, 100);
+  window.localStorage.setItem(visitorsKey, JSON.stringify(saved));
+}
 
 function MiniCalendar({ month, entries, onMonthChange, onSelectMonth, onToday, onPick }: { month: Date; entries: Entry[]; onMonthChange: (offset: number) => void; onSelectMonth: (year: number, month: number) => void; onToday: () => void; onPick: (day: number) => void }) {
   const year = month.getFullYear();
@@ -732,20 +747,34 @@ function ProfileSettingsView({ profile, onCancel, onSave }: { profile: Profile; 
   );
 }
 
-function VisitorsView() {
+function VisitorsView({ records, accounts }: { records: VisitorRecord[]; accounts: SocialAccount[] }) {
+  const accountByEmail = new Map(accounts.map((account) => [account.email, account]));
+  const recentRecords = records.filter((record) => !Number.isNaN(new Date(record.visitedAt).getTime()));
+  const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+  const thisWeekCount = recentRecords.filter((record) => new Date(record.visitedAt).getTime() >= weekAgo).length;
+  const formatVisitedAt = (value: string) => {
+    const date = new Date(value);
+    const prefix = date.toDateString() === new Date().toDateString() ? "今日" : `${date.getMonth() + 1}月${date.getDate()}日`;
+    return `${prefix} ${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
+  };
   return (
     <section className="content-panel visitors-panel">
       <div className="page-heading"><p className="eyebrow">VISITORS</p><h1>足あと</h1><p>あなたの日記を訪れた人</p></div>
-      <div className="visitor-summary"><Footprints size={22} /><div><strong>今週 18人</strong><span>先週より4人増えました</span></div></div>
+      <div className="visitor-summary"><Footprints size={22} /><div><strong>今週 {thisWeekCount}人</strong><span>最近あなたの日記を訪れた人</span></div></div>
       <div className="visitor-list">
-        {visitors.map((visitor) => (
-          <button className="visitor-row" key={`${visitor.name}-${visitor.time}`}>
-            <span className={`avatar avatar-${visitor.color}`}>{visitor.initial}</span>
-            <span className="visitor-info"><strong>{visitor.name}</strong><span>「{visitor.entry}」を読みました</span></span>
-            <time>{visitor.time}</time>
+        {recentRecords.map((record) => {
+          const account = accountByEmail.get(record.visitorEmail);
+          const name = account?.displayName ?? account?.username ?? record.visitorEmail;
+          return (
+          <button className="visitor-row" key={`${record.visitorEmail}-${record.visitedAt}`}>
+            <span className="avatar avatar-blue">{name.slice(0, 1).toUpperCase()}</span>
+            <span className="visitor-info"><strong>{name}</strong><span>{record.entryTitle ? `「${record.entryTitle}」を読みました` : "あなたの日記を訪れました"}</span></span>
+            <time>{formatVisitedAt(record.visitedAt)}</time>
             <ChevronRight size={17} />
           </button>
-        ))}
+          );
+        })}
+        {!recentRecords.length && <p className="visitor-empty">まだ足あとがありません。</p>}
       </div>
       <p className="visitor-note">ログインしているユーザーの訪問だけが表示されます。</p>
     </section>
@@ -796,6 +825,7 @@ export default function HomePage() {
     }
     return accounts;
   })();
+  const visitorRecords = getVisitorRecords(currentEmail);
   const publicEntries = selectedAccount
     ? selectedAccount.email === currentEmail
       ? entries
@@ -819,6 +849,11 @@ export default function HomePage() {
       setProfileReady(true);
     }
   }, []);
+
+  useEffect(() => {
+    if (!selectedAccount || !currentEmail || selectedAccount.email === currentEmail || (view !== "account" && view !== "detail")) return;
+    recordPageVisit(selectedAccount.email, currentEmail, view === "detail" ? selectedEntry : undefined);
+  }, [currentEmail, selectedAccount, selectedEntry, view]);
 
   useEffect(() => {
     if (localAuthEnabled) {
@@ -1038,7 +1073,7 @@ export default function HomePage() {
           {view === "week" && <WeekView entries={entries} weekStart={weekStart} onShift={shiftWeek} onDetail={openDetail} onEdit={openEditor} />}
           {view === "detail" && <DetailView entry={selectedEntry} readOnly={Boolean(selectedAccount)} interaction={selectedInteraction} currentEmail={currentEmail} onToggleLike={toggleSelectedLike} onPrevious={() => moveDetail(-1)} onNext={() => moveDetail(1)} onBack={() => { setWeekStart(mondayOf(parseDateValue(selectedEntry.date))); changeView(selectedAccount ? "account" : "week"); }} onEdit={() => openEditor(normalizeDateValue(selectedEntry.date), selectedEntry.day, selectedEntry)} />}
           {view === "compose" && <ComposeView entry={editingEntry} date={editingDate.date} day={editingDate.day} onCancel={() => changeView("week")} onSave={saveEntry} />}
-          {view === "visitors" && <VisitorsView />}
+          {view === "visitors" && <VisitorsView records={visitorRecords} accounts={socialAccounts} />}
           {view === "profile" && <ProfileSettingsView profile={visibleProfile} onCancel={() => changeView("week")} onSave={saveProfile} />}
           {view === "search" && <SearchView query={searchQuery} currentEmail={currentEmail} accounts={socialAccounts} onToggleFollow={toggleAccountFollow} onSelectAccount={openAccount} />}
           {view === "account" && selectedAccount && <AccountView entries={publicEntries} weekStart={weekStart} onShift={shiftWeek} onDetail={openDetail} />}
