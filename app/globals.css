@@ -259,7 +259,7 @@ button { color: inherit; }
 .left-column { border-right: 0 !important; }
 
 /* Final PC sizing: intentionally last so legacy rules cannot narrow the reader. */
-@media (min-width: 1041px) {
+@media (min-width: 1101px) {
   .diary-hero-copy { max-width: 1540px; padding-left: 32px; padding-right: 32px; }
   .app-layout { width: 100%; max-width: 1540px; grid-template-columns: 290px minmax(0, 1fr); column-gap: 42px !important; padding: 0 32px 90px; }
   .left-column { padding: 38px 30px 0 0 !important; border-right: 1px solid #ecebe7 !important; }
@@ -322,7 +322,7 @@ body { background: #fdfcf8; }
 .empty-entry { min-height: 116px; opacity: .72; }
 .empty-entry .entry-heading h2 { color: #777b79; font-size: 15px; font-weight: 500; }
 
-@media (max-width: 1040px) {
+@media (max-width: 1100px) {
   .app-layout { grid-template-columns: 250px minmax(0, 1fr); column-gap: 28px !important; padding-left: 24px; padding-right: 24px; }
   .left-column { padding-right: 20px !important; }
   .reading-entry { grid-template-columns: 94px minmax(0, 1fr); gap: 24px; }
@@ -393,7 +393,7 @@ body { background: #fdfcf8; color: #25282a; }
 .empty-entry { min-height: 112px; opacity: .72; }
 .empty-entry .entry-heading h2 { color: #777b79; font-size: 15px; font-weight: 500; }
 
-@media (max-width: 1040px) {
+@media (max-width: 1100px) {
   .app-layout { grid-template-columns: 250px minmax(0, 1fr); gap: 28px !important; padding-left: 24px; padding-right: 24px; }
   .reading-entry { grid-template-columns: 78px minmax(0, 1fr); gap: 24px; }
   .reading-image { grid-column: 2; width: min(100%, 520px); height: 220px; margin-top: 10px; }
