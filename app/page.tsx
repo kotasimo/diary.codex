@@ -750,8 +750,6 @@ function ProfileSettingsView({ profile, onCancel, onSave }: { profile: Profile; 
 function VisitorsView({ records, accounts }: { records: VisitorRecord[]; accounts: SocialAccount[] }) {
   const accountByEmail = new Map(accounts.map((account) => [account.email, account]));
   const recentRecords = records.filter((record) => !Number.isNaN(new Date(record.visitedAt).getTime()));
-  const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
-  const thisWeekCount = recentRecords.filter((record) => new Date(record.visitedAt).getTime() >= weekAgo).length;
   const formatVisitedAt = (value: string) => {
     const date = new Date(value);
     const prefix = date.toDateString() === new Date().toDateString() ? "今日" : `${date.getMonth() + 1}月${date.getDate()}日`;
@@ -759,8 +757,7 @@ function VisitorsView({ records, accounts }: { records: VisitorRecord[]; account
   };
   return (
     <section className="content-panel visitors-panel">
-      <div className="page-heading"><p className="eyebrow">VISITORS</p><h1>足あと</h1><p>あなたの日記を訪れた人</p></div>
-      <div className="visitor-summary"><Footprints size={22} /><div><strong>今週 {thisWeekCount}人</strong><span>最近あなたの日記を訪れた人</span></div></div>
+      <div className="page-heading"><h1>足あと</h1></div>
       <div className="visitor-list">
         {recentRecords.map((record) => {
           const account = accountByEmail.get(record.visitorEmail);
