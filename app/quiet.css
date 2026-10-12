@@ -1245,3 +1245,18 @@ body {
   .crop-frame { margin-top: 14px; }
 }
 
+.diary-hero {
+  height: auto;
+  aspect-ratio: 6.6 / 1;
+  background-position: center 58%;
+  background-size: cover;
+}
+.diary-hero-copy {
+  height: 100%;
+  padding-top: 0;
+  padding-bottom: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
