@@ -252,7 +252,7 @@ function MiniCalendar({ month, entries, onMonthChange, onSelectMonth, onToday, o
   );
 }
 
-function Header({ profile, searchQuery, onSearchQuery, onSearch, onHome, onMenu, onPost }: { profile: Profile; searchQuery: string; onSearchQuery: (query: string) => void; onSearch: () => void; onHome: () => void; onMenu: () => void; onPost: () => void }) {
+function Header({ profile, searchQuery, onSearchQuery, onSearch, onHome, onMenu }: { profile: Profile; searchQuery: string; onSearchQuery: (query: string) => void; onSearch: () => void; onHome: () => void; onMenu: () => void }) {
   return (
     <header className="site-header">
       <div className="header-inner">
@@ -268,7 +268,6 @@ function Header({ profile, searchQuery, onSearchQuery, onSearch, onHome, onMenu,
         <div className="header-actions">
           <button className="icon-button" aria-label="お知らせ"><Bell size={20} /><span className="notification-dot" /></button>
           <button className="header-profile-button" aria-label="プロフィール"><ProfileAvatar profile={profile} /></button>
-          <button className="header-post-button" onClick={onPost}><Edit3 size={15} />日記を書く</button>
         </div>
       </div>
     </header>
@@ -1040,7 +1039,6 @@ export default function HomePage() {
         onSearch={searchAccounts}
         onHome={goHome}
         onMenu={() => setDrawerOpen(true)}
-        onPost={() => openEditor("2026-10-10", "土", entries.find((entry) => normalizeDateValue(entry.date) === "2026-10-10"))}
       />
       <div className="mobile-title">{title}</div>
       <DiaryHero profile={publicProfile} />

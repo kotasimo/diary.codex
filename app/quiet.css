@@ -1245,6 +1245,3 @@ body {
   .crop-frame { margin-top: 14px; }
 }
 
-@media (max-width: 900px) {
-  .header-post-button { display: none !important; }
-}
