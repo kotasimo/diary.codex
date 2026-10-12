@@ -852,6 +852,7 @@ body {
     box-sizing: border-box;
     height: 36px;
     margin-top: 68px;
+    padding-right: 12px;
     background: #e7e3d7;
   }
   .compose-title-row .title-input {
