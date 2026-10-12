@@ -988,19 +988,12 @@ export default function HomePage() {
   };
   const shiftWeek = (days: number) => setWeekStart((current) => new Date(current.getFullYear(), current.getMonth(), current.getDate() + days));
   const pickCalendarDay = (day: number) => {
-    const dateKey = toDateKey(new Date(calendarMonth.getFullYear(), calendarMonth.getMonth(), day));
-    const calendarEntries = view === "account" ? publicEntries : entries;
-    const entry = calendarEntries.find((item) => normalizeDateValue(item.date) === dateKey);
-    if (view === "account" || selectedAccount) {
-      setWeekStart(mondayOf(new Date(calendarMonth.getFullYear(), calendarMonth.getMonth(), day)));
-      if (selectedAccount && view !== "account") setView("account");
+    const pickedDate = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth(), day);
+    setWeekStart(mondayOf(pickedDate));
+    if (selectedAccount) {
+      if (view !== "account") changeView("account");
       return;
     }
-    if (entry) {
-      openDetail(entry);
-      return;
-    }
-    setWeekStart(mondayOf(new Date(calendarMonth.getFullYear(), calendarMonth.getMonth(), day)));
     changeView("week");
   };
   const saveEntry = async (entry: Entry): Promise<boolean> => {
