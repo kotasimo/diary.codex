@@ -13,7 +13,6 @@ import {
   Menu,
   Search,
   Settings,
-  UserRoundPlus,
   UserRound,
   X,
 } from "lucide-react";
@@ -304,14 +303,12 @@ function ProfileAvatar({ profile, large = false }: { profile: Profile; large?: b
   );
 }
 
-function ProfileCard({ profile, socialEmail, currentEmail, publicAccount, socialVersion, onToggleFollow, onRelationships }: { profile: Profile; socialEmail: string; currentEmail: string; publicAccount: boolean; socialVersion: number; onToggleFollow: (email: string) => void; onRelationships: (kind: RelationshipKind, email: string) => void }) {
+function ProfileCard({ profile, socialEmail, currentEmail, socialVersion, onRelationships }: { profile: Profile; socialEmail: string; currentEmail: string; socialVersion: number; onRelationships: (kind: RelationshipKind, email: string) => void }) {
   const [followingCount, setFollowingCount] = useState(0);
   const [followerCount, setFollowerCount] = useState(0);
-  const [following, setFollowing] = useState(false);
   useEffect(() => {
     setFollowingCount(getFollowingCount(socialEmail));
     setFollowerCount(getFollowerCount(socialEmail));
-    setFollowing(socialEmail ? getFollowing(currentEmail).includes(socialEmail) : false);
   }, [currentEmail, socialEmail, socialVersion]);
   return (
     <section className="profile-card">
@@ -321,7 +318,6 @@ function ProfileCard({ profile, socialEmail, currentEmail, publicAccount, social
       </div>
       <p className="profile-bio">{profile.bio}</p>
       <div className="profile-follow-summary"><button type="button" onClick={() => onRelationships("following", socialEmail)}><strong>{followingCount}</strong><span>フォロー</span></button><button type="button" onClick={() => onRelationships("followers", socialEmail)}><strong>{followerCount}</strong><span>フォロワー</span></button></div>
-      {publicAccount && socialEmail !== currentEmail && <button type="button" className={following ? "secondary-button profile-follow-button" : "primary-button profile-follow-button"} onClick={() => onToggleFollow(socialEmail)}>{following ? "フォロー中" : <><UserRoundPlus size={16} />フォロー</>}</button>}
     </section>
   );
 }
@@ -1050,7 +1046,7 @@ export default function HomePage() {
       <DiaryHero profile={publicProfile} />
       <main className={`app-layout${selectedAccount && (view === "account" || view === "detail") ? " public-account-layout" : ""}`}>
         <aside className="left-column">
-          <ProfileCard profile={publicProfile} socialEmail={view === "account" || view === "detail" ? selectedAccount?.email ?? "" : view === "relationships" ? selectedAccount?.email ?? currentEmail : currentEmail} currentEmail={currentEmail} publicAccount={view === "account" || view === "detail"} socialVersion={socialVersion} onToggleFollow={toggleAccountFollow} onRelationships={openRelationships} />
+          <ProfileCard profile={publicProfile} socialEmail={view === "account" || view === "detail" ? selectedAccount?.email ?? "" : view === "relationships" ? selectedAccount?.email ?? currentEmail : currentEmail} currentEmail={currentEmail} socialVersion={socialVersion} onRelationships={openRelationships} />
           <MiniCalendar month={calendarMonth} entries={view === "account" ? publicEntries : entries} onMonthChange={(offset) => setCalendarMonth((current) => new Date(current.getFullYear(), current.getMonth() + offset, 1))} onSelectMonth={(year, month) => setCalendarMonth(new Date(year, month, 1))} onToday={() => { const today = new Date(); setCalendarMonth(new Date(today.getFullYear(), today.getMonth(), 1)); }} onPick={pickCalendarDay} />
           {view !== "account" && <SideNavigation
             view={view}
