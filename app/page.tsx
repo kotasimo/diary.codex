@@ -8,8 +8,10 @@ import {
   Edit3,
   Feather,
   Footprints,
+  Heart,
   LogOut,
   Menu,
+  MessageCircle,
   Search,
   Settings,
   UserRoundPlus,
@@ -62,6 +64,27 @@ type Entry = {
   views: number;
   image?: string;
 };
+
+type ArticleComment = { id: string; author: string; text: string; createdAt: string };
+type ArticleInteraction = { likes: string[]; comments: ArticleComment[] };
+const articleInteractionsKey = "hibi-article-interactions";
+
+function getArticleInteraction(ownerEmail: string, date: string): ArticleInteraction {
+  if (typeof window === "undefined") return { likes: [], comments: [] };
+  try {
+    const saved = JSON.parse(window.localStorage.getItem(articleInteractionsKey) ?? "{}") as Record<string, ArticleInteraction>;
+    const value = saved[`${ownerEmail}:${normalizeDateValue(date)}`];
+    return { likes: value?.likes ?? [], comments: value?.comments ?? [] };
+  } catch {
+    return { likes: [], comments: [] };
+  }
+}
+
+function saveArticleInteraction(ownerEmail: string, date: string, interaction: ArticleInteraction) {
+  const saved = JSON.parse(window.localStorage.getItem(articleInteractionsKey) ?? "{}") as Record<string, ArticleInteraction>;
+  saved[`${ownerEmail}:${normalizeDateValue(date)}`] = interaction;
+  window.localStorage.setItem(articleInteractionsKey, JSON.stringify(saved));
+}
 
 const initialEntries: Entry[] = [
   {
@@ -315,10 +338,10 @@ function SearchView({ query, currentEmail, accounts, onToggleFollow, onSelectAcc
   );
 }
 
-function AccountView({ entries, weekStart, onShift }: { entries: Entry[]; weekStart: Date; onShift: (days: number) => void }) {
+function AccountView({ entries, weekStart, onShift, onDetail }: { entries: Entry[]; weekStart: Date; onShift: (days: number) => void; onDetail: (entry: Entry) => void }) {
   return (
     <>
-      <WeekView entries={entries} weekStart={weekStart} onShift={onShift} onDetail={() => undefined} onEdit={() => undefined} readOnly />
+      <WeekView entries={entries} weekStart={weekStart} onShift={onShift} onDetail={onDetail} onEdit={() => undefined} readOnly />
     </>
   );
 }
@@ -377,7 +400,7 @@ function WeekView({ entries, weekStart, onShift, onDetail, onEdit, readOnly = fa
               <div className="entry-body">
                 <div className="reading-copy">
                   {entry ? (
-                    <button className="entry-content" onClick={() => onDetail(entry)} disabled={readOnly}>
+                    <button className="entry-content" onClick={() => onDetail(entry)}>
                       <p>{entry.content}</p>
                     </button>
                   ) : null}
@@ -400,8 +423,15 @@ function WeekView({ entries, weekStart, onShift, onDetail, onEdit, readOnly = fa
   );
 }
 
-function DetailView({ entry, onBack, onEdit }: { entry: Entry; onBack: () => void; onEdit: () => void }) {
+function DetailView({ entry, onBack, onEdit, readOnly, interaction, currentEmail, onToggleLike, onAddComment }: { entry: Entry; onBack: () => void; onEdit: () => void; readOnly?: boolean; interaction: ArticleInteraction; currentEmail: string; onToggleLike: () => void; onAddComment: (text: string) => void }) {
   const displayDate = formatDate(parseDateValue(entry.date));
+  const [comment, setComment] = useState("");
+  const submitComment = () => {
+    const text = comment.trim();
+    if (!text) return;
+    onAddComment(text);
+    setComment("");
+  };
   return (
     <article className="content-panel detail-panel">
       <button className="back-button" onClick={onBack}><ArrowLeft size={18} />週の一覧へ</button>
@@ -412,7 +442,19 @@ function DetailView({ entry, onBack, onEdit }: { entry: Entry; onBack: () => voi
       <div className="detail-body">
         <p>{entry.content}</p>
       </div>
-      <div className="detail-actions"><button className="secondary-button" onClick={onEdit}><Edit3 size={16} />編集する</button></div>
+      <div className="article-reactions">
+        <button type="button" className={interaction.likes.includes(currentEmail) ? "reaction-button liked" : "reaction-button"} onClick={onToggleLike}><Heart size={17} fill={interaction.likes.includes(currentEmail) ? "currentColor" : "none"} />いいね {interaction.likes.length}</button>
+        <span><MessageCircle size={17} />{interaction.comments.length}</span>
+      </div>
+      <section className="article-comments" aria-label="コメント">
+        <h2>コメント</h2>
+        <div className="comment-list">
+          {interaction.comments.map((item) => <article key={item.id}><strong>{item.author}</strong><p>{item.text}</p></article>)}
+          {!interaction.comments.length && <p className="comment-empty">まだコメントはありません。</p>}
+        </div>
+        <div className="comment-form"><input value={comment} onChange={(event) => setComment(event.target.value)} placeholder="コメントを書く" onKeyDown={(event) => { if (event.key === "Enter") submitComment(); }} /><button type="button" className="primary-button" onClick={submitComment}>送信</button></div>
+      </section>
+      {!readOnly && <div className="detail-actions"><button className="secondary-button" onClick={onEdit}><Edit3 size={16} />編集する</button></div>}
       <nav className="entry-pagination"><button><ChevronLeft size={17} />前の日記</button><button>次の日記<ChevronRight size={17} /></button></nav>
     </article>
   );
@@ -756,7 +798,7 @@ export default function HomePage() {
   const [selectedAccount, setSelectedAccount] = useState<SocialAccount | undefined>();
   const [relationshipKind, setRelationshipKind] = useState<RelationshipKind>("following");
   const visibleProfile = upgradeProfile(profile);
-  const publicProfile = (view === "account" || view === "relationships") && selectedAccount ? upgradeProfile({
+  const publicProfile = (view === "account" || view === "detail" || view === "relationships") && selectedAccount ? upgradeProfile({
     displayName: selectedAccount.displayName,
     diaryTitle: `${selectedAccount.displayName}の日記`,
     subtitle: selectedAccount.bio,
@@ -897,6 +939,21 @@ export default function HomePage() {
     toggleFollowing(currentEmail, email);
     setSocialVersion((version) => version + 1);
   };
+  const interactionOwnerEmail = selectedAccount?.email ?? currentEmail;
+  const selectedInteraction = getArticleInteraction(interactionOwnerEmail, selectedEntry.date);
+  const updateSelectedInteraction = (update: (current: ArticleInteraction) => ArticleInteraction) => {
+    const next = update(getArticleInteraction(interactionOwnerEmail, selectedEntry.date));
+    saveArticleInteraction(interactionOwnerEmail, selectedEntry.date, next);
+    setSocialVersion((version) => version + 1);
+  };
+  const toggleSelectedLike = () => updateSelectedInteraction((current) => ({
+    ...current,
+    likes: current.likes.includes(currentEmail) ? current.likes.filter((email) => email !== currentEmail) : [...current.likes, currentEmail],
+  }));
+  const addSelectedComment = (text: string) => updateSelectedInteraction((current) => ({
+    ...current,
+    comments: [...current.comments, { id: `${Date.now()}-${Math.random()}`, author: visibleProfile.displayName, text, createdAt: new Date().toISOString() }],
+  }));
   const openDetail = (entry: Entry) => { setSelectedEntry(entry); changeView("detail"); };
   const openEditor = (date: string, day: string, entry?: Entry) => {
     setEditingDate({ date, day });
@@ -971,9 +1028,9 @@ export default function HomePage() {
       />
       <div className="mobile-title">{title}</div>
       <DiaryHero profile={publicProfile} />
-      <main className={`app-layout${view === "account" ? " public-account-layout" : ""}`}>
+      <main className={`app-layout${selectedAccount && (view === "account" || view === "detail") ? " public-account-layout" : ""}`}>
         <aside className="left-column">
-          <ProfileCard profile={publicProfile} socialEmail={view === "account" ? selectedAccount?.email ?? "" : view === "relationships" ? selectedAccount?.email ?? currentEmail : currentEmail} currentEmail={currentEmail} publicAccount={view === "account"} socialVersion={socialVersion} onToggleFollow={toggleAccountFollow} onRelationships={openRelationships} />
+          <ProfileCard profile={publicProfile} socialEmail={view === "account" || view === "detail" ? selectedAccount?.email ?? "" : view === "relationships" ? selectedAccount?.email ?? currentEmail : currentEmail} currentEmail={currentEmail} publicAccount={view === "account" || view === "detail"} socialVersion={socialVersion} onToggleFollow={toggleAccountFollow} onRelationships={openRelationships} />
           <MiniCalendar month={calendarMonth} entries={view === "account" ? publicEntries : entries} onMonthChange={(offset) => setCalendarMonth((current) => new Date(current.getFullYear(), current.getMonth() + offset, 1))} onSelectMonth={(year, month) => setCalendarMonth(new Date(year, month, 1))} onToday={() => { const today = new Date(); setCalendarMonth(new Date(today.getFullYear(), today.getMonth(), 1)); }} onPick={pickCalendarDay} />
           {view !== "account" && <SideNavigation
             view={view}
@@ -985,12 +1042,12 @@ export default function HomePage() {
         </aside>
         <section className="main-column">
           {view === "week" && <WeekView entries={entries} weekStart={weekStart} onShift={shiftWeek} onDetail={openDetail} onEdit={openEditor} />}
-          {view === "detail" && <DetailView entry={selectedEntry} onBack={() => { setWeekStart(mondayOf(parseDateValue(selectedEntry.date))); changeView("week"); }} onEdit={() => openEditor(normalizeDateValue(selectedEntry.date), selectedEntry.day, selectedEntry)} />}
+          {view === "detail" && <DetailView entry={selectedEntry} readOnly={Boolean(selectedAccount)} interaction={selectedInteraction} currentEmail={currentEmail} onToggleLike={toggleSelectedLike} onAddComment={addSelectedComment} onBack={() => { setWeekStart(mondayOf(parseDateValue(selectedEntry.date))); changeView(selectedAccount ? "account" : "week"); }} onEdit={() => openEditor(normalizeDateValue(selectedEntry.date), selectedEntry.day, selectedEntry)} />}
           {view === "compose" && <ComposeView entry={editingEntry} date={editingDate.date} day={editingDate.day} onCancel={() => changeView("week")} onSave={saveEntry} />}
           {view === "visitors" && <VisitorsView />}
           {view === "profile" && <ProfileSettingsView profile={visibleProfile} onCancel={() => changeView("week")} onSave={saveProfile} />}
           {view === "search" && <SearchView query={searchQuery} currentEmail={currentEmail} accounts={socialAccounts} onToggleFollow={toggleAccountFollow} onSelectAccount={openAccount} />}
-          {view === "account" && selectedAccount && <AccountView entries={publicEntries} weekStart={weekStart} onShift={shiftWeek} />}
+          {view === "account" && selectedAccount && <AccountView entries={publicEntries} weekStart={weekStart} onShift={shiftWeek} onDetail={openDetail} />}
           {view === "relationships" && <RelationshipView kind={relationshipKind} subjectEmail={selectedAccount?.email ?? currentEmail} currentEmail={currentEmail} accounts={socialAccounts} onBack={() => selectedAccount ? changeView("account") : changeView("week")} onToggleFollow={toggleAccountFollow} onSelectAccount={openAccount} />}
         </section>
       </main>
