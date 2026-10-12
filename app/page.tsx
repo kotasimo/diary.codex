@@ -421,12 +421,12 @@ function WeekView({ entries, weekStart, onShift, onDetail, onEdit, readOnly = fa
   );
 }
 
-function DetailView({ entry, onBack, onEdit, readOnly, interaction, currentEmail, onToggleLike }: { entry: Entry; onBack: () => void; onEdit: () => void; readOnly?: boolean; interaction: ArticleInteraction; currentEmail: string; onToggleLike: () => void }) {
+function DetailView({ entry, onBack, onEdit, onPrevious, onNext, readOnly, interaction, currentEmail, onToggleLike }: { entry: Entry; onBack: () => void; onEdit: () => void; onPrevious: () => void; onNext: () => void; readOnly?: boolean; interaction: ArticleInteraction; currentEmail: string; onToggleLike: () => void }) {
   const displayDate = formatDate(parseDateValue(entry.date));
   return (
     <article className="content-panel detail-panel">
       <button className="back-button" onClick={onBack}><ArrowLeft size={18} />週の一覧へ</button>
-      <nav className="entry-pagination"><button><ChevronLeft size={17} />前の日記</button><button>次の日記<ChevronRight size={17} /></button></nav>
+      <nav className="entry-pagination"><button type="button" onClick={onPrevious}><ChevronLeft size={17} />前の日記</button><button type="button" onClick={onNext}>次の日記<ChevronRight size={17} /></button></nav>
       <header className="detail-heading">
         <p>{displayDate.replace("月", "/").replace("日", "")}（{entry.day}）</p>
         {entry.title && <h1>{entry.title}</h1>}
@@ -933,6 +933,14 @@ export default function HomePage() {
     likes: current.likes.includes(currentEmail) ? current.likes.filter((email) => email !== currentEmail) : [...current.likes, currentEmail],
   }));
   const openDetail = (entry: Entry) => { setSelectedEntry(entry); changeView("detail"); };
+  const moveDetail = (direction: -1 | 1) => {
+    const availableEntries = (selectedAccount ? publicEntries : entries).filter((entry) => entry.content.trim()).sort((a, b) => parseDateValue(a.date).getTime() - parseDateValue(b.date).getTime());
+    const currentIndex = availableEntries.findIndex((entry) => normalizeDateValue(entry.date) === normalizeDateValue(selectedEntry.date));
+    const nextEntry = availableEntries[currentIndex + direction];
+    if (!nextEntry) return;
+    setSelectedEntry(nextEntry);
+    setWeekStart(mondayOf(parseDateValue(nextEntry.date)));
+  };
   const openEditor = (date: string, day: string, entry?: Entry) => {
     setEditingDate({ date, day });
     setEditingEntry(entry);
@@ -1020,7 +1028,7 @@ export default function HomePage() {
         </aside>
         <section className="main-column">
           {view === "week" && <WeekView entries={entries} weekStart={weekStart} onShift={shiftWeek} onDetail={openDetail} onEdit={openEditor} />}
-          {view === "detail" && <DetailView entry={selectedEntry} readOnly={Boolean(selectedAccount)} interaction={selectedInteraction} currentEmail={currentEmail} onToggleLike={toggleSelectedLike} onBack={() => { setWeekStart(mondayOf(parseDateValue(selectedEntry.date))); changeView(selectedAccount ? "account" : "week"); }} onEdit={() => openEditor(normalizeDateValue(selectedEntry.date), selectedEntry.day, selectedEntry)} />}
+          {view === "detail" && <DetailView entry={selectedEntry} readOnly={Boolean(selectedAccount)} interaction={selectedInteraction} currentEmail={currentEmail} onToggleLike={toggleSelectedLike} onPrevious={() => moveDetail(-1)} onNext={() => moveDetail(1)} onBack={() => { setWeekStart(mondayOf(parseDateValue(selectedEntry.date))); changeView(selectedAccount ? "account" : "week"); }} onEdit={() => openEditor(normalizeDateValue(selectedEntry.date), selectedEntry.day, selectedEntry)} />}
           {view === "compose" && <ComposeView entry={editingEntry} date={editingDate.date} day={editingDate.day} onCancel={() => changeView("week")} onSave={saveEntry} />}
           {view === "visitors" && <VisitorsView />}
           {view === "profile" && <ProfileSettingsView profile={visibleProfile} onCancel={() => changeView("week")} onSave={saveProfile} />}
