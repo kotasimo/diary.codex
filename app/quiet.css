@@ -468,12 +468,7 @@ body {
     border-bottom: 0;
   }
   .week-toolbar::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 35px;
-    bottom: 0;
-    border-bottom: 1px solid #e7e6e1;
+    display: none;
   }
 
   .week-arrow {
