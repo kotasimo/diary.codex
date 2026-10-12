@@ -483,7 +483,7 @@ function ComposeView({ entry, date, day, onCancel, onSave }: { entry?: Entry; da
         <label className="field-label" htmlFor="title">タイトル <span>任意</span></label>
         <div className="compose-title-row">
           <input id="title" className="title-input" value={title} onChange={(event) => setTitle(event.target.value)} placeholder="記事タイトル" maxLength={80} />
-          <button type="button" className="compose-save-button" disabled={!content.trim() || saving} onClick={() => void saveEntry()}>{saving ? "保存中…" : entry ? "保存" : "公開"}</button>
+          <button type="button" className="entry-edit-button compose-save-button" disabled={!content.trim() || saving} onClick={() => void saveEntry()}>{saving ? "保存中…" : entry ? "保存" : "公開"}</button>
         </div>
         <div className="character-count">{title.length} / 80</div>
         <label className="field-label" htmlFor="body">本文</label>
