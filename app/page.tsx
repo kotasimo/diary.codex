@@ -438,6 +438,7 @@ function DetailView({ entry, onBack, onEdit, readOnly, interaction, currentEmail
       <header className="detail-heading">
         <p>{displayDate.replace("月", "/").replace("日", "")}（{entry.day}）</p>
         {entry.title && <h1>{entry.title}</h1>}
+        {!readOnly && <button type="button" className="detail-edit-button" onClick={onEdit}><Edit3 size={14} aria-hidden="true" />編集</button>}
       </header>
       <div className="detail-body">
         <p>{entry.content}</p>
@@ -450,11 +451,9 @@ function DetailView({ entry, onBack, onEdit, readOnly, interaction, currentEmail
         <h2>コメント</h2>
         <div className="comment-list">
           {interaction.comments.map((item) => <article key={item.id}><strong>{item.author}</strong><p>{item.text}</p></article>)}
-          {!interaction.comments.length && <p className="comment-empty">まだコメントはありません。</p>}
         </div>
         <div className="comment-form"><input value={comment} onChange={(event) => setComment(event.target.value)} placeholder="コメントを書く" onKeyDown={(event) => { if (event.key === "Enter") submitComment(); }} /><button type="button" className="primary-button" onClick={submitComment}>送信</button></div>
       </section>
-      {!readOnly && <div className="detail-actions"><button className="secondary-button" onClick={onEdit}><Edit3 size={16} />編集する</button></div>}
       <nav className="entry-pagination"><button><ChevronLeft size={17} />前の日記</button><button>次の日記<ChevronRight size={17} /></button></nav>
     </article>
   );
