@@ -293,7 +293,6 @@ export function useDiaryApp() {
   const openNotifications = () => {
     markNotificationsRead(currentEmail);
     setSocialVersion((version) => version + 1);
-    changeView("notifications");
   };
   const openDetail = (entry: Entry) => {
     setSelectedEntry(entry);
