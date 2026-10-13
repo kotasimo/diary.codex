@@ -13,27 +13,19 @@ import {
 } from "@/components/diary/EditorViews";
 import {
   DetailView,
+  NotificationsView,
   RelationshipView,
   SearchView,
   VisitorsView,
   WeekView,
 } from "@/components/diary/ReadingViews";
 import { useDiaryApp } from "@/hooks/useDiaryApp";
+import type { View } from "@/types/diary";
 import { normalizeDateValue } from "@/utils/date";
 
 export default function HomePage() {
   const app = useDiaryApp();
-  const openNavigationView = (
-    nextView:
-      | "week"
-      | "detail"
-      | "compose"
-      | "visitors"
-      | "profile"
-      | "search"
-      | "account"
-      | "relationships",
-  ) => {
+  const openNavigationView = (nextView: View) => {
     if (nextView === "compose") {
       app.openEditor(
         "2026-10-10",
@@ -62,6 +54,8 @@ export default function HomePage() {
         onSearch={() => app.changeView("search")}
         onHome={app.goHome}
         onMenu={() => app.setDrawerOpen(true)}
+        hasUnreadNotifications={app.hasUnreadNotifications}
+        onNotifications={app.openNotifications}
       />
       <div className="mobile-title">{app.title}</div>
       <DiaryHero profile={app.publicProfile} />
@@ -127,6 +121,8 @@ export default function HomePage() {
               interaction={app.selectedInteraction}
               currentEmail={app.currentEmail}
               onToggleLike={app.toggleSelectedLike}
+              comments={app.selectedComments}
+              onAddComment={app.addSelectedComment}
               onPrevious={() => app.moveDetail(-1)}
               onNext={() => app.moveDetail(1)}
               onBack={app.returnToSelectedWeek}
@@ -151,6 +147,12 @@ export default function HomePage() {
           {app.view === "visitors" && (
             <VisitorsView
               records={app.visitorRecords}
+              accounts={app.socialAccounts}
+            />
+          )}
+          {app.view === "notifications" && (
+            <NotificationsView
+              notifications={app.notifications}
               accounts={app.socialAccounts}
             />
           )}

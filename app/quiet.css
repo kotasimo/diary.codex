@@ -1294,3 +1294,34 @@ body {
   width: 685px;
 }
 
+.notifications-panel {
+  width: 685px;
+  max-width: 685px;
+  padding: 30px 0;
+}
+.notifications-panel .page-heading { margin: 0 0 18px; }
+.notification-list { border-top: 1px solid #e7e6e1; }
+.notification-row {
+  display: flex;
+  gap: 12px;
+  padding: 15px 4px;
+  border-bottom: 1px solid #e7e6e1;
+}
+.notification-row.unread { background: #f7f8f6; }
+.notification-avatar {
+  display: grid;
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border-radius: 50%;
+  background: #e5e9e5;
+  color: #39413e;
+  font-size: 13px;
+  font-weight: 700;
+}
+.notification-row strong { display: block; font-size: 13px; line-height: 1.6; }
+.notification-row p { margin: 4px 0 0; color: #68716d; font-size: 12px; }
+.notification-row time { display: block; margin-top: 4px; color: #929a95; font-size: 11px; }
+.notification-empty { margin: 16px 0; color: #929a95; font-size: 13px; }
+

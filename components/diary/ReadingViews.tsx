@@ -7,6 +7,7 @@ import {
   Edit3,
   Heart,
 } from "lucide-react";
+import { useState } from "react";
 import {
   getFollowerCount,
   getFollowing,
@@ -15,7 +16,9 @@ import {
 } from "@/app/lib/social";
 import type {
   ArticleInteraction,
+  Comment,
   Entry,
+  Notification,
   RelationshipKind,
   VisitorRecord,
 } from "@/types/diary";
@@ -296,6 +299,8 @@ export function DetailView({
   interaction,
   currentEmail,
   onToggleLike,
+  comments,
+  onAddComment,
 }: {
   entry: Entry;
   onBack: () => void;
@@ -306,8 +311,16 @@ export function DetailView({
   interaction: ArticleInteraction;
   currentEmail: string;
   onToggleLike: () => void;
+  comments: Comment[];
+  onAddComment: (body: string) => void;
 }) {
   const displayDate = formatDate(parseDateValue(entry.date));
+  const [commentBody, setCommentBody] = useState("");
+  const submitComment = () => {
+    if (!commentBody.trim()) return;
+    onAddComment(commentBody);
+    setCommentBody("");
+  };
   return (
     <article className="content-panel detail-panel">
       <button className="back-button" onClick={onBack}>
@@ -358,7 +371,99 @@ export function DetailView({
           いいね {interaction.likes.length}
         </button>
       </div>
+      <section className="article-comments" aria-label="コメント">
+        <h2>コメント</h2>
+        <div className="comment-list">
+          {comments.map((comment) => (
+            <article key={comment.id}>
+              <strong>{comment.authorEmail}</strong>
+              <p>{comment.body}</p>
+            </article>
+          ))}
+          {!comments.length && (
+            <p className="comment-empty">まだコメントはありません。</p>
+          )}
+        </div>
+        <form
+          className="comment-form"
+          onSubmit={(event) => {
+            event.preventDefault();
+            submitComment();
+          }}
+        >
+          <input
+            value={commentBody}
+            onChange={(event) => setCommentBody(event.target.value)}
+            maxLength={280}
+            placeholder="コメントを書く"
+            aria-label="コメント"
+          />
+          <button
+            type="submit"
+            className="primary-button"
+            disabled={!commentBody.trim()}
+          >
+            送信
+          </button>
+        </form>
+      </section>
     </article>
+  );
+}
+
+export function NotificationsView({
+  notifications,
+  accounts,
+}: {
+  notifications: Notification[];
+  accounts: SocialAccount[];
+}) {
+  const accountByEmail = new Map(
+    accounts.map((account) => [account.email, account]),
+  );
+  const formatMessage = (notification: Notification) => {
+    const actor =
+      accountByEmail.get(notification.actorEmail)?.displayName ??
+      notification.actorEmail;
+    if (notification.kind === "follow")
+      return `${actor}さんがあなたをフォローしました`;
+    if (notification.kind === "like")
+      return `${actor}さんが「${notification.entryTitle ?? "日記"}」にいいねしました`;
+    return `${actor}さんが「${notification.entryTitle ?? "日記"}」にコメントしました`;
+  };
+  return (
+    <section className="content-panel notifications-panel">
+      <div className="page-heading">
+        <h1>お知らせ</h1>
+      </div>
+      <div className="notification-list">
+        {notifications.map((notification) => (
+          <article
+            className={`notification-row${notification.read ? "" : " unread"}`}
+            key={notification.id}
+          >
+            <span className="notification-avatar">
+              {(
+                accountByEmail.get(notification.actorEmail)?.displayName ??
+                notification.actorEmail
+              )
+                .slice(0, 1)
+                .toUpperCase()}
+            </span>
+            <div>
+              <strong>{formatMessage(notification)}</strong>
+              {notification.commentBody && <p>{notification.commentBody}</p>}
+              <time>
+                {new Date(notification.createdAt).toLocaleString("ja-JP")}
+              </time>
+            </div>
+          </article>
+        ))}
+        {!notifications.length && (
+          <p className="notification-empty">お知らせはまだありません。</p>
+        )}
+      </div>
+    </section>
   );
 }
 

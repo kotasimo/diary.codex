@@ -48,6 +48,8 @@ export function Header({
   onSearch,
   onHome,
   onMenu,
+  hasUnreadNotifications,
+  onNotifications,
 }: {
   profile: Profile;
   searchQuery: string;
@@ -55,6 +57,8 @@ export function Header({
   onSearch: () => void;
   onHome: () => void;
   onMenu: () => void;
+  hasUnreadNotifications: boolean;
+  onNotifications: () => void;
 }) {
   return (
     <header className="site-header">
@@ -82,9 +86,13 @@ export function Header({
           />
         </label>
         <div className="header-actions">
-          <button className="icon-button" aria-label="お知らせ">
+          <button
+            className="icon-button"
+            aria-label="お知らせ"
+            onClick={onNotifications}
+          >
             <Bell size={20} />
-            <span className="notification-dot" />
+            {hasUnreadNotifications && <span className="notification-dot" />}
           </button>
           <button className="header-profile-button" aria-label="プロフィール">
             <ProfileAvatar profile={profile} />

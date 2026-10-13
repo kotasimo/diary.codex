@@ -20,13 +20,19 @@ import {
   saveDiaryEntry,
 } from "@/lib/diary-repository";
 import {
+  addComment,
+  addNotification,
   getArticleInteraction,
+  getComments,
+  getNotifications,
   getVisitorRecords,
+  markNotificationsRead,
   recordPageVisit,
   saveArticleInteraction,
 } from "@/lib/diary-storage";
 import type {
   ArticleInteraction,
+  Comment,
   Entry,
   Profile,
   RelationshipKind,
@@ -87,13 +93,15 @@ export function useDiaryApp() {
           ? "プロフィール設定"
           : view === "search"
             ? "アカウントを探す"
-            : view === "account"
-              ? (selectedAccount?.displayName ?? "アカウント")
-              : view === "relationships"
-                ? relationshipKind === "following"
-                  ? "フォロー"
-                  : "フォロワー"
-                : visibleProfile.diaryTitle,
+            : view === "notifications"
+              ? "お知らせ"
+              : view === "account"
+                ? (selectedAccount?.displayName ?? "アカウント")
+                : view === "relationships"
+                  ? relationshipKind === "following"
+                    ? "フォロー"
+                    : "フォロワー"
+                  : visibleProfile.diaryTitle,
     [
       relationshipKind,
       selectedAccount?.displayName,
@@ -116,6 +124,10 @@ export function useDiaryApp() {
     return accounts;
   }, [currentEmail, visibleProfile.bio, visibleProfile.displayName]);
   const visitorRecords = getVisitorRecords(currentEmail);
+  const notifications = getNotifications(currentEmail);
+  const hasUnreadNotifications = notifications.some(
+    (notification) => !notification.read,
+  );
   const publicEntries = selectedAccount
     ? selectedAccount.email === currentEmail
       ? entries
@@ -219,11 +231,17 @@ export function useDiaryApp() {
   };
   const toggleAccountFollow = (email: string) => {
     if (!currentEmail) return;
-    toggleFollowing(currentEmail, email);
+    const isFollowing = toggleFollowing(currentEmail, email);
+    if (isFollowing)
+      addNotification(email, { kind: "follow", actorEmail: currentEmail });
     setSocialVersion((version) => version + 1);
   };
   const interactionOwnerEmail = selectedAccount?.email ?? currentEmail;
   const selectedInteraction = getArticleInteraction(
+    interactionOwnerEmail,
+    selectedEntry.date,
+  );
+  const selectedComments = getComments(
     interactionOwnerEmail,
     selectedEntry.date,
   );
@@ -236,13 +254,47 @@ export function useDiaryApp() {
     saveArticleInteraction(interactionOwnerEmail, selectedEntry.date, next);
     setSocialVersion((version) => version + 1);
   };
-  const toggleSelectedLike = () =>
+  const toggleSelectedLike = () => {
+    if (!currentEmail) return;
+    const isNewLike = !selectedInteraction.likes.includes(currentEmail);
     updateSelectedInteraction((current) => ({
       ...current,
       likes: current.likes.includes(currentEmail)
         ? current.likes.filter((email) => email !== currentEmail)
         : [...current.likes, currentEmail],
     }));
+    if (isNewLike) {
+      addNotification(interactionOwnerEmail, {
+        kind: "like",
+        actorEmail: currentEmail,
+        entryDate: selectedEntry.date,
+        entryTitle: selectedEntry.title,
+      });
+    }
+  };
+  const addSelectedComment = (body: string) => {
+    if (!currentEmail || !body.trim()) return;
+    const comment: Comment = {
+      id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      authorEmail: currentEmail,
+      body: body.trim(),
+      createdAt: new Date().toISOString(),
+    };
+    addComment(interactionOwnerEmail, selectedEntry.date, comment);
+    addNotification(interactionOwnerEmail, {
+      kind: "comment",
+      actorEmail: currentEmail,
+      entryDate: selectedEntry.date,
+      entryTitle: selectedEntry.title,
+      commentBody: comment.body,
+    });
+    setSocialVersion((version) => version + 1);
+  };
+  const openNotifications = () => {
+    markNotificationsRead(currentEmail);
+    setSocialVersion((version) => version + 1);
+    changeView("notifications");
+  };
   const openDetail = (entry: Entry) => {
     setSelectedEntry(entry);
     changeView("detail");
@@ -360,8 +412,11 @@ export function useDiaryApp() {
     currentEmail,
     socialAccounts,
     visitorRecords,
+    notifications,
+    hasUnreadNotifications,
     publicEntries,
     selectedInteraction,
+    selectedComments,
     setCalendarMonth,
     setDrawerOpen,
     setSearchQuery,
@@ -371,6 +426,8 @@ export function useDiaryApp() {
     openAccount,
     toggleAccountFollow,
     toggleSelectedLike,
+    addSelectedComment,
+    openNotifications,
     openDetail,
     returnToSelectedWeek,
     moveDetail,

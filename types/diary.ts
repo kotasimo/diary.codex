@@ -8,7 +8,8 @@ export type View =
   | "profile"
   | "search"
   | "account"
-  | "relationships";
+  | "relationships"
+  | "notifications";
 export type RelationshipKind = "following" | "followers";
 
 export type Profile = {
@@ -37,6 +38,26 @@ export type VisitorRecord = {
   visitedAt: string;
   entryDate?: string;
   entryTitle?: string;
+};
+
+export type Comment = {
+  id: string;
+  authorEmail: string;
+  body: string;
+  createdAt: string;
+};
+
+export type NotificationKind = "like" | "comment" | "follow";
+
+export type Notification = {
+  id: string;
+  kind: NotificationKind;
+  actorEmail: string;
+  createdAt: string;
+  read: boolean;
+  entryDate?: string;
+  entryTitle?: string;
+  commentBody?: string;
 };
 
 export type PublicAccount = SocialAccount;
