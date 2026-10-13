@@ -53,6 +53,7 @@ export function useDiaryApp() {
   const [entries, setEntries] = useState<Entry[]>(initialEntries);
   const [profile, setProfile] = useState<Profile>(defaultProfile);
   const [profileReady, setProfileReady] = useState(false);
+  const [authReady, setAuthReady] = useState(false);
   const [view, setView] = useState<View>("week");
   const [notificationsReturnView, setNotificationsReturnView] =
     useState<View>("week");
@@ -149,21 +150,6 @@ export function useDiaryApp() {
     }
   }, []);
   useEffect(() => {
-    let active = true;
-    const loadEmail = async () => {
-      if (localAuthEnabled) {
-        if (active) setCurrentEmail(window.localStorage.getItem(localSessionKey) ?? "");
-        return;
-      }
-      const supabase = getSupabaseClient();
-      if (!supabase) return;
-      const { data } = await supabase.auth.getUser();
-      if (active) setCurrentEmail(data.user?.email?.toLowerCase() ?? "");
-    };
-    void loadEmail();
-    return () => { active = false; };
-  }, []);
-  useEffect(() => {
     if (!currentEmail || localAuthEnabled) return;
     void Promise.all([hydrateSocialData(currentEmail), hydrateFollowing(currentEmail)])
       .then(() => setSocialVersion((version) => version + 1));
@@ -190,16 +176,30 @@ export function useDiaryApp() {
   }, [currentEmail, selectedAccount, selectedEntry, view]);
   useEffect(() => {
     if (localAuthEnabled) {
-      if (!window.localStorage.getItem(localSessionKey))
+      const email = window.localStorage.getItem(localSessionKey) ?? "";
+      if (!email) {
         window.location.assign("/login");
+      } else {
+        setCurrentEmail(email);
+        setAuthReady(true);
+      }
       return;
     }
     const supabase = getSupabaseClient();
-    if (!supabase) return;
+    if (!supabase) {
+      window.location.assign("/login");
+      return;
+    }
     let active = true;
     const redirectIfSignedOut = async () => {
       const { data } = await supabase.auth.getSession();
-      if (active && !data.session) window.location.assign("/login");
+      if (!active) return;
+      if (!data.session) {
+        window.location.assign("/login");
+        return;
+      }
+      setCurrentEmail(data.session.user.email?.toLowerCase() ?? "");
+      setAuthReady(true);
     };
     void redirectIfSignedOut();
     const { data: listener } = supabase.auth.onAuthStateChange(
@@ -427,6 +427,7 @@ export function useDiaryApp() {
   return {
     entries,
     profileReady,
+    authReady,
     view,
     weekStart,
     calendarMonth,
