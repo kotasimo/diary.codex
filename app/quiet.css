@@ -466,7 +466,7 @@ body {
     justify-content: space-between;
     align-items: center;
     gap: 0;
-    padding-block: 16px 10px;
+    padding-block: 16px;
     border-bottom: 0;
   }
   .week-toolbar::after {
