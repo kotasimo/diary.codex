@@ -1294,23 +1294,6 @@ body {
   width: 685px;
 }
 
-/* Keep the detail and editor title bands 60px below the masthead. */
-.detail-panel {
-  padding-top: 0;
-}
-.detail-panel .entry-pagination {
-  padding-top: 0;
-}
-.detail-panel .detail-heading {
-  margin-top: 20px;
-}
-.compose-panel {
-  padding-top: 0;
-}
-.compose-panel .compose-heading {
-  margin-top: 4px;
-}
-
 .notifications-panel {
   width: 685px;
   max-width: 685px;
