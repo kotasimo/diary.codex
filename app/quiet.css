@@ -1300,12 +1300,10 @@ body {
   position: relative;
 }
 .detail-panel > .back-button {
-  position: absolute;
-  top: 16px;
-  left: 0;
-  z-index: 1;
-  height: 36px;
-  padding: 0;
+  position: static;
+  height: 60px;
+  box-sizing: border-box;
+  padding: 16px 0 8px;
   color: #252525;
   font-size: 25px;
   font-weight: 600;
@@ -1320,7 +1318,7 @@ body {
   align-items: center;
 }
 .detail-panel > .detail-heading {
-  margin-top: 68px;
+  margin-top: 8px;
 }
 
 .notifications-panel {
