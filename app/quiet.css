@@ -1346,4 +1346,9 @@ body {
   width: 90px;
   height: 90px;
 }
+.main-column > .detail-panel,
+.main-column > .compose-panel {
+  width: calc(90% - 35px);
+  max-width: none;
+}
 
