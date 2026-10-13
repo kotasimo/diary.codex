@@ -5,6 +5,7 @@ import { localAuthEnabled, localSessionKey } from "@/app/lib/auth";
 import {
   getSocialAccounts,
   getSocialEntries,
+  hydrateFollowing,
   toggleFollowing,
   type SocialAccount,
 } from "@/app/lib/social";
@@ -27,6 +28,7 @@ import {
   getNotifications,
   getVisitorRecords,
   markNotificationsRead,
+  hydrateSocialData,
   recordPageVisit,
   saveArticleInteraction,
 } from "@/lib/diary-storage";
@@ -67,16 +69,13 @@ export function useDiaryApp() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [socialVersion, setSocialVersion] = useState(0);
+  const [currentEmail, setCurrentEmail] = useState("");
   const [selectedAccount, setSelectedAccount] = useState<
     SocialAccount | undefined
   >();
   const [relationshipKind, setRelationshipKind] =
     useState<RelationshipKind>("following");
   const visibleProfile = upgradeProfile(profile);
-  const currentEmail =
-    typeof window !== "undefined"
-      ? (window.localStorage.getItem(localSessionKey) ?? "")
-      : "";
   const publicProfile =
     (view === "account" || view === "detail" || view === "relationships") &&
     selectedAccount
@@ -149,6 +148,32 @@ export function useDiaryApp() {
       setProfileReady(true);
     }
   }, []);
+  useEffect(() => {
+    let active = true;
+    const loadEmail = async () => {
+      if (localAuthEnabled) {
+        if (active) setCurrentEmail(window.localStorage.getItem(localSessionKey) ?? "");
+        return;
+      }
+      const supabase = getSupabaseClient();
+      if (!supabase) return;
+      const { data } = await supabase.auth.getUser();
+      if (active) setCurrentEmail(data.user?.email?.toLowerCase() ?? "");
+    };
+    void loadEmail();
+    return () => { active = false; };
+  }, []);
+  useEffect(() => {
+    if (!currentEmail || localAuthEnabled) return;
+    void Promise.all([hydrateSocialData(currentEmail), hydrateFollowing(currentEmail)])
+      .then(() => setSocialVersion((version) => version + 1));
+  }, [currentEmail]);
+  useEffect(() => {
+    if (localAuthEnabled || !selectedAccount || selectedAccount.email === currentEmail)
+      return;
+    void hydrateSocialData(selectedAccount.email)
+      .then(() => setSocialVersion((version) => version + 1));
+  }, [currentEmail, selectedAccount]);
   useEffect(() => {
     if (
       !selectedAccount ||

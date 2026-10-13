@@ -1,4 +1,5 @@
 import { getLocalUsers } from "./auth";
+import { getSupabaseClient } from "./supabase";
 
 export type SocialAccount = {
   email: string;
@@ -75,6 +76,14 @@ export function toggleFollowing(email: string, targetEmail: string): boolean {
   else current.add(targetEmail);
   map[email] = [...current];
   window.localStorage.setItem(followsKey, JSON.stringify(map));
+  const supabase = getSupabaseClient();
+  if (supabase) {
+    if (current.has(targetEmail)) {
+      void supabase.from("follows").upsert({ follower_email: email, following_email: targetEmail }, { onConflict: "follower_email,following_email" });
+    } else {
+      void supabase.from("follows").delete().eq("follower_email", email).eq("following_email", targetEmail);
+    }
+  }
   return current.has(targetEmail);
 }
 
@@ -84,4 +93,13 @@ export function getFollowerCount(targetEmail: string): number {
 
 export function getFollowingCount(email: string): number {
   return getFollowing(email).length;
+}
+
+export async function hydrateFollowing(email: string) {
+  const supabase = getSupabaseClient();
+  if (!supabase || !email || typeof window === "undefined") return;
+  const { data } = await supabase.from("follows").select("following_email").eq("follower_email", email);
+  const map = getFollowMap();
+  map[email] = (data ?? []).map((row) => row.following_email);
+  window.localStorage.setItem(followsKey, JSON.stringify(map));
 }

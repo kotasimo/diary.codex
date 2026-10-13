@@ -6,6 +6,7 @@ import type {
   VisitorRecord,
 } from "@/types/diary";
 import { normalizeDateValue } from "@/utils/date";
+import { getSupabaseClient } from "@/app/lib/supabase";
 
 const articleInteractionsKey = "hibi-article-interactions";
 const visitorsKey = "hibi-page-visitors";
@@ -38,6 +39,12 @@ export function saveArticleInteraction(
   ) as Record<string, ArticleInteraction>;
   saved[`${ownerEmail}:${normalizeDateValue(date)}`] = interaction;
   window.localStorage.setItem(articleInteractionsKey, JSON.stringify(saved));
+  const supabase = getSupabaseClient();
+  if (supabase) void supabase.from("article_interactions").upsert({
+    owner_email: ownerEmail,
+    entry_date: normalizeDateValue(date),
+    likes: interaction.likes,
+  }, { onConflict: "owner_email,entry_date" });
 }
 
 export function getVisitorRecords(ownerEmail: string): VisitorRecord[] {
@@ -83,6 +90,14 @@ export function recordPageVisit(
   );
   saved[ownerEmail] = [next, ...withoutRecentDuplicate].slice(0, 100);
   window.localStorage.setItem(visitorsKey, JSON.stringify(saved));
+  const supabase = getSupabaseClient();
+  if (supabase) void supabase.from("page_visitors").insert({
+    owner_email: ownerEmail,
+    visitor_email: visitorEmail,
+    visited_at: next.visitedAt,
+    entry_date: next.entryDate,
+    entry_title: next.entryTitle,
+  });
 }
 
 export function getComments(ownerEmail: string, date: string): Comment[] {
@@ -104,6 +119,15 @@ export function addComment(ownerEmail: string, date: string, comment: Comment) {
   const key = `${ownerEmail}:${normalizeDateValue(date)}`;
   saved[key] = [...(saved[key] ?? []), comment];
   window.localStorage.setItem(commentsKey, JSON.stringify(saved));
+  const supabase = getSupabaseClient();
+  if (supabase) void supabase.from("article_comments").insert({
+    id: comment.id,
+    owner_email: ownerEmail,
+    entry_date: normalizeDateValue(date),
+    author_email: comment.authorEmail,
+    body: comment.body,
+    created_at: comment.createdAt,
+  });
 }
 
 export function getNotifications(ownerEmail: string): Notification[] {
@@ -139,6 +163,18 @@ export function addNotification(
   };
   saved[ownerEmail] = [next, ...(saved[ownerEmail] ?? [])].slice(0, 100);
   window.localStorage.setItem(notificationsKey, JSON.stringify(saved));
+  const supabase = getSupabaseClient();
+  if (supabase) void supabase.from("notifications").insert({
+    id: next.id,
+    owner_email: ownerEmail,
+    kind: next.kind,
+    actor_email: next.actorEmail,
+    created_at: next.createdAt,
+    read: next.read,
+    entry_date: next.entryDate,
+    entry_title: next.entryTitle,
+    comment_body: next.commentBody,
+  });
 }
 
 export function markNotificationsRead(ownerEmail: string) {
@@ -152,4 +188,32 @@ export function markNotificationsRead(ownerEmail: string) {
     read: true,
   }));
   window.localStorage.setItem(notificationsKey, JSON.stringify(saved));
+  const supabase = getSupabaseClient();
+  if (supabase) void supabase.from("notifications").update({ read: true })
+    .eq("owner_email", ownerEmail);
+}
+
+/** Load the signed-in user's social data from Supabase into the existing cache. */
+export async function hydrateSocialData(email: string) {
+  const supabase = getSupabaseClient();
+  if (!supabase || !email || typeof window === "undefined") return;
+  const [interactions, visitors, comments, notifications] = await Promise.all([
+    supabase.from("article_interactions").select("owner_email,entry_date,likes").eq("owner_email", email),
+    supabase.from("page_visitors").select("visitor_email,visited_at,entry_date,entry_title").eq("owner_email", email).order("visited_at", { ascending: false }).limit(100),
+    supabase.from("article_comments").select("id,entry_date,author_email,body,created_at").eq("owner_email", email).order("created_at"),
+    supabase.from("notifications").select("id,kind,actor_email,created_at,read,entry_date,entry_title,comment_body").eq("owner_email", email).order("created_at", { ascending: false }).limit(100),
+  ]);
+  const interactionMap: Record<string, ArticleInteraction> = {};
+  for (const row of interactions.data ?? []) interactionMap[`${email}:${row.entry_date}`] = { likes: row.likes ?? [] };
+  const visitorMap: Record<string, VisitorRecord[]> = { [email]: (visitors.data ?? []).map((row) => ({ visitorEmail: row.visitor_email, visitedAt: row.visited_at, entryDate: row.entry_date ?? undefined, entryTitle: row.entry_title ?? undefined })) };
+  const commentMap: Record<string, Comment[]> = {};
+  for (const row of comments.data ?? []) {
+    const key = `${email}:${row.entry_date}`;
+    (commentMap[key] ??= []).push({ id: row.id, authorEmail: row.author_email, body: row.body, createdAt: row.created_at });
+  }
+  const notificationRows = (notifications.data ?? []).map((row) => ({ id: row.id, kind: row.kind, actorEmail: row.actor_email, createdAt: row.created_at, read: row.read, entryDate: row.entry_date ?? undefined, entryTitle: row.entry_title ?? undefined, commentBody: row.comment_body ?? undefined } satisfies Notification));
+  window.localStorage.setItem(articleInteractionsKey, JSON.stringify(interactionMap));
+  window.localStorage.setItem(visitorsKey, JSON.stringify(visitorMap));
+  window.localStorage.setItem(commentsKey, JSON.stringify(commentMap));
+  window.localStorage.setItem(notificationsKey, JSON.stringify({ [email]: notificationRows }));
 }
