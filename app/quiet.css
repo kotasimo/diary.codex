@@ -1331,6 +1331,9 @@ body {
   width: 90%;
   max-width: none;
 }
+.main-column > .content-panel:not(.detail-panel):not(.compose-panel):not(.visitors-panel):not(.search-panel):not(.profile-settings-panel):not(.relationship-panel) .week-toolbar {
+  width: calc(90% - 35px);
+}
 .main-column > .content-panel:not(.detail-panel):not(.compose-panel):not(.visitors-panel):not(.search-panel):not(.profile-settings-panel):not(.relationship-panel) .reading-entry {
   width: 100%;
   max-width: none;
