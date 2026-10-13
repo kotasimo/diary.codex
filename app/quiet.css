@@ -1294,6 +1294,18 @@ body {
   width: 685px;
 }
 
+/* Match the detail back link to the weekly range heading. */
+.detail-panel {
+  padding-top: 0;
+}
+.detail-panel > .back-button {
+  padding: 16px 0 8px;
+  color: #252525;
+  font-size: 25px;
+  font-weight: 600;
+  line-height: 1;
+}
+
 .notifications-panel {
   width: 685px;
   max-width: 685px;
