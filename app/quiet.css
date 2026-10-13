@@ -1335,4 +1335,12 @@ body {
   width: 100%;
   max-width: none;
 }
+.main-column > .content-panel:not(.detail-panel):not(.compose-panel):not(.visitors-panel):not(.search-panel):not(.profile-settings-panel):not(.relationship-panel) .entry-body {
+  grid-template-columns: minmax(0, 1fr) 90px;
+  gap: 5px;
+}
+.main-column > .content-panel:not(.detail-panel):not(.compose-panel):not(.visitors-panel):not(.search-panel):not(.profile-settings-panel):not(.relationship-panel) .entry-body .reading-image {
+  width: 90px;
+  height: 90px;
+}
 
