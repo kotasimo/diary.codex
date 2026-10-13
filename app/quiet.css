@@ -1297,13 +1297,28 @@ body {
 /* Match the detail back link to the weekly range heading. */
 .detail-panel {
   padding-top: 0;
+  position: relative;
 }
 .detail-panel > .back-button {
-  padding: 16px 0 8px;
+  position: absolute;
+  top: 16px;
+  left: 0;
+  z-index: 1;
+  height: 36px;
+  padding: 0;
   color: #252525;
   font-size: 25px;
   font-weight: 600;
   line-height: 1;
+}
+.detail-panel > .entry-pagination {
+  box-sizing: border-box;
+  height: 60px;
+  padding: 16px 0 8px;
+  align-items: center;
+}
+.detail-panel > .detail-heading {
+  margin-top: 0;
 }
 
 .notifications-panel {
