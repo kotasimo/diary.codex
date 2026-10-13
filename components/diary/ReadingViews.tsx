@@ -325,7 +325,7 @@ export function DetailView({
     <article className="content-panel detail-panel">
       <button className="back-button" onClick={onBack}>
         <ArrowLeft size={18} />
-        週の一覧へ
+        週一覧へ
       </button>
       <nav className="entry-pagination">
         <button type="button" onClick={onPrevious}>
