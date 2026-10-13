@@ -322,7 +322,7 @@ export function DetailView({
     setCommentBody("");
   };
   return (
-    <article className="content-panel detail-panel">
+    <article className="content-panel detail-panel" style={{ width: "581px", maxWidth: "581px" }}>
       <button className="back-button" onClick={onBack}>
         <ArrowLeft size={18} />
         週の一覧へ
