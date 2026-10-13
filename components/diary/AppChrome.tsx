@@ -14,18 +14,8 @@ import {
   X,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import {
-  getFollowerCount,
-  getFollowingCount,
-  type SocialAccount,
-} from "@/app/lib/social";
-import type {
-  Entry,
-  Notification,
-  Profile,
-  RelationshipKind,
-  View,
-} from "@/types/diary";
+import { getFollowerCount, getFollowingCount } from "@/app/lib/social";
+import type { Entry, Profile, RelationshipKind, View } from "@/types/diary";
 import { parseDateValue } from "@/utils/date";
 
 export function ProfileAvatar({
@@ -60,8 +50,6 @@ export function Header({
   onMenu,
   hasUnreadNotifications,
   onNotifications,
-  notifications,
-  accounts,
 }: {
   profile: Profile;
   searchQuery: string;
@@ -71,23 +59,7 @@ export function Header({
   onMenu: () => void;
   hasUnreadNotifications: boolean;
   onNotifications: () => void;
-  notifications: Notification[];
-  accounts: SocialAccount[];
 }) {
-  const [notificationOpen, setNotificationOpen] = useState(false);
-  const accountByEmail = new Map(
-    accounts.map((account) => [account.email, account]),
-  );
-  const formatMessage = (notification: Notification) => {
-    const actor =
-      accountByEmail.get(notification.actorEmail)?.displayName ??
-      notification.actorEmail;
-    if (notification.kind === "follow")
-      return `${actor}さんがあなたをフォローしました`;
-    if (notification.kind === "like")
-      return `${actor}さんが「${notification.entryTitle ?? "日記"}」にいいねしました`;
-    return `${actor}さんが「${notification.entryTitle ?? "日記"}」にコメントしました`;
-  };
   return (
     <header className="site-header">
       <div className="header-inner">
@@ -117,10 +89,7 @@ export function Header({
           <button
             className="icon-button"
             aria-label="お知らせ"
-            onClick={() => {
-              setNotificationOpen((open) => !open);
-              onNotifications();
-            }}
+            onClick={onNotifications}
           >
             <Bell size={20} />
             {hasUnreadNotifications && <span className="notification-dot" />}
@@ -129,53 +98,6 @@ export function Header({
             <ProfileAvatar profile={profile} />
           </button>
         </div>
-        {notificationOpen && (
-          <section className="notification-popover" aria-label="お知らせ一覧">
-            <div className="notification-tabs">
-              <strong>通知</strong>
-              <span>お知らせ</span>
-            </div>
-            <div className="notification-popover-list">
-              {notifications.map((notification) => (
-                <article
-                  className="notification-popover-row"
-                  key={notification.id}
-                >
-                  <span
-                    className={`notification-type-icon notification-type-${notification.kind}`}
-                    aria-hidden="true"
-                  >
-                    {notification.kind === "like"
-                      ? "♥"
-                      : notification.kind === "comment"
-                        ? "▱"
-                        : "＋"}
-                  </span>
-                  <span className="notification-popover-avatar">
-                    {(
-                      accountByEmail.get(notification.actorEmail)
-                        ?.displayName ?? notification.actorEmail
-                    )
-                      .slice(0, 1)
-                      .toUpperCase()}
-                  </span>
-                  <div>
-                    <strong>{formatMessage(notification)}</strong>
-                    {notification.commentBody && (
-                      <p>{notification.commentBody}</p>
-                    )}
-                    <time>
-                      {new Date(notification.createdAt).toLocaleString("ja-JP")}
-                    </time>
-                  </div>
-                </article>
-              ))}
-              {!notifications.length && (
-                <p className="notification-empty">お知らせはまだありません。</p>
-              )}
-            </div>
-          </section>
-        )}
       </div>
     </header>
   );

@@ -56,8 +56,6 @@ export default function HomePage() {
         onMenu={() => app.setDrawerOpen(true)}
         hasUnreadNotifications={app.hasUnreadNotifications}
         onNotifications={app.openNotifications}
-        notifications={app.notifications}
-        accounts={app.socialAccounts}
       />
       <div className="mobile-title">{app.title}</div>
       <DiaryHero profile={app.publicProfile} />

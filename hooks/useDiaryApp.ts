@@ -52,6 +52,8 @@ export function useDiaryApp() {
   const [profile, setProfile] = useState<Profile>(defaultProfile);
   const [profileReady, setProfileReady] = useState(false);
   const [view, setView] = useState<View>("week");
+  const [notificationsReturnView, setNotificationsReturnView] =
+    useState<View>("week");
   const [weekStart, setWeekStart] = useState(() => new Date(2026, 9, 5));
   const [calendarMonth, setCalendarMonth] = useState(
     () => new Date(2026, 9, 1),
@@ -291,8 +293,14 @@ export function useDiaryApp() {
     setSocialVersion((version) => version + 1);
   };
   const openNotifications = () => {
+    if (view === "notifications") {
+      changeView(notificationsReturnView);
+      return;
+    }
+    setNotificationsReturnView(view);
     markNotificationsRead(currentEmail);
     setSocialVersion((version) => version + 1);
+    changeView("notifications");
   };
   const openDetail = (entry: Entry) => {
     setSelectedEntry(entry);
