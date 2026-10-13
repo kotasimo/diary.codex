@@ -298,7 +298,7 @@ export function ComposeView({
   };
   return (
     <>
-      <section className="content-panel compose-panel" style={{ width: "581px", maxWidth: "581px" }}>
+      <section className="content-panel compose-panel">
         <div className="compose-heading">
           <button className="back-button" onClick={onCancel}>
             <X size={18} />

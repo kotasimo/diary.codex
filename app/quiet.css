@@ -1325,30 +1325,3 @@ body {
 .notification-row time { display: block; margin-top: 4px; color: #929a95; font-size: 11px; }
 .notification-empty { margin: 16px 0; color: #929a95; font-size: 13px; }
 
-/* Narrow only the weekly list canvas; keep each thumbnail at its existing size. */
-.main-column > .content-panel:not(.detail-panel):not(.compose-panel):not(.visitors-panel):not(.search-panel):not(.profile-settings-panel):not(.relationship-panel) .week-toolbar,
-.main-column > .content-panel:not(.detail-panel):not(.compose-panel):not(.visitors-panel):not(.search-panel):not(.profile-settings-panel):not(.relationship-panel) .entry-list {
-  width: 90%;
-  max-width: none;
-}
-.main-column > .content-panel:not(.detail-panel):not(.compose-panel):not(.visitors-panel):not(.search-panel):not(.profile-settings-panel):not(.relationship-panel) .week-toolbar {
-  width: calc(90% - 35px);
-}
-.main-column > .content-panel:not(.detail-panel):not(.compose-panel):not(.visitors-panel):not(.search-panel):not(.profile-settings-panel):not(.relationship-panel) .reading-entry {
-  width: 100%;
-  max-width: none;
-}
-.main-column > .content-panel:not(.detail-panel):not(.compose-panel):not(.visitors-panel):not(.search-panel):not(.profile-settings-panel):not(.relationship-panel) .entry-body {
-  grid-template-columns: minmax(0, 1fr) 90px;
-  gap: 5px;
-}
-.main-column > .content-panel:not(.detail-panel):not(.compose-panel):not(.visitors-panel):not(.search-panel):not(.profile-settings-panel):not(.relationship-panel) .entry-body .reading-image {
-  width: 90px;
-  height: 90px;
-}
-.main-column > .detail-panel,
-.main-column > .compose-panel {
-  width: 581px !important;
-  max-width: 581px !important;
-}
-
