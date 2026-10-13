@@ -1313,12 +1313,14 @@ body {
 }
 .detail-panel > .entry-pagination {
   box-sizing: border-box;
-  height: 60px;
-  padding: 16px 0 8px;
+  top: 16px;
+  right: 35px;
+  height: 36px;
+  padding: 0;
   align-items: center;
 }
 .detail-panel > .detail-heading {
-  margin-top: 0;
+  margin-top: 68px;
 }
 
 .notifications-panel {
