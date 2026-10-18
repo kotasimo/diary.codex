@@ -14,6 +14,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
+  const [confirmationPending, setConfirmationPending] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
@@ -29,6 +30,7 @@ export default function LoginPage() {
     event.preventDefault();
     setError("");
     setNotice("");
+    setConfirmationPending(false);
     const supabase = getSupabaseClient();
     if (!supabase) {
       setError("認証機能の接続設定がまだ完了していません。管理者にSupabaseの設定を確認してください。");
@@ -45,10 +47,35 @@ export default function LoginPage() {
     }
     if (isSignup && !result.data.session) {
       setNotice("確認メールを送信しました。メール内のリンクを開いて登録を完了してください。");
+      setConfirmationPending(true);
       return;
     }
     router.refresh();
     router.push("/");
+  };
+
+  const resendConfirmation = async () => {
+    setError("");
+    setNotice("");
+    const supabase = getSupabaseClient();
+    if (!supabase || !email.trim()) {
+      setError("再送するメールアドレスを入力してください。");
+      return;
+    }
+    setSubmitting(true);
+    const { error: resendError } = await supabase.auth.resend({
+      type: "signup",
+      email: email.trim(),
+      options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
+    });
+    setSubmitting(false);
+    if (resendError) {
+      setError(resendError.message.toLowerCase().includes("rate limit")
+        ? "送信回数の上限に達しました。しばらく待ってから再度お試しください。"
+        : resendError.message);
+      return;
+    }
+    setNotice("確認メールを再送しました。迷惑メールフォルダーもご確認ください。");
   };
 
   const resetPassword = async () => {
@@ -92,6 +119,7 @@ export default function LoginPage() {
             {!isSignup && <button type="button" className="forgot-link" onClick={() => void resetPassword()}>パスワードを忘れた方</button>}
             {error && <p className="auth-message auth-error" role="alert">{error}</p>}
             {notice && <p className="auth-message auth-notice" role="status">{notice}</p>}
+            {confirmationPending && <button type="button" className="forgot-link" disabled={submitting} onClick={() => void resendConfirmation()}>確認メールを再送する</button>}
             <button type="submit" className="primary-button auth-submit" disabled={submitting}>{submitting ? "処理中…" : isSignup ? "アカウントを作成" : "ログイン"}<ArrowRight size={17} /></button>
           </form>
           <div className="auth-divider"><span>または</span></div>
