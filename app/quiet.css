@@ -1430,8 +1430,8 @@ body {
 
   .diary-hero {
     width: 100%;
-    height: 106px;
-    min-height: 106px;
+    height: 80px;
+    min-height: 80px;
     aspect-ratio: auto;
     background-position: center 58%;
   }
@@ -1439,17 +1439,17 @@ body {
   .diary-hero-copy {
     width: 100%;
     max-width: none;
-    padding: 18px 20px;
+    padding: 8px 20px;
   }
 
   .diary-hero-copy h1 {
     margin-bottom: 5px;
-    font-size: clamp(27px, 8vw, 34px);
+    font-size: clamp(24px, 7vw, 28px);
     line-height: 1.15;
   }
 
   .diary-hero-copy p {
-    font-size: 13px;
+    font-size: 12px;
     line-height: 1.45;
   }
 
