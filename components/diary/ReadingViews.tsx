@@ -206,7 +206,15 @@ export function WeekView({
     <div className="content-panel">
       <div className="week-toolbar">
         <span className="week-range" aria-label="表示期間">
-          {weekDays[0].label} — {weekDays[weekDays.length - 1].label}
+          <span className="week-range-desktop">
+            {weekDays[0].label} — {weekDays[weekDays.length - 1].label}
+          </span>
+          <span className="week-range-mobile">
+            {weekDays[0].label.replace("月", "/").replace("日", "")}ー
+            {weekDays[weekDays.length - 1].label
+              .replace("月", "/")
+              .replace("日", "")}
+          </span>
         </span>
         <div className="week-actions">
           <button
