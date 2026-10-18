@@ -1661,7 +1661,12 @@ body {
   .detail-panel > .back-button {
     height: 52px;
     padding: 12px 0 4px;
-    font-size: 21px;
+    font-size: 16px;
+  }
+
+  .detail-panel > .back-button svg {
+    width: 16px;
+    height: 16px;
   }
 
   .detail-panel > .entry-pagination {
