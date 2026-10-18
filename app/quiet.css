@@ -1578,9 +1578,10 @@ body {
 
   .reading-entry > .entry-heading {
     width: 100%;
-    min-height: 40px;
+    height: 30px;
+    min-height: 30px;
     margin: 0;
-    padding: 7px 10px;
+    padding: 2px 8px;
     gap: 9px;
     align-items: center;
     background: #e7e3d7;
@@ -1604,8 +1605,8 @@ body {
 
   .entry-edit-button {
     flex: 0 0 auto;
-    min-height: 28px;
-    padding: 4px 7px;
+    min-height: 26px;
+    padding: 2px 6px;
   }
 
   .entry-body {
