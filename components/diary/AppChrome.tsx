@@ -12,6 +12,7 @@ import {
   UserRound,
   X,
 } from "lucide-react";
+import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
 import { getFollowerCount, getFollowingCount } from "@/app/lib/social";
 import type { Entry, Profile, RelationshipKind, View } from "@/types/diary";
@@ -86,6 +87,13 @@ export function Header({
         </label>
         <div className="header-actions">
           <button
+            className="mobile-search-button"
+            aria-label="アカウントを検索"
+            onClick={onSearch}
+          >
+            <Search size={20} />
+          </button>
+          <button
             className="icon-button"
             aria-label="お知らせ"
             onClick={onNotifications}
@@ -93,7 +101,11 @@ export function Header({
             <Bell size={20} />
             {hasUnreadNotifications && <span className="notification-dot" />}
           </button>
-          <button className="header-profile-button" aria-label="プロフィール">
+          <button
+            className="header-profile-button"
+            aria-label="プロフィールとメニュー"
+            onClick={onMenu}
+          >
             <ProfileAvatar profile={profile} />
           </button>
         </div>
@@ -294,13 +306,20 @@ export function SideNavigation({
   open,
   onClose,
   mobileOnly = false,
+  children,
 }: {
   view: View;
   onView: (view: View) => void;
   open: boolean;
   onClose: () => void;
   mobileOnly?: boolean;
+  children?: ReactNode;
 }) {
+  const selectView = (nextView: View) => {
+    onView(nextView);
+    if (mobileOnly) onClose();
+  };
+
   return (
     <aside
       className={`mobile-drawer ${mobileOnly ? "mobile-nav" : "desktop-nav"} ${open ? "drawer-open" : ""}`}
@@ -311,16 +330,26 @@ export function SideNavigation({
           <X size={20} />
         </button>
       </div>
+      {children && <div className="mobile-drawer-context">{children}</div>}
+      {mobileOnly && (
+        <button
+          className={view === "search" ? "active" : ""}
+          onClick={() => selectView("search")}
+        >
+          <Search size={19} />
+          検索
+        </button>
+      )}
       <button
         className={view === "visitors" ? "active" : ""}
-        onClick={() => onView("visitors")}
+        onClick={() => selectView("visitors")}
       >
         <Footprints size={19} />
         足あと
       </button>
       <button
         className={view === "profile" ? "active" : ""}
-        onClick={() => onView("profile")}
+        onClick={() => selectView("profile")}
       >
         <UserRound size={19} />
         プロフィール

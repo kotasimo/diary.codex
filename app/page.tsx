@@ -212,7 +212,42 @@ export default function HomePage() {
           open={app.drawerOpen}
           onClose={() => app.setDrawerOpen(false)}
           mobileOnly
-        />
+        >
+          <ProfileCard
+            profile={app.publicProfile}
+            socialEmail={sidebarEmail}
+            currentEmail={app.currentEmail}
+            socialVersion={app.socialVersion}
+            onRelationships={app.openRelationships}
+          />
+          <MiniCalendar
+            month={app.calendarMonth}
+            entries={app.entries}
+            onMonthChange={(offset) =>
+              app.setCalendarMonth(
+                (current) =>
+                  new Date(
+                    current.getFullYear(),
+                    current.getMonth() + offset,
+                    1,
+                  ),
+              )
+            }
+            onSelectMonth={(year, month) =>
+              app.setCalendarMonth(new Date(year, month, 1))
+            }
+            onToday={() => {
+              const today = new Date();
+              app.setCalendarMonth(
+                new Date(today.getFullYear(), today.getMonth(), 1),
+              );
+            }}
+            onPick={(day) => {
+              app.pickCalendarDay(day);
+              app.setDrawerOpen(false);
+            }}
+          />
+        </SideNavigation>
       )}
     </div>
   );
