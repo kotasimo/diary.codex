@@ -4,6 +4,7 @@ import {
   DiaryHero,
   Header,
   MiniCalendar,
+  MobileProfileSummary,
   ProfileCard,
   SideNavigation,
 } from "@/components/diary/AppChrome";
@@ -59,6 +60,7 @@ export default function HomePage() {
       />
       <div className="mobile-title">{app.title}</div>
       <DiaryHero profile={app.publicProfile} />
+      <MobileProfileSummary profile={app.publicProfile} />
       <main
         className={`app-layout${app.selectedAccount && (app.view === "account" || app.view === "detail") ? " public-account-layout" : ""}`}
       >

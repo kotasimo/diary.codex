@@ -135,6 +135,18 @@ export function DiaryHero({ profile }: { profile: Profile }) {
   );
 }
 
+export function MobileProfileSummary({ profile }: { profile: Profile }) {
+  return (
+    <section className="mobile-profile-summary" aria-label="プロフィール概要">
+      <div className="mobile-profile-identity">
+        <ProfileAvatar profile={profile} large />
+        <strong>{profile.displayName}</strong>
+      </div>
+      <p>{profile.bio}</p>
+    </section>
+  );
+}
+
 export function ProfileCard({
   profile,
   socialEmail,
