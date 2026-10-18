@@ -6,7 +6,6 @@ import {
   ChevronRight,
   Feather,
   Footprints,
-  LogOut,
   Menu,
   Search,
   Settings,
@@ -294,14 +293,12 @@ export function SideNavigation({
   onView,
   open,
   onClose,
-  onLogout,
   mobileOnly = false,
 }: {
   view: View;
   onView: (view: View) => void;
   open: boolean;
   onClose: () => void;
-  onLogout: () => void;
   mobileOnly?: boolean;
 }) {
   return (
@@ -331,11 +328,6 @@ export function SideNavigation({
       <button>
         <Settings size={19} />
         設定
-      </button>
-      <div className="drawer-spacer" />
-      <button onClick={onLogout}>
-        <LogOut size={19} />
-        ログアウト
       </button>
     </aside>
   );

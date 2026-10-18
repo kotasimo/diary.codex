@@ -25,8 +25,6 @@ import { normalizeDateValue } from "@/utils/date";
 
 export default function HomePage() {
   const app = useDiaryApp();
-  if (app.authError) return <main role="alert" style={{ padding: 32 }}>{app.authError}</main>;
-  if (!app.authReady) return null;
   const openNavigationView = (nextView: View) => {
     if (nextView === "compose") {
       app.openEditor(
@@ -102,7 +100,6 @@ export default function HomePage() {
               onView={openNavigationView}
               open={false}
               onClose={() => undefined}
-              onLogout={() => void app.handleLogout()}
             />
           )}
         </aside>
@@ -214,7 +211,6 @@ export default function HomePage() {
           onView={openNavigationView}
           open={app.drawerOpen}
           onClose={() => app.setDrawerOpen(false)}
-          onLogout={() => void app.handleLogout()}
           mobileOnly
         />
       )}
