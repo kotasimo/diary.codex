@@ -4,8 +4,9 @@ import { createClient } from "@supabase/supabase-js";
 
 const inputPath = process.argv[2];
 const dryRun = process.argv.includes("--dry-run");
+const userId = process.argv.find((arg) => arg.startsWith("--user-id="))?.slice("--user-id=".length);
 if (!inputPath) {
-  console.error("Usage: npm run import:diary -- /path/to/diary.csv");
+  console.error("Usage: npm run import:diary -- /path/to/diary.csv --user-id=AUTH_USER_UUID [--dry-run]");
   process.exit(1);
 }
 
@@ -67,13 +68,14 @@ if (dryRun) {
 }
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-if (!url || !key) throw new Error("NEXT_PUBLIC_SUPABASE_URL と NEXT_PUBLIC_SUPABASE_ANON_KEY が必要です。.env.local を確認してください。");
+const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+if (!url || !key) throw new Error("NEXT_PUBLIC_SUPABASE_URL と SUPABASE_SERVICE_ROLE_KEY が必要です。service role keyはサーバー側でのみ使用してください。");
+if (!userId || !/^[0-9a-f]{8}-[0-9a-f-]{27,}$/i.test(userId)) throw new Error("--user-id=AUTH_USER_UUID を指定してください。");
 
 const supabase = createClient(url, key);
 for (let offset = 0; offset < entries.length; offset += 100) {
-  const batch = entries.slice(offset, offset + 100);
-  const { error } = await supabase.from("diary_entries").upsert(batch, { onConflict: "date" });
+  const batch = entries.slice(offset, offset + 100).map((entry) => ({ ...entry, user_id: userId }));
+  const { error } = await supabase.from("user_diary_entries").upsert(batch, { onConflict: "user_id,date" });
   if (error) throw new Error(`行 ${offset + 1}-${offset + batch.length} の保存に失敗: ${error.message}`);
   console.log(`保存済み: ${Math.min(offset + batch.length, entries.length)}/${entries.length}`);
 }

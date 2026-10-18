@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { localAuthEnabled, localSessionKey } from "@/app/lib/auth";
 import {
   getSocialAccounts,
   getSocialEntries,
+  hydrateSocialAccounts,
+  hydrateSocialEntries,
   hydrateFollowing,
   toggleFollowing,
   type SocialAccount,
@@ -12,17 +13,17 @@ import {
 import { getSupabaseClient } from "@/app/lib/supabase";
 import {
   defaultProfile,
-  initialEntries,
   upgradeProfile,
 } from "@/lib/diary-data";
 import {
   loadDiaryEntries,
-  persistLocalDiaryEntries,
   saveDiaryEntry,
 } from "@/lib/diary-repository";
+import { loadProfile, saveProfileForUser } from "@/lib/profile-repository";
 import {
   addComment,
   addNotification,
+  clearSocialCache,
   getArticleInteraction,
   getComments,
   getNotifications,
@@ -50,10 +51,12 @@ import {
 } from "@/utils/date";
 
 export function useDiaryApp() {
-  const [entries, setEntries] = useState<Entry[]>(initialEntries);
+  const [entries, setEntries] = useState<Entry[]>([]);
   const [profile, setProfile] = useState<Profile>(defaultProfile);
   const [profileReady, setProfileReady] = useState(false);
   const [authReady, setAuthReady] = useState(false);
+  const [authError, setAuthError] = useState("");
+  const [currentUserId, setCurrentUserId] = useState("");
   const [view, setView] = useState<View>("week");
   const [notificationsReturnView, setNotificationsReturnView] =
     useState<View>("week");
@@ -64,7 +67,10 @@ export function useDiaryApp() {
       return new Date(today.getFullYear(), today.getMonth(), 1);
     },
   );
-  const [selectedEntry, setSelectedEntry] = useState(initialEntries[3]);
+  const [selectedEntry, setSelectedEntry] = useState<Entry>(() => {
+    const today = new Date();
+    return { date: toDateKey(today), day: dayNames[today.getDay()], content: "", updatedAt: "", views: 0 };
+  });
   const [editingEntry, setEditingEntry] = useState<Entry | undefined>();
   const [editingDate, setEditingDate] = useState({
     date: "2026-10-10",
@@ -114,7 +120,7 @@ export function useDiaryApp() {
       view,
     ],
   );
-  const socialAccounts = useMemo(() => {
+  const socialAccounts = (() => {
     const accounts = getSocialAccounts();
     if (
       currentEmail &&
@@ -127,7 +133,7 @@ export function useDiaryApp() {
         bio: visibleProfile.bio,
       });
     return accounts;
-  }, [currentEmail, visibleProfile.bio, visibleProfile.displayName]);
+  })();
   const visitorRecords = getVisitorRecords(currentEmail);
   const notifications = getNotifications(currentEmail);
   const hasUnreadNotifications = notifications.some(
@@ -140,28 +146,16 @@ export function useDiaryApp() {
     : [];
 
   useEffect(() => {
-    try {
-      const savedProfile = window.localStorage.getItem("hibi-diary-profile");
-      if (savedProfile)
-        setProfile(
-          upgradeProfile(JSON.parse(savedProfile) as Partial<Profile>),
-        );
-    } catch {
-      window.localStorage.removeItem("hibi-diary-profile");
-    } finally {
-      setProfileReady(true);
-    }
-  }, []);
-  useEffect(() => {
-    if (!currentEmail || localAuthEnabled) return;
+    if (!currentEmail) return;
+    void hydrateSocialAccounts().then(() => setSocialVersion((version) => version + 1)).catch(console.error);
     void Promise.all([hydrateSocialData(currentEmail), hydrateFollowing(currentEmail)])
       .then(() => setSocialVersion((version) => version + 1));
   }, [currentEmail]);
   useEffect(() => {
-    if (localAuthEnabled || !selectedAccount || selectedAccount.email === currentEmail)
+    if (!selectedAccount || selectedAccount.email === currentEmail)
       return;
-    void hydrateSocialData(selectedAccount.email)
-      .then(() => setSocialVersion((version) => version + 1));
+    void Promise.all([hydrateSocialData(selectedAccount.email), hydrateSocialEntries(selectedAccount)])
+      .then(() => setSocialVersion((version) => version + 1)).catch(console.error);
   }, [currentEmail, selectedAccount]);
   useEffect(() => {
     if (
@@ -178,50 +172,50 @@ export function useDiaryApp() {
     );
   }, [currentEmail, selectedAccount, selectedEntry, view]);
   useEffect(() => {
-    if (localAuthEnabled) {
-      const email = window.localStorage.getItem(localSessionKey) ?? "";
-      if (!email) {
-        window.location.assign("/login");
-      } else {
-        setCurrentEmail(email);
-        setAuthReady(true);
-      }
-      return;
-    }
+    window.localStorage.removeItem("hibi-local-auth-users");
+    window.localStorage.removeItem("hibi-local-auth-session");
     const supabase = getSupabaseClient();
     if (!supabase) {
-      window.location.assign("/login");
+      setAuthError("Supabaseの接続設定がありません。環境変数を確認してください。");
       return;
     }
     let active = true;
-    const redirectIfSignedOut = async () => {
-      const { data } = await supabase.auth.getSession();
+    const initialize = async () => {
+      const { data, error } = await supabase.auth.getUser();
       if (!active) return;
-      if (!data.session) {
+      if (error || !data.user) {
         window.location.assign("/login");
         return;
       }
-      setCurrentEmail(data.session.user.email?.toLowerCase() ?? "");
-      setAuthReady(true);
+      const user = data.user;
+      const email = user.email?.toLowerCase() ?? "";
+      try {
+        const [loadedProfile, loadedEntries] = await Promise.all([
+          loadProfile(user.id, email, typeof user.user_metadata.username === "string" ? user.user_metadata.username : undefined),
+          loadDiaryEntries(user.id),
+        ]);
+        if (!active) return;
+        clearSocialCache();
+        window.localStorage.removeItem("hibi-local-follows");
+        setCurrentUserId(user.id);
+        setCurrentEmail(email);
+        setProfile(loadedProfile);
+        setEntries(loadedEntries);
+        setProfileReady(true);
+        setAuthReady(true);
+      } catch (loadError) {
+        if (active) setAuthError(`アカウント情報を読み込めません: ${loadError instanceof Error ? loadError.message : "不明なエラー"}。Supabaseのauth-migration.sqlを適用してください。`);
+      }
     };
-    void redirectIfSignedOut();
+    void initialize();
     const { data: listener } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        if (!session) window.location.assign("/login");
+      (event) => {
+        if (event === "SIGNED_OUT") window.location.assign("/login");
       },
     );
     return () => {
       active = false;
       listener.subscription.unsubscribe();
-    };
-  }, []);
-  useEffect(() => {
-    let cancelled = false;
-    void loadDiaryEntries().then((loaded) => {
-      if (!cancelled && loaded) setEntries(loaded);
-    });
-    return () => {
-      cancelled = true;
     };
   }, []);
 
@@ -257,6 +251,7 @@ export function useDiaryApp() {
       setWeekStart(mondayOf(firstDate));
     }
     setSelectedAccount(account);
+    void hydrateSocialEntries(account).then(() => setSocialVersion((version) => version + 1)).catch(console.error);
     changeView("account");
   };
   const toggleAccountFollow = (email: string) => {
@@ -388,7 +383,7 @@ export function useDiaryApp() {
     changeView("week");
   };
   const saveEntry = async (entry: Entry) => {
-    const result = await saveDiaryEntry(entry);
+    const result = await saveDiaryEntry(entry, currentUserId);
     if (!result.ok) {
       window.alert(
         `Supabase保存エラー\n${result.message || "接続設定またはテーブル設定を確認してください"}`,
@@ -400,28 +395,25 @@ export function useDiaryApp() {
         ...current.filter((item) => item.date !== entry.date),
         entry,
       ];
-      persistLocalDiaryEntries(nextEntries);
       return nextEntries;
     });
     setSelectedEntry(entry);
     changeView("detail");
     return true;
   };
-  const saveProfile = (nextProfile: Profile) => {
+  const saveProfile = async (nextProfile: Profile) => {
     const upgradedProfile = upgradeProfile(nextProfile);
+    const result = await saveProfileForUser(currentUserId, currentEmail, upgradedProfile);
+    if (!result.ok) {
+      window.alert(`プロフィール保存エラー: ${result.message}`);
+      return;
+    }
     setProfile(upgradedProfile);
-    window.localStorage.setItem(
-      "hibi-diary-profile",
-      JSON.stringify(upgradedProfile),
-    );
     changeView("week");
   };
   const handleLogout = async () => {
-    if (localAuthEnabled) {
-      window.localStorage.removeItem(localSessionKey);
-      window.location.assign("/login");
-      return;
-    }
+    clearSocialCache();
+    window.localStorage.removeItem("hibi-local-follows");
     const supabase = getSupabaseClient();
     if (supabase) await supabase.auth.signOut();
     window.location.assign("/login");
@@ -431,6 +423,7 @@ export function useDiaryApp() {
     entries,
     profileReady,
     authReady,
+    authError,
     view,
     weekStart,
     calendarMonth,
