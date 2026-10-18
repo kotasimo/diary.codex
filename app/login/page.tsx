@@ -116,7 +116,10 @@ export default function LoginPage() {
           <form onSubmit={submitAuth}>
             <label>メールアドレス<div className="input-with-icon"><Mail size={17} /><input required value={email} onChange={(event) => setEmail(event.target.value)} type="email" placeholder="you@example.com" autoComplete="email" /></div></label>
             <label>パスワード<div className="input-with-icon password-input-wrap"><LockKeyhole size={17} /><input required minLength={6} value={password} onChange={(event) => setPassword(event.target.value)} type={showPassword ? "text" : "password"} placeholder="6文字以上" autoComplete={isSignup ? "new-password" : "current-password"} /><button type="button" className="password-visibility-button" onClick={() => setShowPassword((visible) => !visible)} aria-label={showPassword ? "パスワードを隠す" : "パスワードを表示"}>{showPassword ? <EyeOff size={17} /> : <Eye size={17} />}</button></div></label>
-            {!isSignup && <button type="button" className="forgot-link" onClick={() => void resetPassword()}>パスワードを忘れた方</button>}
+            {!isSignup && <>
+              <button type="button" className="forgot-link" onClick={() => void resetPassword()}>パスワードを忘れた方</button>
+              <button type="button" className="forgot-link" disabled={submitting} onClick={() => void resendConfirmation()}>確認メールが届かない方</button>
+            </>}
             {error && <p className="auth-message auth-error" role="alert">{error}</p>}
             {notice && <p className="auth-message auth-notice" role="status">{notice}</p>}
             {confirmationPending && <button type="button" className="forgot-link" disabled={submitting} onClick={() => void resendConfirmation()}>確認メールを再送する</button>}
