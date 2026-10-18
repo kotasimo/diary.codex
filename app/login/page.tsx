@@ -9,7 +9,6 @@ import { getSupabaseClient } from "../lib/supabase";
 export default function LoginPage() {
   const router = useRouter();
   const [isSignup, setIsSignup] = useState(false);
-  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -37,7 +36,7 @@ export default function LoginPage() {
     }
     setSubmitting(true);
     const result = isSignup
-      ? await supabase.auth.signUp({ email: email.trim(), password, options: { data: { username: username.trim() }, emailRedirectTo: `${window.location.origin}/auth/callback` } })
+      ? await supabase.auth.signUp({ email: email.trim(), password, options: { emailRedirectTo: `${window.location.origin}/auth/callback` } })
       : await supabase.auth.signInWithPassword({ email: email.trim(), password });
     setSubmitting(false);
     if (result.error) {
@@ -88,7 +87,6 @@ export default function LoginPage() {
           <h2>{isSignup ? "日記をはじめる" : "おかえりなさい"}</h2>
           <p>{isSignup ? "アカウントを作って、今日を残しましょう。" : "続きを書きに、ログインしましょう。"}</p>
           <form onSubmit={submitAuth}>
-            {isSignup && <label>ユーザー名<input value={username} onChange={(event) => setUsername(event.target.value)} placeholder="hibi_tarou" autoComplete="nickname" /></label>}
             <label>メールアドレス<div className="input-with-icon"><Mail size={17} /><input required value={email} onChange={(event) => setEmail(event.target.value)} type="email" placeholder="you@example.com" autoComplete="email" /></div></label>
             <label>パスワード<div className="input-with-icon password-input-wrap"><LockKeyhole size={17} /><input required minLength={6} value={password} onChange={(event) => setPassword(event.target.value)} type={showPassword ? "text" : "password"} placeholder="6文字以上" autoComplete={isSignup ? "new-password" : "current-password"} /><button type="button" className="password-visibility-button" onClick={() => setShowPassword((visible) => !visible)} aria-label={showPassword ? "パスワードを隠す" : "パスワードを表示"}>{showPassword ? <EyeOff size={17} /> : <Eye size={17} />}</button></div></label>
             {!isSignup && <button type="button" className="forgot-link" onClick={() => void resetPassword()}>パスワードを忘れた方</button>}
