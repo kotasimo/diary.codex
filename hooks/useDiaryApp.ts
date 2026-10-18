@@ -191,7 +191,7 @@ export function useDiaryApp() {
       const email = user.email?.toLowerCase() ?? "";
       try {
         const [loadedProfile, loadedEntries] = await Promise.all([
-          loadProfile(user.id, email, typeof user.user_metadata.username === "string" ? user.user_metadata.username : undefined),
+          loadProfile(user.id, email),
           loadDiaryEntries(user.id),
         ]);
         if (!active) return;
