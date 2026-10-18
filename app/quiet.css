@@ -1294,6 +1294,19 @@ body {
   width: 685px;
 }
 
+@media (min-width: 1180px) {
+  .app-layout {
+    grid-template-columns: minmax(0, 1fr) 685px minmax(0, 1fr);
+  }
+  .left-column {
+    width: var(--sidebar-width);
+    justify-self: start;
+  }
+  .main-column {
+    justify-self: center;
+  }
+}
+
 /* Match the detail back link to the weekly range heading. */
 .detail-panel {
   padding-top: 0;
