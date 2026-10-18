@@ -1377,10 +1377,7 @@ body {
   }
 
   .site-header {
-    position: sticky;
-    top: 0;
-    z-index: 30;
-    height: 60px;
+    display: none;
   }
 
   .header-inner {
