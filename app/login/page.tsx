@@ -91,7 +91,7 @@ export default function LoginPage() {
       return;
     }
     setSubmitting(true);
-    const { error: resetError } = await supabase.auth.resetPasswordForEmail(email.trim(), { redirectTo: `${window.location.origin}/auth/callback?next=/reset-password` });
+    const { error: resetError } = await supabase.auth.resetPasswordForEmail(email.trim(), { redirectTo: `${window.location.origin}/reset-password` });
     setSubmitting(false);
     if (resetError) setError(resetError.message);
     else setNotice("パスワード再設定用のメールを送信しました。");

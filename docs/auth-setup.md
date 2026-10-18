@@ -3,7 +3,7 @@
 開発環境・本番環境とも Supabase Auth のメール／パスワード認証を使用します。以前のローカル専用アカウントとログイン状態は、更新後にページを開いた時点でブラウザーから削除されます。旧パスワードは自動移行しないため、Supabase に新規登録してください。日記・プロフィールのローカル保存データはこのリセットでは削除しません。
 
 1. Supabase SQL Editor で `supabase/schema.sql`、続けて `supabase/auth-migration.sql` を実行します。両方とも再実行可能です。移行SQLは既存の日記を削除せず、古い共有テーブルへのブラウザーアクセスを停止します。
-2. Supabase の Authentication → URL Configuration で Site URL を `https://diary-seven-rho.vercel.app` に設定し、Redirect URLs に `https://diary-seven-rho.vercel.app/auth/callback` と `http://localhost:3000/auth/callback` を追加します。プレビュー環境を使う場合はその URL も追加してください。メール確認を有効にします。メールテンプレートは確認・再設定リンクが `redirectTo` に戻る設定にしてください。
+2. Supabase の Authentication → URL Configuration で Site URL を `https://diary-seven-rho.vercel.app` に設定し、Redirect URLs に `https://diary-seven-rho.vercel.app/auth/callback`、`https://diary-seven-rho.vercel.app/reset-password`、`http://localhost:3000/auth/callback`、`http://localhost:3000/reset-password` を追加します。プレビュー環境を使う場合はその URL も追加してください。メール確認を有効にします。Confirm signup と Reset password のメールテンプレートは、ボタンのリンク先に `{{ .ConfirmationURL }}` を指定します。
 3. Vercel の Production／Preview／Development に `NEXT_PUBLIC_SUPABASE_URL` と `NEXT_PUBLIC_SUPABASE_ANON_KEY` を設定して再デプロイします。これらはブラウザー公開用の値です。`SUPABASE_SERVICE_ROLE_KEY` は Vercel の公開環境変数に入れず、管理用スクリプトを使うときだけ安全なローカル環境に設定します。
 4. 新しいアカウントでログインし、日記作成・再ログイン・ログアウト・確認メール・再設定メールを確認します。
 
