@@ -1622,7 +1622,7 @@ body {
   }
 
   .reading-copy { min-width: 0; }
-  .reading-media { display: none; }
+  .reading-entry .entry-body .reading-media { display: none; }
 
   .reading-copy .entry-content {
     width: 100%;
