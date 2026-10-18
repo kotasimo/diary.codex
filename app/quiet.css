@@ -1616,13 +1616,13 @@ body {
   .entry-body {
     display: grid;
     width: 100%;
-    grid-template-columns: minmax(0, 1fr) 84px;
-    gap: 16px;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
     padding-top: 9px;
   }
 
-  .reading-copy,
-  .reading-media { min-width: 0; }
+  .reading-copy { min-width: 0; }
+  .reading-media { display: none; }
 
   .reading-copy .entry-content {
     width: 100%;
