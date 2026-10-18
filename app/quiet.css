@@ -1430,8 +1430,8 @@ body {
 
   .diary-hero {
     width: 100%;
-    height: 132px;
-    min-height: 132px;
+    height: 106px;
+    min-height: 106px;
     aspect-ratio: auto;
     background-position: center 58%;
   }
