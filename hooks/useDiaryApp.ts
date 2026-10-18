@@ -57,9 +57,12 @@ export function useDiaryApp() {
   const [view, setView] = useState<View>("week");
   const [notificationsReturnView, setNotificationsReturnView] =
     useState<View>("week");
-  const [weekStart, setWeekStart] = useState(() => new Date(2026, 9, 5));
+  const [weekStart, setWeekStart] = useState(() => mondayOf(new Date()));
   const [calendarMonth, setCalendarMonth] = useState(
-    () => new Date(2026, 9, 1),
+    () => {
+      const today = new Date();
+      return new Date(today.getFullYear(), today.getMonth(), 1);
+    },
   );
   const [selectedEntry, setSelectedEntry] = useState(initialEntries[3]);
   const [editingEntry, setEditingEntry] = useState<Entry | undefined>();
