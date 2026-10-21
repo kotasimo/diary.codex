@@ -135,12 +135,28 @@ export function DiaryHero({ profile }: { profile: Profile }) {
   );
 }
 
-export function MobileProfileSummary({ profile }: { profile: Profile }) {
+export function MobileProfileSummary({
+  profile,
+  onSettings,
+}: {
+  profile: Profile;
+  onSettings?: () => void;
+}) {
   return (
     <section className="mobile-profile-summary" aria-label="プロフィール概要">
       <div className="mobile-profile-identity">
         <ProfileAvatar profile={profile} large />
         <strong>{profile.displayName}</strong>
+        {onSettings && (
+          <button
+            type="button"
+            className="mobile-profile-settings"
+            onClick={onSettings}
+          >
+            <Settings size={15} aria-hidden="true" />
+            設定
+          </button>
+        )}
       </div>
       <p>{profile.bio}</p>
     </section>
