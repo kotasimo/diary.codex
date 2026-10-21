@@ -47,7 +47,9 @@ export default function HomePage() {
         : app.currentEmail;
 
   return (
-    <div className={`app-shell${app.profileReady ? "" : " profile-loading"}`}>
+    <div
+      className={`app-shell view-${app.view}${app.profileReady ? "" : " profile-loading"}`}
+    >
       <Header
         profile={app.visibleProfile}
         searchQuery={app.searchQuery}
