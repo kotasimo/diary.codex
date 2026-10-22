@@ -246,7 +246,6 @@ export function WeekView({
                 <time className="entry-heading-date">
                   {label.replace("月", "/").replace("日", "")}（{day}）
                 </time>
-                <h2>{entry?.title ?? ""}</h2>
                 {!readOnly && (
                   <button
                     type="button"
@@ -276,7 +275,7 @@ export function WeekView({
                     role={entry?.image ? "img" : undefined}
                     aria-label={
                       entry?.image
-                        ? `${entry.title ?? "日記"}の写真`
+                        ? `${label}の日記の写真`
                         : undefined
                     }
                     aria-hidden={entry?.image ? undefined : true}
@@ -348,7 +347,6 @@ export function DetailView({
         <p>
           {displayDate.replace("月", "/").replace("日", "")}（{entry.day}）
         </p>
-        {entry.title && <h1>{entry.title}</h1>}
         {!readOnly && (
           <button type="button" className="detail-edit-button" onClick={onEdit}>
             <Edit3 size={14} aria-hidden="true" />
@@ -435,8 +433,8 @@ export function NotificationsView({
     if (notification.kind === "follow")
       return `${actor}さんがあなたをフォローしました`;
     if (notification.kind === "like")
-      return `${actor}さんが「${notification.entryTitle ?? "日記"}」にいいねしました`;
-    return `${actor}さんが「${notification.entryTitle ?? "日記"}」にコメントしました`;
+      return `${actor}さんが日記にいいねしました`;
+    return `${actor}さんが日記にコメントしました`;
   };
   return (
     <section className="content-panel notifications-panel">
@@ -515,11 +513,7 @@ export function VisitorsView({
               </span>
               <span className="visitor-info">
                 <strong>{name}</strong>
-                <span>
-                  {record.entryTitle
-                    ? `「${record.entryTitle}」を読みました`
-                    : "あなたの日記を訪れました"}
-                </span>
+                <span>あなたの日記を訪れました</span>
               </span>
               <time>{formatVisitedAt(record.visitedAt)}</time>
               <ChevronRight size={17} />

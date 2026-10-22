@@ -235,7 +235,6 @@ export function useDiaryApp() {
         kind: "like",
         actorEmail: currentEmail,
         entryDate: selectedEntry.date,
-        entryTitle: selectedEntry.title,
       });
     }
   };
@@ -252,7 +251,6 @@ export function useDiaryApp() {
       kind: "comment",
       actorEmail: currentEmail,
       entryDate: selectedEntry.date,
-      entryTitle: selectedEntry.title,
       commentBody: comment.body,
     });
     setSocialVersion((version) => version + 1);

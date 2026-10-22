@@ -260,7 +260,6 @@ export function ComposeView({
   onCancel: () => void;
   onSave: (entry: Entry) => Promise<boolean>;
 }) {
-  const [title, setTitle] = useState(entry?.title ?? "");
   const [content, setContent] = useState(entry?.content ?? "");
   const [image, setImage] = useState(entry?.image ?? "");
   const [cropSource, setCropSource] = useState<string | null>(null);
@@ -273,7 +272,6 @@ export function ComposeView({
     const saved = await onSave({
       date,
       day,
-      title: title.trim() || undefined,
       content: content.trim(),
       updatedAt: `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`,
       views: entry?.views ?? 0,
@@ -305,9 +303,6 @@ export function ComposeView({
             キャンセル
           </button>
         </div>
-        <label className="field-label" htmlFor="title">
-          タイトル <span>任意</span>
-        </label>
         <div className="compose-title-row">
           <span className="compose-entry-date">
             {formatDate(parseDateValue(date))
@@ -315,14 +310,6 @@ export function ComposeView({
               .replace("日", "")}
             （{day}）
           </span>
-          <input
-            id="title"
-            className="title-input"
-            value={title}
-            onChange={(event) => setTitle(event.target.value)}
-            placeholder="記事タイトル"
-            maxLength={80}
-          />
           <button
             type="button"
             className="entry-edit-button compose-save-button"
@@ -332,7 +319,6 @@ export function ComposeView({
             {saving ? "保存中…" : entry ? "保存" : "公開"}
           </button>
         </div>
-        <div className="character-count">{title.length} / 80</div>
         <label className="field-label" htmlFor="body">
           本文
         </label>

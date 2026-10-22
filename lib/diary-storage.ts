@@ -90,7 +90,6 @@ export function recordPageVisit(
     visitorEmail,
     visitedAt: new Date().toISOString(),
     entryDate: entry?.date,
-    entryTitle: entry?.title,
   };
   const withoutRecentDuplicate = records.filter(
     (record) =>
