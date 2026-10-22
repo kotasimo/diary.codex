@@ -1541,11 +1541,11 @@ body {
   }
 
   .reading-entry > .entry-heading {
-    width: 100%;
+    width: calc(100% + 32px);
     height: 30px;
     min-height: 30px;
-    margin: 0;
-    padding: 2px 8px;
+    margin: 0 -16px;
+    padding: 2px 24px;
     gap: 9px;
     align-items: center;
     background: #e7e3d7;
