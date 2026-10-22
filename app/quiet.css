@@ -1536,8 +1536,7 @@ body {
   .reading-entry + .reading-entry { padding-top: 12px; }
 
   .reading-entry::after {
-    right: 0;
-    border-color: #e7e6e1;
+    display: none;
   }
 
   .reading-entry > .entry-heading {
