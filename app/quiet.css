@@ -1645,10 +1645,10 @@ body {
   }
 
   .detail-panel > .detail-heading {
-    width: 100%;
+    width: calc(100% + 32px);
     height: 30px;
-    margin-top: 0;
-    padding: 2px 8px;
+    margin: 0 -16px;
+    padding: 2px 24px;
     gap: 9px;
   }
 
@@ -1678,14 +1678,15 @@ body {
   }
 
   .compose-title-row {
-    width: 100%;
+    width: calc(100% + 32px);
     height: 30px;
-    padding-right: 8px;
+    margin: 0 -16px;
+    padding-right: 24px;
     align-items: center;
   }
 
   .compose-title-row .compose-entry-date {
-    padding-left: 8px;
+    padding-left: 24px;
     font-size: 14px;
   }
 
