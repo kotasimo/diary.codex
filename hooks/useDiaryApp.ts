@@ -257,14 +257,17 @@ export function useDiaryApp() {
     });
     setSocialVersion((version) => version + 1);
   };
+  const markAllNotificationsRead = () => {
+    markNotificationsRead(currentEmail);
+    setSocialVersion((version) => version + 1);
+  };
   const openNotifications = () => {
     if (view === "notifications") {
       changeView(notificationsReturnView);
       return;
     }
     setNotificationsReturnView(view);
-    markNotificationsRead(currentEmail);
-    setSocialVersion((version) => version + 1);
+    markAllNotificationsRead();
     changeView("notifications");
   };
   const openDetail = (entry: Entry) => {
@@ -386,6 +389,7 @@ export function useDiaryApp() {
     toggleSelectedLike,
     addSelectedComment,
     openNotifications,
+    markAllNotificationsRead,
     openDetail,
     returnToSelectedWeek,
     moveDetail,

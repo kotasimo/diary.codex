@@ -23,9 +23,20 @@ import {
 import { useDiaryApp } from "@/hooks/useDiaryApp";
 import type { View } from "@/types/diary";
 import { normalizeDateValue } from "@/utils/date";
+import { useState } from "react";
+
+type MobileDrawerMode = "menu" | "search" | "notifications";
 
 export default function HomePage() {
   const app = useDiaryApp();
+  const [mobileDrawerMode, setMobileDrawerMode] =
+    useState<MobileDrawerMode>("menu");
+  const isMobileViewport = () =>
+    window.matchMedia("(max-width: 767px)").matches;
+  const openMobileDrawer = (mode: MobileDrawerMode) => {
+    setMobileDrawerMode(mode);
+    app.setDrawerOpen(true);
+  };
   const openNavigationView = (nextView: View) => {
     if (nextView === "compose") {
       app.openEditor(
@@ -54,11 +65,22 @@ export default function HomePage() {
         profile={app.visibleProfile}
         searchQuery={app.searchQuery}
         onSearchQuery={app.setSearchQuery}
-        onSearch={() => app.changeView("search")}
+        onSearch={() =>
+          isMobileViewport()
+            ? openMobileDrawer("search")
+            : app.changeView("search")
+        }
         onHome={app.goHome}
-        onMenu={() => app.setDrawerOpen(true)}
+        onMenu={() => openMobileDrawer("menu")}
         hasUnreadNotifications={app.hasUnreadNotifications}
-        onNotifications={app.openNotifications}
+        onNotifications={() => {
+          if (isMobileViewport()) {
+            app.markAllNotificationsRead();
+            openMobileDrawer("notifications");
+            return;
+          }
+          app.openNotifications();
+        }}
       />
       <div className="mobile-title">{app.title}</div>
       <DiaryHero profile={app.publicProfile} />
@@ -217,50 +239,90 @@ export default function HomePage() {
           onClick={() => app.setDrawerOpen(false)}
         />
       )}
-      {app.view !== "account" && (
-        <SideNavigation
-          view={app.view}
-          onView={openNavigationView}
-          open={app.drawerOpen}
-          onClose={() => app.setDrawerOpen(false)}
-          mobileOnly
-        >
-          <ProfileCard
-            profile={app.publicProfile}
-            socialEmail={sidebarEmail}
-            currentEmail={app.currentEmail}
-            socialVersion={app.socialVersion}
-            onRelationships={app.openRelationships}
+      <SideNavigation
+        view={app.view}
+        onView={openNavigationView}
+        open={app.drawerOpen}
+        onClose={() => app.setDrawerOpen(false)}
+        mobileOnly
+        title={
+          mobileDrawerMode === "search"
+            ? "検索"
+            : mobileDrawerMode === "notifications"
+              ? "お知らせ"
+              : "メニュー"
+        }
+        panelKind={mobileDrawerMode}
+        showNavigation={mobileDrawerMode === "menu"}
+        onSearchPanel={() => setMobileDrawerMode("search")}
+      >
+        {mobileDrawerMode === "menu" && (
+          <>
+            <ProfileCard
+              profile={app.publicProfile}
+              socialEmail={sidebarEmail}
+              currentEmail={app.currentEmail}
+              socialVersion={app.socialVersion}
+              onRelationships={app.openRelationships}
+            />
+            <MiniCalendar
+              month={app.calendarMonth}
+              entries={app.entries}
+              onMonthChange={(offset) =>
+                app.setCalendarMonth(
+                  (current) =>
+                    new Date(
+                      current.getFullYear(),
+                      current.getMonth() + offset,
+                      1,
+                    ),
+                )
+              }
+              onSelectMonth={(year, month) =>
+                app.setCalendarMonth(new Date(year, month, 1))
+              }
+              onToday={() => {
+                const today = new Date();
+                app.setCalendarMonth(
+                  new Date(today.getFullYear(), today.getMonth(), 1),
+                );
+              }}
+              onPick={(day) => {
+                app.pickCalendarDay(day);
+                app.setDrawerOpen(false);
+              }}
+            />
+          </>
+        )}
+        {mobileDrawerMode === "search" && (
+          <div className="mobile-search-panel">
+            <input
+              type="search"
+              value={app.searchQuery}
+              onChange={(event) => app.setSearchQuery(event.target.value)}
+              placeholder="アカウントを検索"
+              aria-label="アカウントを検索"
+              autoFocus
+            />
+            <SearchView
+              query={app.searchQuery}
+              currentEmail={app.currentEmail}
+              accounts={app.socialAccounts}
+              onToggleFollow={app.toggleAccountFollow}
+              onSelectAccount={(account) => {
+                app.openAccount(account);
+                app.setDrawerOpen(false);
+              }}
+            />
+          </div>
+        )}
+        {mobileDrawerMode === "notifications" && (
+          <NotificationsView
+            notifications={app.notifications}
+            accounts={app.socialAccounts}
           />
-          <MiniCalendar
-            month={app.calendarMonth}
-            entries={app.entries}
-            onMonthChange={(offset) =>
-              app.setCalendarMonth(
-                (current) =>
-                  new Date(
-                    current.getFullYear(),
-                    current.getMonth() + offset,
-                    1,
-                  ),
-              )
-            }
-            onSelectMonth={(year, month) =>
-              app.setCalendarMonth(new Date(year, month, 1))
-            }
-            onToday={() => {
-              const today = new Date();
-              app.setCalendarMonth(
-                new Date(today.getFullYear(), today.getMonth(), 1),
-              );
-            }}
-            onPick={(day) => {
-              app.pickCalendarDay(day);
-              app.setDrawerOpen(false);
-            }}
-          />
-        </SideNavigation>
-      )}
+        )}
+      </SideNavigation>
     </div>
   );
 }

@@ -335,6 +335,10 @@ export function SideNavigation({
   onClose,
   mobileOnly = false,
   children,
+  title = "メニュー",
+  panelKind = "menu",
+  showNavigation = true,
+  onSearchPanel,
 }: {
   view: View;
   onView: (view: View) => void;
@@ -342,6 +346,10 @@ export function SideNavigation({
   onClose: () => void;
   mobileOnly?: boolean;
   children?: ReactNode;
+  title?: string;
+  panelKind?: "menu" | "search" | "notifications";
+  showNavigation?: boolean;
+  onSearchPanel?: () => void;
 }) {
   const selectView = (nextView: View) => {
     onView(nextView);
@@ -350,42 +358,46 @@ export function SideNavigation({
 
   return (
     <aside
-      className={`mobile-drawer ${mobileOnly ? "mobile-nav" : "desktop-nav"} ${open ? "drawer-open" : ""}`}
+      className={`mobile-drawer ${mobileOnly ? `mobile-nav mobile-nav-${panelKind}` : "desktop-nav"} ${open ? "drawer-open" : ""}`}
     >
       <div className="drawer-head">
-        <span>メニュー</span>
+        <span>{title}</span>
         <button onClick={onClose}>
           <X size={20} />
         </button>
       </div>
       {children && <div className="mobile-drawer-context">{children}</div>}
-      {mobileOnly && (
+      {mobileOnly && showNavigation && (
         <button
           className={view === "search" ? "active" : ""}
-          onClick={() => selectView("search")}
+          onClick={onSearchPanel ?? (() => selectView("search"))}
         >
           <Search size={19} />
           検索
         </button>
       )}
-      <button
-        className={view === "visitors" ? "active" : ""}
-        onClick={() => selectView("visitors")}
-      >
-        <Footprints size={19} />
-        足あと
-      </button>
-      <button
-        className={view === "profile" ? "active" : ""}
-        onClick={() => selectView("profile")}
-      >
-        <UserRound size={19} />
-        プロフィール
-      </button>
-      <button>
-        <Settings size={19} />
-        設定
-      </button>
+      {showNavigation && (
+        <>
+          <button
+            className={view === "visitors" ? "active" : ""}
+            onClick={() => selectView("visitors")}
+          >
+            <Footprints size={19} />
+            足あと
+          </button>
+          <button
+            className={view === "profile" ? "active" : ""}
+            onClick={() => selectView("profile")}
+          >
+            <UserRound size={19} />
+            プロフィール
+          </button>
+          <button>
+            <Settings size={19} />
+            設定
+          </button>
+        </>
+      )}
     </aside>
   );
 }
