@@ -642,7 +642,6 @@ body {
 .search-account-avatar { display: grid; place-items: center; flex: 0 0 auto; width: 48px; height: 48px; border-radius: 50%; background: #252b2d; color: #fff; font-weight: 700; font-size: 18px; }
 .search-account-copy { min-width: 0; flex: 1; }
 .search-account-copy strong { display: block; color: #242a29; font-size: 16px; }
-.search-account-copy > span { color: #858d89; font-size: 12px; }
 .search-account-link { display: block; padding: 0; border: 0; background: transparent; text-align: left; cursor: pointer; }
 .search-account-link:hover strong { text-decoration: underline; }
 .search-account-copy p { margin: 7px 0 5px; color: #59615e; font-size: 13px; line-height: 1.5; }

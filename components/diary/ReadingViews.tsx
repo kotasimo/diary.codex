@@ -70,7 +70,6 @@ export function SearchView({
                   onClick={() => onSelectAccount(account)}
                 >
                   <strong>{account.displayName}</strong>
-                  <span>@{account.username}</span>
                 </button>
                 <p>{account.bio}</p>
                 <small>
