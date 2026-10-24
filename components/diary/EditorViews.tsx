@@ -441,6 +441,14 @@ export function ProfileSettingsView({
             <h1>プロフィール設定</h1>
             <p>日記に表示される名前や紹介文を編集できます。</p>
           </div>
+          <button
+            type="button"
+            className="profile-settings-heading-save"
+            disabled={!canSave}
+            onClick={saveProfile}
+          >
+            保存
+          </button>
         </header>
         <div className="profile-settings-body">
           <section

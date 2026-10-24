@@ -1027,6 +1027,7 @@ body {
   color: #747a75;
   font-size: 12px;
 }
+.profile-settings-heading-save { display: none; }
 .profile-settings-body { padding-top: 24px; }
 .profile-preview {
   display: flex;
@@ -1871,6 +1872,7 @@ body {
     min-height: 45px;
     padding: 0 16px;
     align-items: center;
+    justify-content: space-between;
     border-bottom: 1px solid #e7e6e1;
   }
 
@@ -1882,6 +1884,23 @@ body {
   .profile-settings-heading h1 {
     margin: 0;
     font: 700 18px/1.3 var(--sans);
+  }
+
+  .profile-settings-heading-save {
+    display: inline-flex;
+    min-height: 30px;
+    padding: 5px 12px;
+    align-items: center;
+    border: 0;
+    border-radius: 6px;
+    background: #252525;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .profile-settings-heading-save:disabled {
+    opacity: .45;
   }
 
   .profile-settings-body {
