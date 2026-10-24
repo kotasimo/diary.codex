@@ -1452,7 +1452,7 @@ body {
 
   .diary-hero-copy h1 {
     margin-bottom: 5px;
-    font-size: clamp(24px, 7vw, 28px);
+    font-size: clamp(18px, 5.25vw, 21px);
     line-height: 1.15;
   }
 
