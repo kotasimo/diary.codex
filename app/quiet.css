@@ -1142,6 +1142,7 @@ body {
   padding-top: 20px;
   border-top: 1px solid #e7e6e1;
 }
+.profile-settings-actions-mobile { display: none; }
 .compose-image-actions { display: flex; align-items: center; gap: 12px; margin-top: 18px; }
 .image-adjust-button {
   padding: 6px 8px;
@@ -1990,7 +1991,10 @@ body {
 
   .profile-form-grid small { font-size: 9px; }
 
-  .profile-settings-actions {
+  .profile-settings-actions-desktop { display: none; }
+
+  .profile-settings-actions-mobile {
+    display: flex;
     position: fixed;
     z-index: 40;
     right: 0;

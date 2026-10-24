@@ -409,6 +409,29 @@ export function ProfileSettingsView({
     draft.diaryTitle.trim() &&
     draft.subtitle.trim() &&
     draft.bio.trim();
+  const saveProfile = () =>
+    onSave({
+      ...draft,
+      displayName: draft.displayName.trim(),
+      diaryTitle: draft.diaryTitle.trim(),
+      subtitle: draft.subtitle.trim(),
+      bio: draft.bio.trim(),
+    });
+  const renderActions = () => (
+    <>
+      <button type="button" className="secondary-button" onClick={onCancel}>
+        キャンセル
+      </button>
+      <button
+        type="button"
+        className="primary-button"
+        disabled={!canSave}
+        onClick={saveProfile}
+      >
+        保存する
+      </button>
+    </>
+  );
   return (
     <>
       <section className="content-panel profile-settings-panel">
@@ -592,28 +615,13 @@ export function ProfileSettingsView({
             </label>
           </div>
         </div>
-        <div className="profile-settings-actions">
-          <button type="button" className="secondary-button" onClick={onCancel}>
-            キャンセル
-          </button>
-          <button
-            type="button"
-            className="primary-button"
-            disabled={!canSave}
-            onClick={() =>
-              onSave({
-                ...draft,
-                displayName: draft.displayName.trim(),
-                diaryTitle: draft.diaryTitle.trim(),
-                subtitle: draft.subtitle.trim(),
-                bio: draft.bio.trim(),
-              })
-            }
-          >
-            保存する
-          </button>
+        <div className="profile-settings-actions profile-settings-actions-desktop">
+          {renderActions()}
         </div>
       </section>
+      <div className="profile-settings-actions profile-settings-actions-mobile">
+        {renderActions()}
+      </div>
       {cropSource && (
         <ImageCropModal
           source={cropSource.source}
