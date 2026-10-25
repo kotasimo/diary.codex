@@ -181,18 +181,9 @@ export function useDiaryApp() {
     changeView("relationships");
   };
   const openAccount = (account: SocialAccount) => {
-    const accountEntries =
-      account.email === currentEmail
-        ? entries
-        : getSocialEntries(account.email).map(withDerivedEntryDay);
-    const firstEntry = accountEntries[accountEntries.length - 1];
-    if (firstEntry) {
-      const firstDate = parseDateValue(firstEntry.date);
-      setCalendarMonth(
-        new Date(firstDate.getFullYear(), firstDate.getMonth(), 1),
-      );
-      setWeekStart(mondayOf(firstDate));
-    }
+    const today = new Date();
+    setCalendarMonth(new Date(today.getFullYear(), today.getMonth(), 1));
+    setWeekStart(mondayOf(today));
     setSelectedAccount(account);
     changeView("account");
   };
