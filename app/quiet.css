@@ -1442,6 +1442,33 @@ body {
   font-weight: 600;
 }
 .record-day.today time { color: #c33d3d; }
+.record-day-toolbar {
+  display: flex;
+  gap: 4px;
+  height: 0;
+  margin: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity .15s ease, height .15s ease, margin .15s ease;
+}
+.record-day:hover .record-day-toolbar,
+.record-day:focus-within .record-day-toolbar {
+  height: 24px;
+  margin-bottom: 3px;
+  opacity: 1;
+}
+.record-day-toolbar button {
+  min-width: 25px;
+  height: 24px;
+  padding: 0 5px;
+  border: 0;
+  border-radius: 5px;
+  background: #f0f1ef;
+  color: #56605b;
+  font-size: 12px;
+  cursor: pointer;
+}
+.record-day-toolbar button:hover { background: #e2e5e1; color: #202522; }
 .record-day textarea {
   display: block;
   min-height: 26px;
