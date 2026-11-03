@@ -164,11 +164,6 @@ export default function HomePage() {
             <DetailView
               entry={app.selectedEntry}
               readOnly={Boolean(app.selectedAccount)}
-              interaction={app.selectedInteraction}
-              currentEmail={app.currentEmail}
-              onToggleLike={app.toggleSelectedLike}
-              comments={app.selectedComments}
-              onAddComment={app.addSelectedComment}
               onPrevious={() => app.moveDetail(-1)}
               onNext={() => app.moveDetail(1)}
               onBack={app.returnToSelectedWeek}

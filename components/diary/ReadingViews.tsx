@@ -5,9 +5,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Edit3,
-  Heart,
 } from "lucide-react";
-import { useState } from "react";
 import {
   getFollowerCount,
   getFollowing,
@@ -15,8 +13,6 @@ import {
   type SocialAccount,
 } from "@/app/lib/social";
 import type {
-  ArticleInteraction,
-  Comment,
   Entry,
   Notification,
   RelationshipKind,
@@ -302,11 +298,6 @@ export function DetailView({
   onPrevious,
   onNext,
   readOnly,
-  interaction,
-  currentEmail,
-  onToggleLike,
-  comments,
-  onAddComment,
 }: {
   entry: Entry;
   onBack: () => void;
@@ -314,19 +305,8 @@ export function DetailView({
   onPrevious: () => void;
   onNext: () => void;
   readOnly?: boolean;
-  interaction: ArticleInteraction;
-  currentEmail: string;
-  onToggleLike: () => void;
-  comments: Comment[];
-  onAddComment: (body: string) => void;
 }) {
   const displayDate = formatDate(parseDateValue(entry.date));
-  const [commentBody, setCommentBody] = useState("");
-  const submitComment = () => {
-    if (!commentBody.trim()) return;
-    onAddComment(commentBody);
-    setCommentBody("");
-  };
   return (
     <article className="content-panel detail-panel">
       <button className="back-button" onClick={onBack}>
@@ -357,61 +337,6 @@ export function DetailView({
       <div className="detail-body">
         <p>{entry.content}</p>
       </div>
-      <div className="article-reactions">
-        <button
-          type="button"
-          className={
-            interaction.likes.includes(currentEmail)
-              ? "reaction-button liked"
-              : "reaction-button"
-          }
-          onClick={onToggleLike}
-        >
-          <Heart
-            size={17}
-            fill={
-              interaction.likes.includes(currentEmail) ? "currentColor" : "none"
-            }
-          />
-          いいね {interaction.likes.length}
-        </button>
-      </div>
-      <section className="article-comments" aria-label="コメント">
-        <h2>コメント</h2>
-        <div className="comment-list">
-          {comments.map((comment) => (
-            <article key={comment.id}>
-              <strong>{comment.authorEmail}</strong>
-              <p>{comment.body}</p>
-            </article>
-          ))}
-          {!comments.length && (
-            <p className="comment-empty">まだコメントはありません。</p>
-          )}
-        </div>
-        <form
-          className="comment-form"
-          onSubmit={(event) => {
-            event.preventDefault();
-            submitComment();
-          }}
-        >
-          <input
-            value={commentBody}
-            onChange={(event) => setCommentBody(event.target.value)}
-            maxLength={280}
-            placeholder="コメントを書く"
-            aria-label="コメント"
-          />
-          <button
-            type="submit"
-            className="primary-button"
-            disabled={!commentBody.trim()}
-          >
-            送信
-          </button>
-        </form>
-      </section>
     </article>
   );
 }

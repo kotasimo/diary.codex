@@ -27,19 +27,13 @@ import {
   saveRecordTabs,
 } from "@/lib/record-repository";
 import {
-  addComment,
   addNotification,
-  getArticleInteraction,
-  getComments,
   getNotifications,
   getVisitorRecords,
   markNotificationsRead,
   recordPageVisit,
-  saveArticleInteraction,
 } from "@/lib/diary-storage";
 import type {
-  ArticleInteraction,
-  Comment,
   Entry,
   LifeRecord,
   Profile,
@@ -215,58 +209,6 @@ export function useDiaryApp() {
     const isFollowing = toggleFollowing(currentEmail, email);
     if (isFollowing)
       addNotification(email, { kind: "follow", actorEmail: currentEmail });
-    setSocialVersion((version) => version + 1);
-  };
-  const interactionOwnerEmail = selectedAccount?.email ?? currentEmail;
-  const selectedInteraction = getArticleInteraction(
-    interactionOwnerEmail,
-    selectedEntry.date,
-  );
-  const selectedComments = getComments(
-    interactionOwnerEmail,
-    selectedEntry.date,
-  );
-  const updateSelectedInteraction = (
-    update: (current: ArticleInteraction) => ArticleInteraction,
-  ) => {
-    const next = update(
-      getArticleInteraction(interactionOwnerEmail, selectedEntry.date),
-    );
-    saveArticleInteraction(interactionOwnerEmail, selectedEntry.date, next);
-    setSocialVersion((version) => version + 1);
-  };
-  const toggleSelectedLike = () => {
-    if (!currentEmail) return;
-    const isNewLike = !selectedInteraction.likes.includes(currentEmail);
-    updateSelectedInteraction((current) => ({
-      ...current,
-      likes: current.likes.includes(currentEmail)
-        ? current.likes.filter((email) => email !== currentEmail)
-        : [...current.likes, currentEmail],
-    }));
-    if (isNewLike) {
-      addNotification(interactionOwnerEmail, {
-        kind: "like",
-        actorEmail: currentEmail,
-        entryDate: selectedEntry.date,
-      });
-    }
-  };
-  const addSelectedComment = (body: string) => {
-    if (!currentEmail || !body.trim()) return;
-    const comment: Comment = {
-      id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-      authorEmail: currentEmail,
-      body: body.trim(),
-      createdAt: new Date().toISOString(),
-    };
-    addComment(interactionOwnerEmail, selectedEntry.date, comment);
-    addNotification(interactionOwnerEmail, {
-      kind: "comment",
-      actorEmail: currentEmail,
-      entryDate: selectedEntry.date,
-      commentBody: comment.body,
-    });
     setSocialVersion((version) => version + 1);
   };
   const markAllNotificationsRead = () => {
@@ -463,8 +405,6 @@ export function useDiaryApp() {
     notifications,
     hasUnreadNotifications,
     publicEntries,
-    selectedInteraction,
-    selectedComments,
     setCalendarMonth,
     setDrawerOpen,
     setSearchQuery,
@@ -473,8 +413,6 @@ export function useDiaryApp() {
     openRelationships,
     openAccount,
     toggleAccountFollow,
-    toggleSelectedLike,
-    addSelectedComment,
     openNotifications,
     markAllNotificationsRead,
     openDetail,
