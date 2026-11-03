@@ -2368,3 +2368,20 @@ body {
 }
 .detail-input:focus { outline: none; }
 .detail-input::placeholder { color: #b7bbb5; }
+
+/* Today leads the page: a roomy box to write in, set apart from the history. */
+.record-day.today {
+  padding-bottom: 20px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid #ebe9e3;
+}
+.record-day.today time {
+  margin-bottom: 8px;
+  font-size: 16px;
+}
+.record-day.today textarea {
+  min-height: 132px;
+  font-size: 15px;
+  line-height: 1.9;
+}
+.record-day.today textarea::placeholder { color: #c0c4bd; }

@@ -119,6 +119,14 @@ export function RecordsView({
                 }}
                 // Keeps the row from disappearing as its last character is deleted.
                 onFocus={() => holdOpen(date)}
+                // A day opened but left blank goes away again, so browsing the
+                // calendar does not leave empty rows behind.
+                onBlur={() => {
+                  if (date === todayDate || (drafts[date] ?? "").trim()) return;
+                  setOpenDates((current) =>
+                    current.filter((held) => held !== date),
+                  );
+                }}
                 onChange={(event) => {
                   const value = event.target.value;
                   setDrafts((current) => ({ ...current, [date]: value }));
