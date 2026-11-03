@@ -63,6 +63,12 @@ export function RecordsView({
                 <time dateTime={date}>{dateLabel(date)}</time>
                 <textarea
                   value={drafts[date] ?? ""}
+                  ref={(element) => {
+                    if (element) {
+                      element.style.height = "auto";
+                      element.style.height = `${Math.max(52, element.scrollHeight)}px`;
+                    }
+                  }}
                   onChange={(event) =>
                     setDrafts((current) => ({ ...current, [date]: event.target.value }))
                   }
