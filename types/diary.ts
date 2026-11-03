@@ -9,7 +9,8 @@ export type View =
   | "search"
   | "account"
   | "relationships"
-  | "notifications";
+  | "notifications"
+  | "records";
 export type RelationshipKind = "following" | "followers";
 
 export type Profile = {
@@ -29,6 +30,14 @@ export type Entry = {
   updatedAt: string;
   views: number;
   image?: string;
+};
+
+export type LifeRecord = {
+  id: string;
+  genre: string;
+  content: string;
+  createdAt: string;
+  date?: string;
 };
 
 export type ArticleInteraction = { likes: string[] };
