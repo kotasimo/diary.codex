@@ -22,7 +22,6 @@ export function RecordsView({
         <div>
           <p className="eyebrow">LIFE RECORDS</p>
           <h1>記録</h1>
-          <p>ジャンルごとの記録を、ひとつの場所に残せます。</p>
         </div>
       </header>
       <div className="records-body">
@@ -42,23 +41,24 @@ export function RecordsView({
             保存
           </button>
         </div>
-        <div className="records-feed">
-          {records.map((record) => (
-            <article className="life-record" key={record.id}>
-              <div className="life-record-meta">
-                <time dateTime={record.createdAt}>
-                  {new Date(record.createdAt).toLocaleDateString("ja-JP", {
-                    month: "numeric",
-                    day: "numeric",
-                    weekday: "short",
-                  })}
-                </time>
-              </div>
-              <p>{record.content}</p>
-            </article>
-          ))}
-          {!records.length && <p className="records-empty">まだメモがありません。</p>}
-        </div>
+        {records.length > 0 && (
+          <div className="records-feed">
+            {records.map((record) => (
+              <article className="life-record" key={record.id}>
+                <div className="life-record-meta">
+                  <time dateTime={record.createdAt}>
+                    {new Date(record.createdAt).toLocaleDateString("ja-JP", {
+                      month: "numeric",
+                      day: "numeric",
+                      weekday: "short",
+                    })}
+                  </time>
+                </div>
+                <p>{record.content}</p>
+              </article>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );
