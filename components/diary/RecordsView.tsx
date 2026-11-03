@@ -41,7 +41,6 @@ export function RecordsView({
   const [drafts, setDrafts] = useState<Record<string, string>>({});
   const todayRef = useRef<HTMLLabelElement | null>(null);
   const formRef = useRef<HTMLDivElement | null>(null);
-  const editorRefs = useRef<Record<string, HTMLTextAreaElement | null>>({});
 
   useEffect(() => {
     const next: Record<string, string> = {};
@@ -71,27 +70,6 @@ export function RecordsView({
       return [...buildDates(first, 7), ...current];
     });
   };
-  const updateDraft = (date: string, value: string) => {
-    setDrafts((current) => ({ ...current, [date]: value }));
-    onAddRecord(value, date);
-  };
-  const wrapSelection = (date: string, before: string, after = before) => {
-    const editor = editorRefs.current[date];
-    if (!editor) return;
-    const start = editor.selectionStart;
-    const end = editor.selectionEnd;
-    const value = drafts[date] ?? "";
-    const next = `${value.slice(0, start)}${before}${value.slice(start, end)}${after}${value.slice(end)}`;
-    updateDraft(date, next);
-    requestAnimationFrame(() => {
-      editor.focus();
-      editor.setSelectionRange(start + before.length, end + before.length);
-    });
-  };
-  const insertChecklist = (date: string) => wrapSelection(date, "☐ ", "");
-  const editHistory = (command: "undo" | "redo") => {
-    document.execCommand(command);
-  };
 
   return (
     <div className="records-page">
@@ -114,24 +92,21 @@ export function RecordsView({
                 ref={date === todayDate ? todayRef : undefined}
               >
                 <time dateTime={date}>{dateLabel(date)}</time>
-                <div className="record-day-toolbar" aria-label="書式ツール">
-                  <button type="button" onClick={() => wrapSelection(date, "**")} aria-label="太字">B</button>
-                  <button type="button" onClick={() => wrapSelection(date, "_", "_")} aria-label="斜体">I</button>
-                  <button type="button" onClick={() => wrapSelection(date, "# ", "")} aria-label="見出し">H</button>
-                  <button type="button" onClick={() => insertChecklist(date)} aria-label="チェックリスト">☐</button>
-                  <button type="button" onClick={() => editHistory("undo")} aria-label="取り消す">↶</button>
-                  <button type="button" onClick={() => editHistory("redo")} aria-label="やり直す">↷</button>
-                </div>
                 <textarea
                   value={drafts[date] ?? ""}
                   ref={(element) => {
-                    editorRefs.current[date] = element;
                     if (element) {
                       element.style.height = "auto";
                       element.style.height = `${Math.max(26, element.scrollHeight)}px`;
                     }
                   }}
-                  onChange={(event) => updateDraft(date, event.target.value)}
+                  onChange={(event) =>
+                    (() => {
+                      const value = event.target.value;
+                      setDrafts((current) => ({ ...current, [date]: value }));
+                      onAddRecord(value, date);
+                    })()
+                  }
                   rows={2}
                 />
               </label>
