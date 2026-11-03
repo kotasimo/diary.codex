@@ -27,10 +27,26 @@ const buildDates = (start: Date, count: number) =>
 export function RecordsView({
   records,
   onAddRecord,
+  title,
+  onTitleChange,
 }: {
   records: LifeRecord[];
   onAddRecord: (content: string, date?: string) => void;
+  title: string;
+  onTitleChange: (title: string) => void;
 }) {
+  // Held locally so the field can be emptied while typing; a blank title
+  // falls back to the stored tab name on blur.
+  const [titleDraft, setTitleDraft] = useState(title);
+  // What this field last sent upstream, so a rename made in the tab bar is
+  // pulled in without the stored (trimmed) name overwriting live typing.
+  const pushedTitle = useRef(title);
+  useEffect(() => {
+    if (title !== pushedTitle.current) {
+      pushedTitle.current = title;
+      setTitleDraft(title);
+    }
+  }, [title]);
   const todayDate = dateValue(new Date());
   const earliestRecordDate = records.reduce(
     (earliest, record) => {
@@ -129,6 +145,23 @@ export function RecordsView({
   return (
     <div className="records-page">
       <section className="content-panel records-panel">
+        <input
+          className="records-title"
+          value={titleDraft}
+          placeholder="タイトル"
+          aria-label="タブのタイトル"
+          onChange={(event) => {
+            const value = event.target.value;
+            setTitleDraft(value);
+            if (value.trim()) {
+              pushedTitle.current = value.trim();
+              onTitleChange(value);
+            }
+          }}
+          onBlur={() => {
+            if (!titleDraft.trim()) setTitleDraft(title);
+          }}
+        />
         <div
           className="records-form"
           ref={formRef}

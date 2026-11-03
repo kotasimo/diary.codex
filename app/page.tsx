@@ -232,6 +232,10 @@ export default function HomePage() {
                 key={app.activeRecordTabId}
                 records={app.records}
                 onAddRecord={app.addLifeRecord}
+                title={app.activeRecordTab.name}
+                onTitleChange={(name) =>
+                  app.renameRecordTab(app.activeRecordTabId, name)
+                }
               />
             </>
           )}

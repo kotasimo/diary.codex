@@ -1420,7 +1420,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 0;
-  height: calc(100vh - 61px - var(--records-tabs-h));
+  height: calc(100vh - 61px - var(--records-tabs-h) - var(--records-title-h));
   min-height: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
@@ -1674,7 +1674,7 @@ body {
   .records-heading h1 { font-size: 22px; }
   .records-heading p:last-child { font-size: 11px; }
   .records-body { padding: 0; }
-  .records-form { height: calc(100vh - 54px - var(--records-tabs-h)); padding: 10px 16px; }
+  .records-form { height: calc(100vh - 54px - var(--records-tabs-h) - var(--records-title-h)); padding: 10px 16px; }
   .record-day { padding: 7px 0 10px; }
   .records-save { margin: 10px 16px 18px auto; }
   .records-genres { margin: 18px 0 12px; }
@@ -2336,4 +2336,27 @@ body {
 @media (max-width: 767px) {
   .record-tab { min-width: 52px; max-width: 150px; padding: 0 3px 0 10px; }
   .record-tab-close { opacity: 1; }
+}
+
+/* Title line at the top of the journal: the active tab's name. */
+.records-title {
+  display: block;
+  width: 100%;
+  height: var(--records-title-h);
+  padding: 0 36px;
+  border: 0;
+  border-bottom: 1px solid #e7e6e1;
+  border-radius: 0;
+  background: #fff;
+  color: #252525;
+  font-family: var(--serif);
+  font-size: 19px;
+  font-weight: 700;
+}
+.records-title::placeholder { color: #b7bbb5; font-weight: 500; }
+.records-title:focus { outline: none; border-bottom-color: #9daaa6; }
+
+@media (max-width: 767px) {
+  :root { --records-title-h: 40px; }
+  .records-title { padding: 0 16px; font-size: 17px; }
 }

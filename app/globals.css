@@ -11,6 +11,7 @@
   --serif: "Hiragino Kaku Gothic ProN", "Yu Gothic", system-ui, sans-serif;
   --sans: "Hiragino Kaku Gothic ProN", "Yu Gothic", system-ui, sans-serif;
   --records-tabs-h: 34px;
+  --records-title-h: 46px;
 }
 
 * { box-sizing: border-box; }

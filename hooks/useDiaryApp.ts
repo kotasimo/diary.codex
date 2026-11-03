@@ -358,6 +358,8 @@ export function useDiaryApp() {
     changeView("detail");
     return true;
   };
+  const activeRecordTab =
+    recordTabs.find((tab) => tab.id === activeRecordTabId) ?? recordTabs[0];
   const selectRecordTab = (tabId: string) => {
     if (tabId === activeRecordTabId) return;
     setActiveRecordTabId(tabId);
@@ -440,6 +442,7 @@ export function useDiaryApp() {
     records,
     recordTabs,
     activeRecordTabId,
+    activeRecordTab,
     profileReady,
     view,
     weekStart,
