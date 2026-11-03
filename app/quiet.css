@@ -1434,11 +1434,11 @@ body {
 .records-form::-webkit-scrollbar { display: none; }
 .record-day {
   display: block;
-  padding: 8px 0 11px;
+  padding: 4px 0 6px;
 }
 .record-day time {
   display: block;
-  margin-bottom: 4px;
+  margin-bottom: 2px;
   color: #4d5652;
   font-size: 15px;
   font-weight: 600;
@@ -1446,12 +1446,13 @@ body {
 .record-day.today time { color: #c33d3d; }
 .record-day textarea {
   display: block;
-  min-height: 26px;
+  min-height: 20px;
   padding: 0;
   border: 0;
   border-radius: 0;
   background: transparent;
-  height: 26px;
+  height: 20px;
+  line-height: 20px;
   overflow: hidden;
   resize: none;
 }
@@ -1503,8 +1504,8 @@ body {
 .record-day textarea {
   flex: none;
   width: 100%;
-  height: 26px;
-  min-height: 26px;
+  height: 20px;
+  min-height: 20px;
   resize: none;
 }
 .records-save {
@@ -2256,6 +2257,7 @@ body {
 /* Tabs share the strip evenly and shrink as more are opened, the way Chrome
    and Notepad do, so the bar never needs a scrollbar. */
 .record-tab {
+  position: relative;
   flex: 1 1 0;
   min-width: 58px;
   max-width: 200px;
@@ -2270,6 +2272,17 @@ body {
   color: #747a75;
 }
 .record-tab:hover { background: rgba(255, 255, 255, .55); }
+.record-tab + .record-tab::before {
+  content: "";
+  position: absolute;
+  left: -2px;
+  top: 8px;
+  bottom: 8px;
+  width: 1px;
+  background: #dcdad3;
+}
+.record-tab.active::before,
+.record-tab.active + .record-tab::before { display: none; }
 .record-tab.active {
   margin-bottom: -1px;
   border-color: #e0ded7;

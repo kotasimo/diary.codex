@@ -187,7 +187,7 @@ export function RecordsView({
                   ref={(element) => {
                     if (element) {
                       element.style.height = "auto";
-                      element.style.height = `${Math.max(26, element.scrollHeight)}px`;
+                      element.style.height = `${Math.max(20, element.scrollHeight)}px`;
                     }
                   }}
                   onChange={(event) =>
@@ -197,7 +197,7 @@ export function RecordsView({
                       onAddRecord(value, date);
                     })()
                   }
-                  rows={2}
+                  rows={1}
                 />
               </label>
             ))}
