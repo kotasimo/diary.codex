@@ -1425,8 +1425,8 @@ body {
   overflow-y: auto;
   overscroll-behavior: contain;
   touch-action: pan-y;
-  border: 1px solid #e7e6e1;
-  border-radius: 10px;
+  border: 0;
+  border-radius: 0;
   background: #fff;
   padding: 24px 36px;
 }
