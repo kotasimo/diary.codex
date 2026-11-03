@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { LifeRecord } from "@/types/diary";
 
 const dateValue = (date: Date) => {
@@ -24,9 +24,11 @@ export function RecordsView({
   records: LifeRecord[];
   onAddRecord: (content: string, date?: string) => void;
 }) {
+  const todayDate = dateValue(new Date());
   const dates = useMemo(() => {
     const first = new Date();
     first.setHours(0, 0, 0, 0);
+    first.setDate(first.getDate() - 7);
     return Array.from({ length: 14 }, (_, index) => {
       const date = new Date(first);
       date.setDate(first.getDate() + index);
@@ -34,6 +36,7 @@ export function RecordsView({
     });
   }, []);
   const [drafts, setDrafts] = useState<Record<string, string>>({});
+  const todayRef = useRef<HTMLLabelElement | null>(null);
 
   useEffect(() => {
     const next: Record<string, string> = {};
@@ -44,12 +47,20 @@ export function RecordsView({
     setDrafts(next);
   }, [records]);
 
+  useEffect(() => {
+    todayRef.current?.scrollIntoView({ block: "center", inline: "nearest" });
+  }, []);
+
   return (
     <div className="records-page">
       <section className="content-panel records-panel">
         <div className="records-form">
             {dates.map((date) => (
-              <label className="record-day" key={date}>
+              <label
+                className={`record-day${date === todayDate ? " today" : ""}`}
+                key={date}
+                ref={date === todayDate ? todayRef : undefined}
+              >
                 <time dateTime={date}>{dateLabel(date)}</time>
                 <textarea
                   value={drafts[date] ?? ""}
