@@ -44,16 +44,6 @@ export function RecordsView({
     setDrafts(next);
   }, [records]);
 
-  const submit = () => {
-    dates.forEach((date) => {
-      const content = drafts[date]?.trim();
-      const alreadySaved = records.some(
-        (record) => (record.date ?? record.createdAt.slice(0, 10)) === date,
-      );
-      if (content && !alreadySaved) onAddRecord(content, date);
-    });
-  };
-
   return (
     <div className="records-page">
       <section className="content-panel records-panel">
@@ -70,7 +60,11 @@ export function RecordsView({
                     }
                   }}
                   onChange={(event) =>
-                    setDrafts((current) => ({ ...current, [date]: event.target.value }))
+                    (() => {
+                      const value = event.target.value;
+                      setDrafts((current) => ({ ...current, [date]: value }));
+                      onAddRecord(value, date);
+                    })()
                   }
                   rows={2}
                 />
@@ -78,9 +72,6 @@ export function RecordsView({
             ))}
         </div>
       </section>
-      <button type="button" className="primary-button records-save" onClick={submit}>
-        保存
-      </button>
     </div>
   );
 }

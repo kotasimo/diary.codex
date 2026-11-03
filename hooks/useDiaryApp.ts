@@ -351,15 +351,19 @@ export function useDiaryApp() {
     return true;
   };
   const addLifeRecord = (content: string, date?: string) => {
+    const targetDate = date ?? new Date().toISOString().slice(0, 10);
     const record = {
       id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
       genre: "メモ",
       content,
       createdAt: new Date().toISOString(),
-      date,
+      date: targetDate,
     };
     setRecords((current) => {
-      const nextRecords = [record, ...current];
+      const nextRecords = current.filter(
+        (item) => (item.date ?? item.createdAt.slice(0, 10)) !== targetDate,
+      );
+      if (content.trim()) nextRecords.unshift(record);
       saveLifeRecords(nextRecords);
       return nextRecords;
     });
