@@ -1420,9 +1420,13 @@ body {
   display: flex;
   flex-direction: column;
   gap: 0;
-  overflow: visible;
-  border: 0;
-  border-radius: 0;
+  height: min(620px, calc(100vh - 110px));
+  min-height: 360px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  border: 1px solid #e7e6e1;
+  border-radius: 10px;
   background: #fff;
   padding: 24px 36px;
 }
@@ -1661,7 +1665,7 @@ body {
   .records-heading h1 { font-size: 22px; }
   .records-heading p:last-child { font-size: 11px; }
   .records-body { padding: 0; }
-  .records-form { padding: 10px 16px; }
+  .records-form { height: min(540px, calc(100vh - 90px)); min-height: 320px; padding: 10px 16px; }
   .record-day { padding: 7px 0 10px; }
   .records-save { margin: 10px 16px 18px auto; }
   .records-genres { margin: 18px 0 12px; }
