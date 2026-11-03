@@ -66,7 +66,7 @@ export function RecordsView({
                   ref={(element) => {
                     if (element) {
                       element.style.height = "auto";
-                      element.style.height = `${Math.max(52, element.scrollHeight)}px`;
+                      element.style.height = `${Math.max(26, element.scrollHeight)}px`;
                     }
                   }}
                   onChange={(event) =>

@@ -1428,23 +1428,23 @@ body {
 }
 .record-day {
   display: block;
-  padding: 16px 0 22px;
+  padding: 8px 0 11px;
 }
 .record-day time {
   display: block;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
   color: #4d5652;
   font-size: 15px;
   font-weight: 600;
 }
 .record-day textarea {
   display: block;
-  min-height: 52px;
+  min-height: 26px;
   padding: 0;
   border: 0;
   border-radius: 0;
   background: transparent;
-  height: 52px;
+  height: 26px;
   overflow: hidden;
   resize: none;
 }
@@ -1493,7 +1493,7 @@ body {
 }
 .records-form select:focus,
 .records-form textarea:focus { border-color: transparent; box-shadow: none; }
-.record-day textarea { flex: none; width: 100%; height: 52px; min-height: 52px; }
+.record-day textarea { flex: none; width: 100%; height: 26px; min-height: 26px; }
 .records-save {
   display: block;
   margin: 12px -12px 24px auto;
@@ -1662,7 +1662,7 @@ body {
   .records-heading p:last-child { font-size: 11px; }
   .records-body { padding: 0; }
   .records-form { padding: 10px 16px; }
-  .record-day { padding: 14px 0 20px; }
+  .record-day { padding: 7px 0 10px; }
   .records-save { margin: 10px 16px 18px auto; }
   .records-genres { margin: 18px 0 12px; }
   .life-record { padding: 16px 2px; }
