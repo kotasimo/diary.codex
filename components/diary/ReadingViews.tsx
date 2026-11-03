@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, ChevronLeft, ChevronRight, Edit3 } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react";
 import {
   getFollowerCount,
   getFollowing,
@@ -183,13 +183,11 @@ export function WeekView({
   weekStart,
   onShift,
   onDetail,
-  readOnly = false,
 }: {
   entries: Entry[];
   weekStart: Date;
   onShift: (days: number) => void;
   onDetail: (entry: Entry) => void;
-  readOnly?: boolean;
 }) {
   const weekDays = buildWeek(weekStart).map(([date, day]) => ({
     iso: date,
@@ -261,17 +259,6 @@ export function WeekView({
                 >
                   {label.replace("月", "/").replace("日", "")}（{day}）
                 </button>
-                {!readOnly && (
-                  <button
-                    type="button"
-                    className="entry-edit-button"
-                    onClick={openDay}
-                    aria-label={`${label}の日記を${entry ? "編集" : "作成"}`}
-                  >
-                    <Edit3 size={14} aria-hidden="true" />
-                    <span>{entry ? "編集" : "作成"}</span>
-                  </button>
-                )}
               </header>
               <div className="entry-body">
                 <div className="reading-copy">

@@ -20,7 +20,6 @@ import {
 } from "@/components/diary/ReadingViews";
 import { useDiaryApp } from "@/hooks/useDiaryApp";
 import type { View } from "@/types/diary";
-import { normalizeDateValue } from "@/utils/date";
 import { useState } from "react";
 
 type MobileDrawerMode = "menu" | "search" | "notifications";
@@ -209,7 +208,6 @@ export default function HomePage() {
               weekStart={app.weekStart}
               onShift={app.shiftWeek}
               onDetail={app.openDetail}
-              readOnly
             />
           )}
           {app.view === "relationships" && (
