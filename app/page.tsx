@@ -121,7 +121,24 @@ export default function HomePage() {
                 new Date(today.getFullYear(), today.getMonth(), 1),
               );
             }}
-            onPick={app.pickCalendarDay}
+            onPick={(day) => {
+              if (app.view === "records") {
+                const selected = new Date(
+                  app.calendarMonth.getFullYear(),
+                  app.calendarMonth.getMonth(),
+                  day,
+                );
+                const month = String(selected.getMonth() + 1).padStart(2, "0");
+                const date = String(selected.getDate()).padStart(2, "0");
+                window.dispatchEvent(
+                  new CustomEvent("records:select-date", {
+                    detail: `${selected.getFullYear()}-${month}-${date}`,
+                  }),
+                );
+                return;
+              }
+              app.pickCalendarDay(day);
+            }}
           />
           {app.view !== "account" && (
             <SideNavigation
