@@ -32,6 +32,11 @@ export type Entry = {
   image?: string;
 };
 
+export type RecordTab = {
+  id: string;
+  name: string;
+};
+
 export type LifeRecord = {
   id: string;
   genre: string;
