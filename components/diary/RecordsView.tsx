@@ -69,8 +69,28 @@ export function RecordsView({
   }, [earliestRecordDate]);
 
   useEffect(() => {
-    todayRef.current?.scrollIntoView({ block: "center", inline: "nearest" });
+    requestAnimationFrame(() => {
+      const container = formRef.current;
+      const target = todayRef.current;
+      if (container && target) {
+        container.scrollTop = Math.max(
+          0,
+          target.offsetTop - container.offsetTop - container.clientHeight / 2,
+        );
+      }
+    });
   }, []);
+
+  const scrollDateToTop = (date: string) => {
+    const container = formRef.current;
+    const target = dateRefs.current[date];
+    if (container && target) {
+      container.scrollTo({
+        top: Math.max(0, target.offsetTop - container.offsetTop),
+        behavior: "smooth",
+      });
+    }
+  };
 
   useEffect(() => {
     const selectDate = (event: Event) => {
@@ -81,7 +101,7 @@ export function RecordsView({
       );
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
-          dateRefs.current[date]?.scrollIntoView({ block: "start" });
+          scrollDateToTop(date);
         });
       });
     };
