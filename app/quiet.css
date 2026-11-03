@@ -1500,7 +1500,13 @@ body {
 }
 .records-form select:focus,
 .records-form textarea:focus { border-color: transparent; box-shadow: none; }
-.record-day textarea { flex: none; width: 100%; height: 26px; min-height: 26px; }
+.record-day textarea {
+  flex: none;
+  width: 100%;
+  height: 26px;
+  min-height: 26px;
+  resize: none;
+}
 .records-save {
   display: block;
   margin: 12px -12px 24px auto;
