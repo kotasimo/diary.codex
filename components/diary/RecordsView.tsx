@@ -40,10 +40,14 @@ export function RecordsView({
     todayDate,
   );
   const [dates, setDates] = useState(() => {
-    return buildDates(new Date(`${earliestRecordDate}T00:00:00`), 15);
+    const yesterday = new Date();
+    yesterday.setHours(0, 0, 0, 0);
+    yesterday.setDate(yesterday.getDate() - 1);
+    const earliest = new Date(`${earliestRecordDate}T00:00:00`);
+    const first = earliest < yesterday ? earliest : yesterday;
+    return buildDates(first, 15);
   });
   const [drafts, setDrafts] = useState<Record<string, string>>({});
-  const todayRef = useRef<HTMLLabelElement | null>(null);
   const formRef = useRef<HTMLDivElement | null>(null);
   const dateRefs = useRef<Record<string, HTMLLabelElement | null>>({});
 
@@ -70,14 +74,7 @@ export function RecordsView({
 
   useEffect(() => {
     requestAnimationFrame(() => {
-      const container = formRef.current;
-      const target = todayRef.current;
-      if (container && target) {
-        container.scrollTop = Math.max(
-          0,
-          target.offsetTop - container.offsetTop - container.clientHeight / 2,
-        );
-      }
+      if (formRef.current) formRef.current.scrollTop = 0;
     });
   }, []);
 
@@ -96,12 +93,15 @@ export function RecordsView({
     const selectDate = (event: Event) => {
       const date = (event as CustomEvent<string>).detail;
       if (!date) return;
+      const previousDate = new Date(`${date}T00:00:00`);
+      previousDate.setDate(previousDate.getDate() - 1);
+      const previous = dateValue(previousDate);
       setDates((current) =>
-        current.includes(date) ? current : [...current, date].sort(),
+        [...new Set([...current, previous, date])].sort(),
       );
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
-          scrollDateToTop(date);
+          scrollDateToTop(previous);
         });
       });
     };
@@ -146,7 +146,6 @@ export function RecordsView({
                 key={date}
                 ref={(element) => {
                   dateRefs.current[date] = element;
-                  if (date === todayDate) todayRef.current = element;
                 }}
               >
                 <time dateTime={date}>{dateLabel(date)}</time>
