@@ -358,9 +358,11 @@ export function useDiaryApp() {
       createdAt: new Date().toISOString(),
       date,
     };
-    const nextRecords = [record, ...records];
-    setRecords(nextRecords);
-    saveLifeRecords(nextRecords);
+    setRecords((current) => {
+      const nextRecords = [record, ...current];
+      saveLifeRecords(nextRecords);
+      return nextRecords;
+    });
   };
   const saveProfile = async (nextProfile: Profile) => {
     const upgradedProfile = upgradeProfile(nextProfile);

@@ -1,7 +1,21 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { LifeRecord } from "@/types/diary";
+
+const dateValue = (date: Date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
+const dateLabel = (value: string) =>
+  new Date(`${value}T00:00:00`).toLocaleDateString("ja-JP", {
+    month: "numeric",
+    day: "numeric",
+    weekday: "short",
+  });
 
 export function RecordsView({
   records,
@@ -10,95 +24,60 @@ export function RecordsView({
   records: LifeRecord[];
   onAddRecord: (content: string, date?: string) => void;
 }) {
-  const today = new Date();
-  const toDateValue = (value: Date) => {
-    const year = value.getFullYear();
-    const month = String(value.getMonth() + 1).padStart(2, "0");
-    const day = String(value.getDate()).padStart(2, "0");
-    return `${year}-${month}-${day}`;
-  };
-  const [selectedDate, setSelectedDate] = useState(toDateValue(today));
-  const [content, setContent] = useState("");
-  const [touchStart, setTouchStart] = useState<number | null>(null);
-  const recordsForDate = records.filter(
-    (record) => (record.date ?? record.createdAt.slice(0, 10)) === selectedDate,
-  );
+  const dates = useMemo(() => {
+    const first = new Date();
+    first.setHours(0, 0, 0, 0);
+    return Array.from({ length: 14 }, (_, index) => {
+      const date = new Date(first);
+      date.setDate(first.getDate() + index);
+      return dateValue(date);
+    });
+  }, []);
+  const [drafts, setDrafts] = useState<Record<string, string>>({});
+
   useEffect(() => {
-    setContent(recordsForDate.map((record) => record.content).join("\n\n"));
-    // The selected date intentionally controls which day's memo is shown.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedDate, records]);
-  const shiftDate = (offset: number) => {
-    const next = new Date(`${selectedDate}T00:00:00`);
-    next.setDate(next.getDate() + offset);
-    setSelectedDate(toDateValue(next));
-  };
-  const dateLabel = new Date(`${selectedDate}T00:00:00`).toLocaleDateString(
-    "ja-JP",
-    { month: "numeric", day: "numeric", weekday: "short" },
-  );
+    const next: Record<string, string> = {};
+    records.forEach((record) => {
+      const date = record.date ?? record.createdAt.slice(0, 10);
+      next[date] = next[date] ? `${next[date]}\n\n${record.content}` : record.content;
+    });
+    setDrafts(next);
+  }, [records]);
+
   const submit = () => {
-    if (!content.trim()) return;
-    onAddRecord(content.trim(), selectedDate);
-    setContent("");
+    dates.forEach((date) => {
+      const content = drafts[date]?.trim();
+      const alreadySaved = records.some(
+        (record) => (record.date ?? record.createdAt.slice(0, 10)) === date,
+      );
+      if (content && !alreadySaved) onAddRecord(content, date);
+    });
   };
+
   return (
     <div className="records-page">
       <section className="content-panel records-panel">
         <header className="records-heading">
-          <div>
-            <h1>記録</h1>
-          </div>
+          <h1>記録</h1>
         </header>
         <div className="records-body">
-          <div
-            className="records-form"
-            onTouchStart={(event) => setTouchStart(event.touches[0]?.clientX ?? null)}
-            onTouchEnd={(event) => {
-              if (touchStart === null) return;
-              const distance = (event.changedTouches[0]?.clientX ?? touchStart) - touchStart;
-              if (Math.abs(distance) > 50) shiftDate(distance > 0 ? -1 : 1);
-              setTouchStart(null);
-            }}
-          >
-            <div className="records-date-column">
-              <button type="button" aria-label="前の日" onClick={() => shiftDate(-1)}>‹</button>
-              <time dateTime={selectedDate}>{dateLabel}</time>
-              <button type="button" aria-label="次の日" onClick={() => shiftDate(1)}>›</button>
-            </div>
-            <textarea
-              value={content}
-              onChange={(event) => setContent(event.target.value)}
-              placeholder="思ったこと、覚えておきたいことを書いてみましょう。"
-              rows={6}
-            />
+          <div className="records-form">
+            {dates.map((date) => (
+              <label className="record-day" key={date}>
+                <time dateTime={date}>{dateLabel(date)}</time>
+                <textarea
+                  value={drafts[date] ?? ""}
+                  onChange={(event) =>
+                    setDrafts((current) => ({ ...current, [date]: event.target.value }))
+                  }
+                  rows={2}
+                />
+              </label>
+            ))}
           </div>
-          {records.length > 0 && (
-            <div className="records-feed">
-              {records.map((record) => (
-                <article className="life-record" key={record.id}>
-                  <div className="life-record-meta">
-                    <time dateTime={record.createdAt}>
-                      {new Date(`${record.date ?? record.createdAt.slice(0, 10)}T00:00:00`).toLocaleDateString("ja-JP", {
-                        month: "numeric",
-                        day: "numeric",
-                        weekday: "short",
-                      })}
-                    </time>
-                  </div>
-                  <p>{record.content}</p>
-                </article>
-              ))}
-            </div>
-          )}
         </div>
       </section>
-      <button
-        type="button"
-        className="primary-button records-save"
-        disabled={!content.trim()}
-        onClick={submit}
-      >
+      <button type="button" className="primary-button records-save" onClick={submit}>
         保存
       </button>
     </div>
