@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { LifeRecord } from "@/types/diary";
 
 const dateValue = (date: Date) => {
@@ -17,6 +17,13 @@ const dateLabel = (value: string) =>
     weekday: "short",
   });
 
+const buildDates = (start: Date, count: number) =>
+  Array.from({ length: count }, (_, index) => {
+    const date = new Date(start);
+    date.setDate(start.getDate() + index);
+    return dateValue(date);
+  });
+
 export function RecordsView({
   records,
   onAddRecord,
@@ -25,18 +32,15 @@ export function RecordsView({
   onAddRecord: (content: string, date?: string) => void;
 }) {
   const todayDate = dateValue(new Date());
-  const dates = useMemo(() => {
+  const [dates, setDates] = useState(() => {
     const first = new Date();
     first.setHours(0, 0, 0, 0);
     first.setDate(first.getDate() - 7);
-    return Array.from({ length: 14 }, (_, index) => {
-      const date = new Date(first);
-      date.setDate(first.getDate() + index);
-      return dateValue(date);
-    });
-  }, []);
+    return buildDates(first, 15);
+  });
   const [drafts, setDrafts] = useState<Record<string, string>>({});
   const todayRef = useRef<HTMLLabelElement | null>(null);
+  const formRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const next: Record<string, string> = {};
@@ -51,10 +55,36 @@ export function RecordsView({
     todayRef.current?.scrollIntoView({ block: "center", inline: "nearest" });
   }, []);
 
+  const extendDates = (direction: "past" | "future") => {
+    setDates((current) => {
+      if (direction === "future") {
+        const last = new Date(`${current[current.length - 1]}T00:00:00`);
+        last.setDate(last.getDate() + 1);
+        return [...current, ...buildDates(last, 7)];
+      }
+      const first = new Date(`${current[0]}T00:00:00`);
+      first.setDate(first.getDate() - 7);
+      requestAnimationFrame(() => {
+        if (formRef.current) formRef.current.scrollTop += 7 * 75;
+      });
+      return [...buildDates(first, 7), ...current];
+    });
+  };
+
   return (
     <div className="records-page">
       <section className="content-panel records-panel">
-        <div className="records-form">
+        <div
+          className="records-form"
+          ref={formRef}
+          onScroll={(event) => {
+            const element = event.currentTarget;
+            if (element.scrollTop < 80) extendDates("past");
+            if (element.scrollHeight - element.scrollTop - element.clientHeight < 80) {
+              extendDates("future");
+            }
+          }}
+        >
             {dates.map((date) => (
               <label
                 className={`record-day${date === todayDate ? " today" : ""}`}
