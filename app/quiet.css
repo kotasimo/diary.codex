@@ -2236,7 +2236,7 @@ body {
   background: #f6f5f1;
 }
 .record-tabs-strip {
-  padding: 6px 0 0;
+  padding: 2px 0 0;
   display: flex;
   align-items: flex-end;
   overflow: hidden;
@@ -2334,8 +2334,8 @@ body {
 .record-tab-add:hover { background: #e7e6e1; color: #252525; }
 
 @media (max-width: 767px) {
-  :root { --records-tabs-h: 37px; }
-  .record-tabs-strip { padding: 5px 0 0; }
+  :root { --records-tabs-h: 34px; }
+  .record-tabs-strip { padding: 2px 0 0; }
   .record-tab { height: 31px; min-width: 52px; max-width: 150px; padding: 0 3px 0 10px; }
   .record-tab-close { opacity: 1; }
 }
