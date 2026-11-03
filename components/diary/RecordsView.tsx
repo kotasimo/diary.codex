@@ -20,7 +20,6 @@ export function RecordsView({
     <section className="content-panel records-panel">
       <header className="records-heading">
         <div>
-          <p className="eyebrow">LIFE RECORDS</p>
           <h1>記録</h1>
         </div>
       </header>
