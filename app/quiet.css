@@ -2044,3 +2044,5 @@ body {
   }
 }
 
+
+.blank-main { max-width: 1240px; margin: 0 auto; padding: 34px 28px 80px; min-height: calc(100vh - 68px); }
