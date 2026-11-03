@@ -7,7 +7,7 @@ import type { Profile } from "@/types/diary";
 
 type CropSource = { kind: "avatar" | "header"; source: string };
 
-export async function resizeImage(file: File, maxWidth: number, maxHeight: number) {
+async function resizeImage(file: File, maxWidth: number, maxHeight: number) {
   if (file.size > 10 * 1024 * 1024)
     throw new Error("画像は10MB以下のものを選んでください。");
   return new Promise<string>((resolve, reject) => {
@@ -45,7 +45,7 @@ export async function resizeImage(file: File, maxWidth: number, maxHeight: numbe
   });
 }
 
-export function ImageCropModal({
+function ImageCropModal({
   source,
   aspect,
   outputWidth,

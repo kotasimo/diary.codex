@@ -8,10 +8,6 @@ import {
   type SocialAccount,
 } from "@/app/lib/social";
 import { useState } from "react";
-import {
-  ImageCropModal,
-  resizeImage,
-} from "@/components/diary/EditorViews";
 import type { DayRecord } from "@/lib/record-repository";
 import type {
   Entry,
@@ -313,13 +309,11 @@ export function DetailView({
 }) {
   const displayDate = formatDate(parseDateValue(entry.date));
   const [content, setContent] = useState(entry.content);
-  const [image, setImage] = useState(entry.image ?? "");
-  const [cropSource, setCropSource] = useState<string | null>(null);
   const [saveError, setSaveError] = useState("");
 
   // Written straight to storage as it is typed, like the record tabs, so the
   // page is never in an unsaved state and nothing needs confirming on exit.
-  const persist = async (next: { content: string; image: string }) => {
+  const persist = async (next: { content: string }) => {
     if (!onUpdate) return;
     const now = new Date();
     const saved = await onUpdate({
@@ -330,28 +324,13 @@ export function DetailView({
         now.getMinutes(),
       ).padStart(2, "0")}`,
       views: entry.views ?? 0,
-      image: next.image || undefined,
+      image: entry.image,
     });
     setSaveError(saved ? "" : "この端末に日記を保存できませんでした。");
   };
   const changeContent = (value: string) => {
     setContent(value);
-    void persist({ content: value, image });
-  };
-  const changeImage = (value: string) => {
-    setImage(value);
-    void persist({ content, image: value });
-  };
-  const pickImage = async (file: File | undefined) => {
-    if (!file) return;
-    try {
-      setCropSource(await resizeImage(file, 1800, 1200));
-      setSaveError("");
-    } catch (error) {
-      setSaveError(
-        error instanceof Error ? error.message : "画像を処理できませんでした。",
-      );
-    }
+    void persist({ content: value });
   };
   return (
     <article className="content-panel detail-panel">
@@ -373,7 +352,6 @@ export function DetailView({
         <p>
           {displayDate.replace("月", "/").replace("日", "")}（{entry.day}）
         </p>
-
       </header>
       {readOnly ? (
         entry.content && (
@@ -396,35 +374,6 @@ export function DetailView({
             }}
             onChange={(event) => changeContent(event.target.value)}
           />
-          <div className="detail-image-actions">
-            <label className="image-upload-button" htmlFor="detail-image-file">
-              画像を追加
-            </label>
-            <input
-              id="detail-image-file"
-              type="file"
-              accept="image/*"
-              onChange={(event) => void pickImage(event.target.files?.[0])}
-            />
-            {image && (
-              <>
-                <button
-                  type="button"
-                  className="image-adjust-button"
-                  onClick={() => setCropSource(image)}
-                >
-                  画像の表示範囲を調整
-                </button>
-                <button
-                  type="button"
-                  className="image-adjust-button"
-                  onClick={() => changeImage("")}
-                >
-                  画像を削除
-                </button>
-              </>
-            )}
-          </div>
           {saveError && (
             <p className="compose-save-error" role="alert">
               {saveError}
@@ -444,18 +393,6 @@ export function DetailView({
       )}
       {readOnly && !entry.content && !dayRecords.length && (
         <p className="detail-empty">この日はまだ何も書かれていません。</p>
-      )}
-      {cropSource && (
-        <ImageCropModal
-          source={cropSource}
-          aspect={1}
-          outputWidth={800}
-          onCancel={() => setCropSource(null)}
-          onUse={(croppedImage) => {
-            changeImage(croppedImage);
-            setCropSource(null);
-          }}
-        />
       )}
     </article>
   );

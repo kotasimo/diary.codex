@@ -2446,11 +2446,3 @@ body {
 }
 .detail-input:focus { outline: none; }
 .detail-input::placeholder { color: #b7bbb5; }
-.detail-image-actions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 10px;
-  padding: 12px 0 2px;
-}
-.detail-image-actions input[type="file"] { display: none; }
