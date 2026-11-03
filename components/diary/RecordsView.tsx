@@ -101,7 +101,7 @@ export function RecordsView({
       );
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
-          scrollDateToTop(previous);
+          scrollDateToTop(date);
         });
       });
     };
