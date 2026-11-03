@@ -87,16 +87,6 @@ export default function HomePage() {
         }
         recordsActive={app.view === "records"}
       />
-      {app.view === "records" && (
-        <RecordTabs
-          tabs={app.recordTabs}
-          activeId={app.activeRecordTabId}
-          onSelect={app.selectRecordTab}
-          onAdd={app.addRecordTab}
-          onClose={app.closeRecordTab}
-          onRename={app.renameRecordTab}
-        />
-      )}
       <div className="mobile-title">{app.title}</div>
       {app.view !== "records" && <DiaryHero profile={app.publicProfile} />}
       <main
@@ -229,11 +219,21 @@ export default function HomePage() {
             />
           )}
           {app.view === "records" && (
-            <RecordsView
-              key={app.activeRecordTabId}
-              records={app.records}
-              onAddRecord={app.addLifeRecord}
-            />
+            <>
+              <RecordTabs
+                tabs={app.recordTabs}
+                activeId={app.activeRecordTabId}
+                onSelect={app.selectRecordTab}
+                onAdd={app.addRecordTab}
+                onClose={app.closeRecordTab}
+                onRename={app.renameRecordTab}
+              />
+              <RecordsView
+                key={app.activeRecordTabId}
+                records={app.records}
+                onAddRecord={app.addLifeRecord}
+              />
+            </>
           )}
           {app.view === "account" && app.selectedAccount && (
             <WeekView
