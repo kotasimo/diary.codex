@@ -66,3 +66,26 @@ export function saveLifeRecords(tabId: string, records: LifeRecord[]) {
 export function removeLifeRecords(tabId: string) {
   window.localStorage.removeItem(recordsKeyOf(tabId));
 }
+
+export type DayRecord = { tabId: string; name: string; content: string };
+
+/** Every tab's writing for one date, in tab order, skipping the blank ones. */
+export function loadRecordsForDate(
+  tabs: RecordTab[],
+  date: string,
+): DayRecord[] {
+  if (typeof window === "undefined") return [];
+  return tabs
+    .map((tab) => ({
+      tabId: tab.id,
+      name: tab.name,
+      content: loadLifeRecords(tab.id)
+        .filter(
+          (record) => (record.date ?? record.createdAt.slice(0, 10)) === date,
+        )
+        .map((record) => record.content)
+        .join("\n\n")
+        .trim(),
+    }))
+    .filter((record) => record.content);
+}

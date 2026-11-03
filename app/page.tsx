@@ -164,6 +164,9 @@ export default function HomePage() {
             <DetailView
               entry={app.selectedEntry}
               readOnly={Boolean(app.selectedAccount)}
+              dayRecords={
+                app.selectedAccount ? undefined : app.selectedDayRecords
+              }
               onPrevious={() => app.moveDetail(-1)}
               onNext={() => app.moveDetail(1)}
               onBack={app.returnToSelectedWeek}

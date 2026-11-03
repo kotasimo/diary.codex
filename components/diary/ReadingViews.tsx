@@ -12,6 +12,7 @@ import {
   getFollowingCount,
   type SocialAccount,
 } from "@/app/lib/social";
+import type { DayRecord } from "@/lib/record-repository";
 import type {
   Entry,
   Notification,
@@ -239,9 +240,24 @@ export function WeekView({
               key={iso}
             >
               <header className="entry-heading">
-                <time className="entry-heading-date">
+                <button
+                  type="button"
+                  className="entry-heading-date"
+                  aria-label={`${label}を開く`}
+                  onClick={() =>
+                    onDetail(
+                      entry ?? {
+                        date: iso,
+                        day,
+                        content: "",
+                        updatedAt: "",
+                        views: 0,
+                      },
+                    )
+                  }
+                >
                   {label.replace("月", "/").replace("日", "")}（{day}）
-                </time>
+                </button>
                 {!readOnly && (
                   <button
                     type="button"
@@ -298,6 +314,7 @@ export function DetailView({
   onPrevious,
   onNext,
   readOnly,
+  dayRecords = [],
 }: {
   entry: Entry;
   onBack: () => void;
@@ -305,6 +322,7 @@ export function DetailView({
   onPrevious: () => void;
   onNext: () => void;
   readOnly?: boolean;
+  dayRecords?: DayRecord[];
 }) {
   const displayDate = formatDate(parseDateValue(entry.date));
   return (
@@ -334,9 +352,24 @@ export function DetailView({
           </button>
         )}
       </header>
-      <div className="detail-body">
-        <p>{entry.content}</p>
-      </div>
+      {entry.content && (
+        <div className="detail-body">
+          <p>{entry.content}</p>
+        </div>
+      )}
+      {dayRecords.length > 0 && (
+        <section className="detail-records" aria-label="この日の記録">
+          {dayRecords.map((record) => (
+            <div className="detail-record" key={record.tabId}>
+              <span className="detail-record-name">{record.name}</span>
+              <p>{record.content}</p>
+            </div>
+          ))}
+        </section>
+      )}
+      {!entry.content && !dayRecords.length && (
+        <p className="detail-empty">この日はまだ何も書かれていません。</p>
+      )}
     </article>
   );
 }

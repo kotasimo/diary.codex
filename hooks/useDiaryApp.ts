@@ -21,6 +21,7 @@ import {
   defaultTabId,
   defaultTabName,
   loadLifeRecords,
+  loadRecordsForDate,
   loadRecordTabs,
   removeLifeRecords,
   saveLifeRecords,
@@ -211,6 +212,14 @@ export function useDiaryApp() {
       addNotification(email, { kind: "follow", actorEmail: currentEmail });
     setSocialVersion((version) => version + 1);
   };
+  // Everything written in the record tabs on the day being read. This reads
+  // storage rather than state, so `records` is listed to recompute it after
+  // the open tab is edited; the linter cannot see that dependency.
+  const selectedDayRecords = useMemo(
+    () => loadRecordsForDate(recordTabs, normalizeDateValue(selectedEntry.date)),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [recordTabs, selectedEntry.date, records],
+  );
   const markAllNotificationsRead = () => {
     markNotificationsRead(currentEmail);
     setSocialVersion((version) => version + 1);
@@ -384,6 +393,7 @@ export function useDiaryApp() {
     records,
     recordTabs,
     activeRecordTabId,
+    selectedDayRecords,
     profileReady,
     view,
     weekStart,

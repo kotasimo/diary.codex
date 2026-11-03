@@ -2376,3 +2376,54 @@ body {
 }
 .record-tab-menu button:hover:not(:disabled) { background: #f1efe9; }
 .record-tab-menu button:disabled { color: #b7bbb5; cursor: default; }
+
+/* The day's record-tab writing, shown under the diary entry, read only. */
+.detail-records {
+  margin: 0;
+  padding: 18px 0 4px;
+  border-top: 1px solid #e7e6e1;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.detail-record {
+  display: grid;
+  grid-template-columns: 116px minmax(0, 1fr);
+  gap: 16px;
+  align-items: baseline;
+}
+.detail-record-name {
+  color: #8c918a;
+  font-size: 12px;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+.detail-record p {
+  margin: 0;
+  color: #3b423d;
+  font-size: 14px;
+  line-height: 1.9;
+  white-space: pre-wrap;
+}
+.detail-empty {
+  margin: 0;
+  padding: 10px 0 4px;
+  color: #9aa09a;
+  font-size: 13px;
+}
+.entry-heading-date {
+  border: 0;
+  padding: 0;
+  background: none;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.entry-heading-date:hover { text-decoration: underline; }
+
+@media (max-width: 767px) {
+  .detail-record {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2px;
+  }
+}
