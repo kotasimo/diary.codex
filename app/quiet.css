@@ -1429,7 +1429,9 @@ body {
   border-radius: 0;
   background: #fff;
   padding: 24px 36px;
+  scrollbar-width: none;
 }
+.records-form::-webkit-scrollbar { display: none; }
 .record-day {
   display: block;
   padding: 8px 0 11px;
