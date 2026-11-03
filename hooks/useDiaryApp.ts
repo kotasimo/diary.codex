@@ -16,6 +16,7 @@ import {
   loadDiaryEntries,
   saveDiaryEntry,
 } from "@/lib/diary-repository";
+import { loadLifeRecords, saveLifeRecords } from "@/lib/record-repository";
 import {
   addComment,
   addNotification,
@@ -31,6 +32,7 @@ import type {
   ArticleInteraction,
   Comment,
   Entry,
+  LifeRecord,
   Profile,
   RelationshipKind,
   View,
@@ -46,6 +48,7 @@ import {
 
 export function useDiaryApp() {
   const [entries, setEntries] = useState<Entry[]>(initialEntries);
+  const [records, setRecords] = useState<LifeRecord[]>([]);
   const [profile, setProfile] = useState<Profile>(defaultProfile);
   const [profileReady, setProfileReady] = useState(false);
   const [view, setView] = useState<View>("week");
@@ -97,13 +100,15 @@ export function useDiaryApp() {
             ? "アカウントを探す"
             : view === "notifications"
               ? "お知らせ"
-              : view === "account"
-                ? (selectedAccount?.displayName ?? "アカウント")
-                : view === "relationships"
-                  ? relationshipKind === "following"
-                    ? "フォロー"
-                    : "フォロワー"
-                  : visibleProfile.diaryTitle,
+              : view === "records"
+                ? "記録"
+                : view === "account"
+                  ? (selectedAccount?.displayName ?? "アカウント")
+                  : view === "relationships"
+                    ? relationshipKind === "following"
+                      ? "フォロー"
+                      : "フォロワー"
+                    : visibleProfile.diaryTitle,
     [
       relationshipKind,
       selectedAccount?.displayName,
@@ -160,6 +165,7 @@ export function useDiaryApp() {
       setProfileReady(true);
     }
     void loadDiaryEntries().then(setEntries);
+    setRecords(loadLifeRecords());
   }, []);
 
   const changeView = (nextView: View) => {
@@ -344,6 +350,17 @@ export function useDiaryApp() {
     changeView("detail");
     return true;
   };
+  const addLifeRecord = (genre: string, content: string) => {
+    const record = {
+      id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      genre,
+      content,
+      createdAt: new Date().toISOString(),
+    };
+    const nextRecords = [record, ...records];
+    setRecords(nextRecords);
+    saveLifeRecords(nextRecords);
+  };
   const saveProfile = async (nextProfile: Profile) => {
     const upgradedProfile = upgradeProfile(nextProfile);
     setProfile(upgradedProfile);
@@ -353,6 +370,7 @@ export function useDiaryApp() {
 
   return {
     entries,
+    records,
     profileReady,
     view,
     weekStart,
@@ -395,6 +413,7 @@ export function useDiaryApp() {
     shiftWeek,
     pickCalendarDay,
     saveEntry,
+    addLifeRecord,
     saveProfile,
   };
 }

@@ -11,6 +11,7 @@ import {
   ComposeView,
   ProfileSettingsView,
 } from "@/components/diary/EditorViews";
+import { RecordsView } from "@/components/diary/RecordsView";
 import {
   DetailView,
   NotificationsView,
@@ -80,9 +81,13 @@ export default function HomePage() {
           }
           app.openNotifications();
         }}
+        onRecords={() =>
+          app.view === "records" ? app.goHome() : app.changeView("records")
+        }
+        recordsActive={app.view === "records"}
       />
       <div className="mobile-title">{app.title}</div>
-      <DiaryHero profile={app.publicProfile} />
+      {app.view !== "records" && <DiaryHero profile={app.publicProfile} />}
       <main
         className={`app-layout${app.selectedAccount && (app.view === "account" || app.view === "detail") ? " public-account-layout" : ""}`}
       >
@@ -193,6 +198,12 @@ export default function HomePage() {
               accounts={app.socialAccounts}
               onToggleFollow={app.toggleAccountFollow}
               onSelectAccount={app.openAccount}
+            />
+          )}
+          {app.view === "records" && (
+            <RecordsView
+              records={app.records}
+              onAddRecord={app.addLifeRecord}
             />
           )}
           {app.view === "account" && app.selectedAccount && (

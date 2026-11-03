@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  BookOpen,
   Bell,
   ChevronLeft,
   ChevronRight,
@@ -50,6 +51,8 @@ export function Header({
   onMenu,
   hasUnreadNotifications,
   onNotifications,
+  onRecords,
+  recordsActive,
 }: {
   profile: Profile;
   searchQuery: string;
@@ -59,6 +62,8 @@ export function Header({
   onMenu: () => void;
   hasUnreadNotifications: boolean;
   onNotifications: () => void;
+  onRecords: () => void;
+  recordsActive: boolean;
 }) {
   return (
     <header className="site-header">
@@ -86,6 +91,14 @@ export function Header({
           />
         </label>
         <div className="header-actions">
+          <button
+            className={`records-button${recordsActive ? " active" : ""}`}
+            aria-label={recordsActive ? "日記へ戻る" : "記録を開く"}
+            onClick={onRecords}
+          >
+            <BookOpen size={20} />
+            <span>{recordsActive ? "日記" : "記録"}</span>
+          </button>
           <button
             className="mobile-search-button"
             aria-label="アカウントを検索"
@@ -341,6 +354,15 @@ export function SideNavigation({
       {children && <div className="mobile-drawer-context">{children}</div>}
       {mobileOnly && showNavigation && (
         <button
+          className={view === "records" ? "active" : ""}
+          onClick={() => selectView("records")}
+        >
+          <BookOpen size={19} />
+          記録
+        </button>
+      )}
+      {mobileOnly && showNavigation && (
+        <button
           className={view === "search" ? "active" : ""}
           onClick={onSearchPanel ?? (() => selectView("search"))}
         >
@@ -350,6 +372,15 @@ export function SideNavigation({
       )}
       {showNavigation && (
         <>
+          {!mobileOnly && (
+            <button
+              className={view === "records" ? "active" : ""}
+              onClick={() => selectView("records")}
+            >
+              <BookOpen size={19} />
+              記録
+            </button>
+          )}
           <button
             className={view === "visitors" ? "active" : ""}
             onClick={() => selectView("visitors")}
