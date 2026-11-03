@@ -16,7 +16,16 @@ import {
   loadDiaryEntries,
   saveDiaryEntry,
 } from "@/lib/diary-repository";
-import { loadLifeRecords, saveLifeRecords } from "@/lib/record-repository";
+import {
+  createTabId,
+  defaultTabId,
+  defaultTabName,
+  loadLifeRecords,
+  loadRecordTabs,
+  removeLifeRecords,
+  saveLifeRecords,
+  saveRecordTabs,
+} from "@/lib/record-repository";
 import {
   addComment,
   addNotification,
@@ -34,6 +43,7 @@ import type {
   Entry,
   LifeRecord,
   Profile,
+  RecordTab,
   RelationshipKind,
   View,
 } from "@/types/diary";
@@ -49,6 +59,10 @@ import {
 export function useDiaryApp() {
   const [entries, setEntries] = useState<Entry[]>(initialEntries);
   const [records, setRecords] = useState<LifeRecord[]>([]);
+  const [recordTabs, setRecordTabs] = useState<RecordTab[]>([
+    { id: defaultTabId, name: defaultTabName },
+  ]);
+  const [activeRecordTabId, setActiveRecordTabId] = useState(defaultTabId);
   const [profile, setProfile] = useState<Profile>(defaultProfile);
   const [profileReady, setProfileReady] = useState(false);
   const [view, setView] = useState<View>("week");
@@ -165,7 +179,10 @@ export function useDiaryApp() {
       setProfileReady(true);
     }
     void loadDiaryEntries().then(setEntries);
-    setRecords(loadLifeRecords());
+    const storedTabs = loadRecordTabs();
+    setRecordTabs(storedTabs.tabs);
+    setActiveRecordTabId(storedTabs.activeId);
+    setRecords(loadLifeRecords(storedTabs.activeId));
   }, []);
 
   const changeView = (nextView: View) => {
@@ -341,6 +358,58 @@ export function useDiaryApp() {
     changeView("detail");
     return true;
   };
+  const selectRecordTab = (tabId: string) => {
+    if (tabId === activeRecordTabId) return;
+    setActiveRecordTabId(tabId);
+    setRecords(loadLifeRecords(tabId));
+    saveRecordTabs(recordTabs, tabId);
+  };
+  const addRecordTab = () => {
+    const usedNames = new Set(recordTabs.map((tab) => tab.name));
+    let suffix = recordTabs.length + 1;
+    while (usedNames.has(`${defaultTabName} ${suffix}`)) suffix += 1;
+    const tab = { id: createTabId(), name: `${defaultTabName} ${suffix}` };
+    const nextTabs = [...recordTabs, tab];
+    setRecordTabs(nextTabs);
+    setActiveRecordTabId(tab.id);
+    setRecords([]);
+    saveLifeRecords(tab.id, []);
+    saveRecordTabs(nextTabs, tab.id);
+  };
+  const renameRecordTab = (tabId: string, name: string) => {
+    const trimmedName = name.trim();
+    if (!trimmedName) return;
+    const nextTabs = recordTabs.map((tab) =>
+      tab.id === tabId ? { ...tab, name: trimmedName } : tab,
+    );
+    setRecordTabs(nextTabs);
+    saveRecordTabs(nextTabs, activeRecordTabId);
+  };
+  const closeRecordTab = (tabId: string) => {
+    if (recordTabs.length <= 1) return;
+    const closingIndex = recordTabs.findIndex((tab) => tab.id === tabId);
+    if (closingIndex < 0) return;
+    const closingTab = recordTabs[closingIndex];
+    if (
+      loadLifeRecords(tabId).length &&
+      !window.confirm(
+        `「${closingTab.name}」を閉じると、このタブに書いた記録も削除されます。よろしいですか？`,
+      )
+    )
+      return;
+    const nextTabs = recordTabs.filter((tab) => tab.id !== tabId);
+    const nextActiveId =
+      tabId === activeRecordTabId
+        ? nextTabs[Math.min(closingIndex, nextTabs.length - 1)].id
+        : activeRecordTabId;
+    setRecordTabs(nextTabs);
+    removeLifeRecords(tabId);
+    saveRecordTabs(nextTabs, nextActiveId);
+    if (nextActiveId !== activeRecordTabId) {
+      setActiveRecordTabId(nextActiveId);
+      setRecords(loadLifeRecords(nextActiveId));
+    }
+  };
   const addLifeRecord = (content: string, date?: string) => {
     const targetDate = date ?? new Date().toISOString().slice(0, 10);
     const record = {
@@ -355,7 +424,7 @@ export function useDiaryApp() {
         (item) => (item.date ?? item.createdAt.slice(0, 10)) !== targetDate,
       );
       if (content.trim()) nextRecords.unshift(record);
-      saveLifeRecords(nextRecords);
+      saveLifeRecords(activeRecordTabId, nextRecords);
       return nextRecords;
     });
   };
@@ -369,6 +438,8 @@ export function useDiaryApp() {
   return {
     entries,
     records,
+    recordTabs,
+    activeRecordTabId,
     profileReady,
     view,
     weekStart,
@@ -412,6 +483,10 @@ export function useDiaryApp() {
     pickCalendarDay,
     saveEntry,
     addLifeRecord,
+    selectRecordTab,
+    addRecordTab,
+    renameRecordTab,
+    closeRecordTab,
     saveProfile,
   };
 }

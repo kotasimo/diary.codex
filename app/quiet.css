@@ -1420,7 +1420,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 0;
-  height: calc(100vh - 61px);
+  height: calc(100vh - 61px - var(--records-tabs-h));
   min-height: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
@@ -1674,7 +1674,7 @@ body {
   .records-heading h1 { font-size: 22px; }
   .records-heading p:last-child { font-size: 11px; }
   .records-body { padding: 0; }
-  .records-form { height: calc(100vh - 54px); padding: 10px 16px; }
+  .records-form { height: calc(100vh - 54px - var(--records-tabs-h)); padding: 10px 16px; }
   .record-day { padding: 7px 0 10px; }
   .records-save { margin: 10px 16px 18px auto; }
   .records-genres { margin: 18px 0 12px; }
@@ -2227,3 +2227,100 @@ body {
 
 
 .blank-main { max-width: 1240px; margin: 0 auto; padding: 34px 28px 80px; min-height: calc(100vh - 68px); }
+
+/* Notepad-style tabs under the header: each tab is its own dated journal. */
+.record-tabs {
+  position: relative;
+  z-index: 20;
+  border-bottom: 1px solid #e7e6e1;
+  background: #f6f5f1;
+}
+.record-tabs-strip {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 6px 28px 0;
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+.record-tab {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  height: 34px;
+  padding: 0 4px 0 12px;
+  border: 1px solid transparent;
+  border-bottom: 0;
+  border-radius: 9px 9px 0 0;
+  color: #747a75;
+}
+.record-tab:hover { background: rgba(255, 255, 255, .55); }
+.record-tab.active {
+  margin-bottom: -1px;
+  border-color: #e0ded7;
+  background: #fff;
+  color: #252525;
+}
+.record-tab-label {
+  max-width: 168px;
+  padding: 0 2px;
+  border: 0;
+  background: none;
+  color: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+.record-tab-input {
+  width: 132px;
+  height: 24px;
+  padding: 0 6px;
+  border: 1px solid #9daaa6;
+  border-radius: 6px;
+  background: #fff;
+  font-size: 12px;
+  font-weight: 700;
+}
+.record-tab-close {
+  width: 20px;
+  height: 20px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: #9aa09a;
+  cursor: pointer;
+  opacity: 0;
+}
+.record-tab:hover .record-tab-close,
+.record-tab.active .record-tab-close { opacity: 1; }
+.record-tab-close:hover { background: #e7e6e1; color: #252525; }
+.record-tab-add {
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  margin: 0 0 3px 4px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 7px;
+  background: none;
+  color: #747a75;
+  cursor: pointer;
+}
+.record-tab-add:hover { background: #e7e6e1; color: #252525; }
+
+@media (max-width: 767px) {
+  :root { --records-tabs-h: 37px; }
+  .record-tabs-strip { padding: 5px 16px 0; }
+  .record-tab { height: 31px; padding: 0 3px 0 10px; }
+  .record-tab-label { max-width: 120px; }
+  .record-tab-close { opacity: 1; }
+}

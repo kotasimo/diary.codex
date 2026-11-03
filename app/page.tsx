@@ -12,6 +12,7 @@ import {
   ProfileSettingsView,
 } from "@/components/diary/EditorViews";
 import { RecordsView } from "@/components/diary/RecordsView";
+import { RecordTabs } from "@/components/diary/RecordTabs";
 import {
   DetailView,
   NotificationsView,
@@ -86,6 +87,16 @@ export default function HomePage() {
         }
         recordsActive={app.view === "records"}
       />
+      {app.view === "records" && (
+        <RecordTabs
+          tabs={app.recordTabs}
+          activeId={app.activeRecordTabId}
+          onSelect={app.selectRecordTab}
+          onAdd={app.addRecordTab}
+          onClose={app.closeRecordTab}
+          onRename={app.renameRecordTab}
+        />
+      )}
       <div className="mobile-title">{app.title}</div>
       {app.view !== "records" && <DiaryHero profile={app.publicProfile} />}
       <main
@@ -219,6 +230,7 @@ export default function HomePage() {
           )}
           {app.view === "records" && (
             <RecordsView
+              key={app.activeRecordTabId}
               records={app.records}
               onAddRecord={app.addLifeRecord}
             />
