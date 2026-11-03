@@ -1417,10 +1417,7 @@ body {
   flex-direction: column;
   gap: 10px;
   align-items: stretch;
-  padding: 16px;
-  border: 1px solid #e7e6e1;
-  border-radius: 10px;
-  background: #fafaf8;
+  padding: 0;
 }
 .records-form-heading { display: flex; align-items: baseline; gap: 10px; }
 .records-form-heading strong { font-size: 14px; }
@@ -1598,8 +1595,7 @@ body {
   .records-heading h1 { font-size: 22px; }
   .records-heading p:last-child { font-size: 11px; }
   .records-body { padding: 18px 16px 40px; }
-  .records-form { gap: 8px; padding: 12px; }
-  .records-form-heading { margin-bottom: 3px; }
+  .records-form { gap: 8px; padding: 0; }
   .records-form .primary-button { align-self: stretch; }
   .records-genres { margin: 18px 0 12px; }
   .life-record { padding: 16px 2px; }
