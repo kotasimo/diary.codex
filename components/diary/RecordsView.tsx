@@ -27,10 +27,6 @@ export function RecordsView({
       </header>
       <div className="records-body">
         <div className="records-form">
-          <div className="records-form-heading">
-            <strong>新しいメモ</strong>
-            <span>日付は自動で保存されます</span>
-          </div>
           <textarea
             value={content}
             onChange={(event) => setContent(event.target.value)}
