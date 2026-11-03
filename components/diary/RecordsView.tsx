@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { LifeRecord } from "@/types/diary";
 
 const dateValue = (date: Date) => {
@@ -10,18 +10,14 @@ const dateValue = (date: Date) => {
   return `${year}-${month}-${day}`;
 };
 
-const dateLabel = (value: string) =>
+// Days from another year carry it, so an old record is never mistaken for
+// one of this week's.
+const dateLabel = (value: string, thisYear: number) =>
   new Date(`${value}T00:00:00`).toLocaleDateString("ja-JP", {
+    year: Number(value.slice(0, 4)) === thisYear ? undefined : "numeric",
     month: "numeric",
     day: "numeric",
     weekday: "short",
-  });
-
-const buildDates = (start: Date, count: number) =>
-  Array.from({ length: count }, (_, index) => {
-    const date = new Date(start);
-    date.setDate(start.getDate() + index);
-    return dateValue(date);
   });
 
 export function RecordsView({
@@ -32,22 +28,11 @@ export function RecordsView({
   onAddRecord: (content: string, date?: string) => void;
 }) {
   const todayDate = dateValue(new Date());
-  const earliestRecordDate = records.reduce(
-    (earliest, record) => {
-      const date = record.date ?? record.createdAt.slice(0, 10);
-      return date < earliest ? date : earliest;
-    },
-    todayDate,
-  );
-  const [dates, setDates] = useState(() => {
-    const yesterday = new Date();
-    yesterday.setHours(0, 0, 0, 0);
-    yesterday.setDate(yesterday.getDate() - 1);
-    const earliest = new Date(`${earliestRecordDate}T00:00:00`);
-    const first = earliest < yesterday ? earliest : yesterday;
-    return buildDates(first, 15);
-  });
+  const thisYear = new Date().getFullYear();
   const [drafts, setDrafts] = useState<Record<string, string>>({});
+  // Days held open although nothing is written on them: today, a day picked
+  // from the calendar, and whichever day is being typed in right now.
+  const [openDates, setOpenDates] = useState<string[]>([todayDate]);
   const formRef = useRef<HTMLDivElement | null>(null);
   const dateRefs = useRef<Record<string, HTMLLabelElement | null>>({});
 
@@ -60,23 +45,24 @@ export function RecordsView({
     setDrafts(next);
   }, [records]);
 
-  useEffect(() => {
-    setDates((current) => {
-      if (earliestRecordDate >= current[0]) return current;
-      const first = new Date(`${earliestRecordDate}T00:00:00`);
-      const currentFirst = new Date(`${current[0]}T00:00:00`);
-      const days = Math.ceil(
-        (currentFirst.getTime() - first.getTime()) / 86400000,
-      );
-      return [...buildDates(first, days), ...current];
-    });
-  }, [earliestRecordDate]);
+  // Newest first: today, anything written, and anything held open. Days with
+  // nothing on them are left out, so the page stays as short as the writing.
+  const dates = useMemo(() => {
+    const rest = [
+      ...new Set([
+        ...Object.keys(drafts).filter((date) => drafts[date].trim()),
+        ...openDates,
+      ]),
+    ]
+      .filter((date) => date !== todayDate)
+      .sort((a, b) => b.localeCompare(a));
+    return [todayDate, ...rest];
+  }, [drafts, openDates, todayDate]);
 
-  useEffect(() => {
-    requestAnimationFrame(() => {
-      if (formRef.current) formRef.current.scrollTop = 0;
-    });
-  }, []);
+  const holdOpen = (date: string) =>
+    setOpenDates((current) =>
+      current.includes(date) ? current : [...current, date],
+    );
 
   const scrollDateToTop = (date: string) => {
     const container = formRef.current;
@@ -90,18 +76,19 @@ export function RecordsView({
   };
 
   useEffect(() => {
+    requestAnimationFrame(() => scrollDateToTop(todayDate));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
     const selectDate = (event: Event) => {
       const date = (event as CustomEvent<string>).detail;
       if (!date) return;
-      const previousDate = new Date(`${date}T00:00:00`);
-      previousDate.setDate(previousDate.getDate() - 1);
-      const previous = dateValue(previousDate);
-      setDates((current) =>
-        [...new Set([...current, previous, date])].sort(),
-      );
+      holdOpen(date);
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
           scrollDateToTop(date);
+          dateRefs.current[date]?.querySelector("textarea")?.focus();
         });
       });
     };
@@ -109,65 +96,38 @@ export function RecordsView({
     return () => window.removeEventListener("records:select-date", selectDate);
   }, []);
 
-  const extendDates = (direction: "past" | "future") => {
-    setDates((current) => {
-      if (direction === "future") {
-        const last = new Date(`${current[current.length - 1]}T00:00:00`);
-        last.setDate(last.getDate() + 1);
-        return [...current, ...buildDates(last, 7)];
-      }
-      if (current[0] <= earliestRecordDate) return current;
-      const first = new Date(`${current[0]}T00:00:00`);
-      first.setDate(first.getDate() - 7);
-      requestAnimationFrame(() => {
-        if (formRef.current) formRef.current.scrollTop += 7 * 75;
-      });
-      return [...buildDates(first, 7), ...current];
-    });
-  };
-
   return (
     <div className="records-page">
       <section className="content-panel records-panel">
-        <div
-          className="records-form"
-          ref={formRef}
-          onScroll={(event) => {
-            const element = event.currentTarget;
-            if (element.scrollTop < 80) extendDates("past");
-            if (element.scrollHeight - element.scrollTop - element.clientHeight < 80) {
-              extendDates("future");
-            }
-          }}
-        >
-            {dates.map((date) => (
-              <label
-                className={`record-day${date === todayDate ? " today" : ""}`}
-                key={date}
+        <div className="records-form" ref={formRef}>
+          {dates.map((date) => (
+            <label
+              className={`record-day${date === todayDate ? " today" : ""}`}
+              key={date}
+              ref={(element) => {
+                dateRefs.current[date] = element;
+              }}
+            >
+              <time dateTime={date}>{dateLabel(date, thisYear)}</time>
+              <textarea
+                value={drafts[date] ?? ""}
                 ref={(element) => {
-                  dateRefs.current[date] = element;
-                }}
-              >
-                <time dateTime={date}>{dateLabel(date)}</time>
-                <textarea
-                  value={drafts[date] ?? ""}
-                  ref={(element) => {
-                    if (element) {
-                      element.style.height = "auto";
-                      element.style.height = `${Math.max(20, element.scrollHeight)}px`;
-                    }
-                  }}
-                  onChange={(event) =>
-                    (() => {
-                      const value = event.target.value;
-                      setDrafts((current) => ({ ...current, [date]: value }));
-                      onAddRecord(value, date);
-                    })()
+                  if (element) {
+                    element.style.height = "auto";
+                    element.style.height = `${Math.max(20, element.scrollHeight)}px`;
                   }
-                  rows={1}
-                />
-              </label>
-            ))}
+                }}
+                // Keeps the row from disappearing as its last character is deleted.
+                onFocus={() => holdOpen(date)}
+                onChange={(event) => {
+                  const value = event.target.value;
+                  setDrafts((current) => ({ ...current, [date]: value }));
+                  onAddRecord(value, date);
+                }}
+                rows={1}
+              />
+            </label>
+          ))}
         </div>
       </section>
     </div>
