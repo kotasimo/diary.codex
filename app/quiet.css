@@ -1419,7 +1419,7 @@ body {
   gap: 10px;
   align-items: stretch;
   min-height: 290px;
-  padding: 24px 36px 72px;
+  padding: 24px 36px;
 }
 .records-form-heading { display: flex; align-items: baseline; gap: 10px; }
 .records-form-heading strong { font-size: 14px; }
@@ -1445,10 +1445,9 @@ body {
 }
 .records-form select:focus,
 .records-form textarea:focus { border-color: transparent; box-shadow: none; }
-.records-form .primary-button {
-  position: absolute;
-  right: 36px;
-  bottom: 24px;
+.records-save {
+  display: block;
+  margin: 12px 36px 24px auto;
   min-height: 42px;
   padding: 9px 18px;
 }
@@ -1611,8 +1610,8 @@ body {
   .records-heading h1 { font-size: 22px; }
   .records-heading p:last-child { font-size: 11px; }
   .records-body { padding: 0 0 40px; }
-  .records-form { gap: 8px; min-height: 260px; padding: 18px 16px 62px; }
-  .records-form .primary-button { right: 16px; bottom: 18px; }
+  .records-form { gap: 8px; min-height: 260px; padding: 18px 16px; }
+  .records-save { margin: 10px 16px 18px auto; }
   .records-genres { margin: 18px 0 12px; }
   .life-record { padding: 16px 2px; }
 

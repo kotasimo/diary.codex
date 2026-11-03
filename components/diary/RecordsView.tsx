@@ -31,15 +31,15 @@ export function RecordsView({
             placeholder="思ったこと、覚えておきたいことを書いてみましょう。"
             rows={6}
           />
-          <button
-            type="button"
-            className="primary-button"
-            disabled={!content.trim()}
-            onClick={submit}
-          >
-            保存
-          </button>
         </div>
+        <button
+          type="button"
+          className="primary-button records-save"
+          disabled={!content.trim()}
+          onClick={submit}
+        >
+          保存
+        </button>
         {records.length > 0 && (
           <div className="records-feed">
             {records.map((record) => (
