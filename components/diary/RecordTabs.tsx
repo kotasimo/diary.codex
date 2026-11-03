@@ -21,8 +21,11 @@ export function RecordTabs({
 }) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [draft, setDraft] = useState("");
+  const [menu, setMenu] = useState<{ tabId: string; x: number; y: number }>();
   const inputRef = useRef<HTMLInputElement | null>(null);
   const activeRef = useRef<HTMLDivElement | null>(null);
+  const knownIds = useRef(tabs.map((tab) => tab.id));
+  const awaitingNewTab = useRef(false);
 
   useEffect(() => {
     if (editingId) inputRef.current?.select();
@@ -33,7 +36,36 @@ export function RecordTabs({
     activeRef.current?.scrollIntoView({ block: "nearest", inline: "nearest" });
   }, [activeId]);
 
+  // A tab added from the "+" button opens straight into its name, so it can
+  // be named while creating it. Tabs restored from storage are left alone.
+  useEffect(() => {
+    const added = tabs.find((tab) => !knownIds.current.includes(tab.id));
+    knownIds.current = tabs.map((tab) => tab.id);
+    if (awaitingNewTab.current && added) {
+      awaitingNewTab.current = false;
+      setDraft(added.name);
+      setEditingId(added.id);
+    }
+  }, [tabs]);
+
+  useEffect(() => {
+    if (!menu) return;
+    const close = () => setMenu(undefined);
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setMenu(undefined);
+    };
+    window.addEventListener("pointerdown", close);
+    window.addEventListener("resize", close);
+    window.addEventListener("keydown", closeOnEscape);
+    return () => {
+      window.removeEventListener("pointerdown", close);
+      window.removeEventListener("resize", close);
+      window.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [menu]);
+
   const startRename = (tab: RecordTab) => {
+    setMenu(undefined);
     setDraft(tab.name);
     setEditingId(tab.id);
   };
@@ -41,6 +73,7 @@ export function RecordTabs({
     if (editingId) onRename(editingId, draft);
     setEditingId(null);
   };
+  const menuTab = tabs.find((tab) => tab.id === menu?.tabId);
 
   return (
     <div className="record-tabs">
@@ -51,6 +84,10 @@ export function RecordTabs({
               className={`record-tab${tab.id === activeId ? " active" : ""}`}
               key={tab.id}
               ref={tab.id === activeId ? activeRef : undefined}
+              onContextMenu={(event) => {
+                event.preventDefault();
+                setMenu({ tabId: tab.id, x: event.clientX, y: event.clientY });
+              }}
             >
               {editingId === tab.id ? (
                 <input
@@ -71,9 +108,12 @@ export function RecordTabs({
                   role="tab"
                   aria-selected={tab.id === activeId}
                   className="record-tab-label"
-                  title={`${tab.name}（ダブルクリックで名前を変更）`}
+                  title={`${tab.name}（ダブルクリックまたは右クリックで名前を変更）`}
                   onClick={() => onSelect(tab.id)}
                   onDoubleClick={() => startRename(tab)}
+                  onKeyDown={(event) => {
+                    if (event.key === "F2") startRename(tab);
+                  }}
                 >
                   {tab.name}
                 </button>
@@ -96,11 +136,35 @@ export function RecordTabs({
           className="record-tab-add"
           aria-label="タブを追加"
           title="タブを追加"
-          onClick={onAdd}
+          onClick={() => {
+            awaitingNewTab.current = true;
+            onAdd();
+          }}
         >
           <Plus size={16} />
         </button>
       </div>
+      {menu && menuTab && (
+        <div
+          className="record-tab-menu"
+          style={{ left: menu.x, top: menu.y }}
+          onPointerDown={(event) => event.stopPropagation()}
+        >
+          <button type="button" onClick={() => startRename(menuTab)}>
+            名前を変更
+          </button>
+          <button
+            type="button"
+            disabled={tabs.length <= 1}
+            onClick={() => {
+              setMenu(undefined);
+              onClose(menuTab.id);
+            }}
+          >
+            タブを閉じる
+          </button>
+        </div>
+      )}
     </div>
   );
 }
