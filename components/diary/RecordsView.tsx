@@ -60,8 +60,7 @@ export function RecordsView({
         <header className="records-heading">
           <h1>記録</h1>
         </header>
-        <div className="records-body">
-          <div className="records-form">
+        <div className="records-form">
             {dates.map((date) => (
               <label className="record-day" key={date}>
                 <time dateTime={date}>{dateLabel(date)}</time>
@@ -74,7 +73,6 @@ export function RecordsView({
                 />
               </label>
             ))}
-          </div>
         </div>
       </section>
       <button type="button" className="primary-button records-save" onClick={submit}>
