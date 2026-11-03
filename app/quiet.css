@@ -1424,6 +1424,27 @@ body {
   min-height: 290px;
   padding: 24px 36px;
 }
+.records-date-column {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #4d5652;
+  font-size: 16px;
+  font-weight: 600;
+}
+.records-date-column time { min-width: 86px; text-align: center; }
+.records-date-column button {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid #d9dddc;
+  border-radius: 50%;
+  background: #fff;
+  color: #4d5652;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+}
 .records-form-heading { display: flex; align-items: baseline; gap: 10px; }
 .records-form-heading strong { font-size: 14px; }
 .records-form-heading span { color: #92978f; font-size: 11px; }
@@ -1616,6 +1637,7 @@ body {
   .records-heading p:last-child { font-size: 11px; }
   .records-body { padding: 0 0 40px; }
   .records-form { gap: 8px; min-height: 260px; padding: 18px 16px; }
+  .records-date-column { justify-content: space-between; }
   .records-save { margin: 10px 16px 18px auto; }
   .records-genres { margin: 18px 0 12px; }
   .life-record { padding: 16px 2px; }

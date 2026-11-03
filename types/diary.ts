@@ -37,6 +37,7 @@ export type LifeRecord = {
   genre: string;
   content: string;
   createdAt: string;
+  date?: string;
 };
 
 export type ArticleInteraction = { likes: string[] };
