@@ -2262,7 +2262,7 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 2px;
-  height: 34px;
+  height: 31px;
   padding: 0 4px 0 12px;
   border: 1px solid transparent;
   border-bottom: 0;
@@ -2334,8 +2334,6 @@ body {
 .record-tab-add:hover { background: #e7e6e1; color: #252525; }
 
 @media (max-width: 767px) {
-  :root { --records-tabs-h: 34px; }
-  .record-tabs-strip { padding: 2px 0 0; }
-  .record-tab { height: 31px; min-width: 52px; max-width: 150px; padding: 0 3px 0 10px; }
+  .record-tab { min-width: 52px; max-width: 150px; padding: 0 3px 0 10px; }
   .record-tab-close { opacity: 1; }
 }
