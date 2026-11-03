@@ -1413,16 +1413,16 @@ body {
 .records-heading p:last-child { margin: 0; color: #747a75; font-size: 12px; }
 .records-body { padding: 24px 36px 40px; }
 .records-form {
-  display: grid;
-  grid-template-columns: 150px minmax(0, 1fr) auto;
+  display: flex;
+  flex-direction: column;
   gap: 10px;
-  align-items: end;
+  align-items: stretch;
   padding: 16px;
   border: 1px solid #e7e6e1;
   border-radius: 10px;
   background: #fafaf8;
 }
-.records-form-heading { grid-column: 1 / -1; display: flex; align-items: baseline; gap: 10px; }
+.records-form-heading { display: flex; align-items: baseline; gap: 10px; }
 .records-form-heading strong { font-size: 14px; }
 .records-form-heading span { color: #92978f; font-size: 11px; }
 .records-form select,
@@ -1435,10 +1435,10 @@ body {
   outline: 0;
 }
 .records-form select { height: 42px; padding: 0 10px; }
-.records-form textarea { min-height: 42px; padding: 10px; resize: vertical; }
+.records-form textarea { min-height: 150px; padding: 10px; resize: vertical; }
 .records-form select:focus,
 .records-form textarea:focus { border-color: #839a90; box-shadow: 0 0 0 3px rgba(83,112,99,.1); }
-.records-form .primary-button { min-height: 42px; padding: 9px 14px; }
+.records-form .primary-button { align-self: flex-end; min-height: 42px; padding: 9px 18px; }
 .records-genres { display: flex; gap: 7px; margin: 24px 0 14px; overflow-x: auto; }
 .records-genres button {
   flex: 0 0 auto;
@@ -1598,9 +1598,9 @@ body {
   .records-heading h1 { font-size: 22px; }
   .records-heading p:last-child { font-size: 11px; }
   .records-body { padding: 18px 16px 40px; }
-  .records-form { grid-template-columns: 1fr; gap: 8px; padding: 12px; }
+  .records-form { gap: 8px; padding: 12px; }
   .records-form-heading { margin-bottom: 3px; }
-  .records-form .primary-button { width: 100%; }
+  .records-form .primary-button { align-self: stretch; }
   .records-genres { margin: 18px 0 12px; }
   .life-record { padding: 16px 2px; }
 
