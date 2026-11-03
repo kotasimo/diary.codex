@@ -7,10 +7,7 @@ import {
   ProfileCard,
   SideNavigation,
 } from "@/components/diary/AppChrome";
-import {
-  ComposeView,
-  ProfileSettingsView,
-} from "@/components/diary/EditorViews";
+import { ProfileSettingsView } from "@/components/diary/EditorViews";
 import { RecordsView } from "@/components/diary/RecordsView";
 import { RecordTabs } from "@/components/diary/RecordTabs";
 import {
@@ -38,19 +35,7 @@ export default function HomePage() {
     setMobileDrawerMode(mode);
     app.setDrawerOpen(true);
   };
-  const openNavigationView = (nextView: View) => {
-    if (nextView === "compose") {
-      app.openEditor(
-        "2026-10-10",
-        "土",
-        app.entries.find(
-          (entry) => normalizeDateValue(entry.date) === "2026-10-10",
-        ),
-      );
-      return;
-    }
-    app.changeView(nextView);
-  };
+  const openNavigationView = (nextView: View) => app.changeView(nextView);
   const sidebarEmail =
     app.view === "account" || app.view === "detail"
       ? (app.selectedAccount?.email ?? "")
@@ -157,11 +142,11 @@ export default function HomePage() {
               weekStart={app.weekStart}
               onShift={app.shiftWeek}
               onDetail={app.openDetail}
-              onEdit={app.openEditor}
             />
           )}
           {app.view === "detail" && (
             <DetailView
+              key={app.selectedEntry.date}
               entry={app.selectedEntry}
               readOnly={Boolean(app.selectedAccount)}
               dayRecords={
@@ -170,22 +155,7 @@ export default function HomePage() {
               onPrevious={() => app.moveDetail(-1)}
               onNext={() => app.moveDetail(1)}
               onBack={app.returnToSelectedWeek}
-              onEdit={() =>
-                app.openEditor(
-                  normalizeDateValue(app.selectedEntry.date),
-                  app.selectedEntry.day,
-                  app.selectedEntry,
-                )
-              }
-            />
-          )}
-          {app.view === "compose" && (
-            <ComposeView
-              entry={app.editingEntry}
-              date={app.editingDate.date}
-              day={app.editingDate.day}
-              onCancel={() => app.changeView("week")}
-              onSave={app.saveEntry}
+              onUpdate={app.updateEntry}
             />
           )}
           {app.view === "visitors" && (
@@ -239,7 +209,6 @@ export default function HomePage() {
               weekStart={app.weekStart}
               onShift={app.shiftWeek}
               onDetail={app.openDetail}
-              onEdit={() => undefined}
               readOnly
             />
           )}

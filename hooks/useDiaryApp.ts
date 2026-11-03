@@ -74,11 +74,6 @@ export function useDiaryApp() {
     const today = new Date();
     return { date: toDateKey(today), day: dayNames[today.getDay()], content: "", updatedAt: "", views: 0 };
   });
-  const [editingEntry, setEditingEntry] = useState<Entry | undefined>();
-  const [editingDate, setEditingDate] = useState({
-    date: "2026-10-10",
-    day: "土",
-  });
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [socialVersion, setSocialVersion] = useState(0);
@@ -263,11 +258,6 @@ export function useDiaryApp() {
     );
     setWeekStart(mondayOf(targetDate));
   };
-  const openEditor = (date: string, day: string, entry?: Entry) => {
-    setEditingDate({ date, day });
-    setEditingEntry(entry);
-    changeView("compose");
-  };
   const shiftWeek = (days: number) =>
     setWeekStart(
       (current) =>
@@ -290,23 +280,15 @@ export function useDiaryApp() {
     }
     changeView("week");
   };
-  const saveEntry = async (entry: Entry) => {
+  // Saves as the day page is typed in, so it never navigates or interrupts.
+  const updateEntry = async (entry: Entry) => {
     const result = await saveDiaryEntry(entry);
-    if (!result.ok) {
-      window.alert(
-        `Supabase保存エラー\n${result.message || "接続設定またはテーブル設定を確認してください"}`,
-      );
-      return false;
-    }
-    setEntries((current) => {
-      const nextEntries = [
-        ...current.filter((item) => item.date !== entry.date),
-        entry,
-      ];
-      return nextEntries;
-    });
+    if (!result.ok) return false;
+    setEntries((current) => [
+      ...current.filter((item) => item.date !== entry.date),
+      entry,
+    ]);
     setSelectedEntry(entry);
-    changeView("detail");
     return true;
   };
   const selectRecordTab = (tabId: string) => {
@@ -399,8 +381,6 @@ export function useDiaryApp() {
     weekStart,
     calendarMonth,
     selectedEntry,
-    editingEntry,
-    editingDate,
     drawerOpen,
     searchQuery,
     socialVersion,
@@ -428,10 +408,9 @@ export function useDiaryApp() {
     openDetail,
     returnToSelectedWeek,
     moveDetail,
-    openEditor,
     shiftWeek,
     pickCalendarDay,
-    saveEntry,
+    updateEntry,
     addLifeRecord,
     selectRecordTab,
     addRecordTab,

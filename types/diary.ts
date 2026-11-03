@@ -3,7 +3,6 @@ import type { SocialAccount } from "@/app/lib/social";
 export type View =
   | "week"
   | "detail"
-  | "compose"
   | "visitors"
   | "profile"
   | "search"

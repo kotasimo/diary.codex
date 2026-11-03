@@ -3,12 +3,11 @@
 import { useRef, useState, type PointerEvent } from "react";
 import { X } from "lucide-react";
 import { ProfileAvatar } from "@/components/diary/AppChrome";
-import type { Entry, Profile } from "@/types/diary";
-import { formatDate, parseDateValue } from "@/utils/date";
+import type { Profile } from "@/types/diary";
 
 type CropSource = { kind: "avatar" | "header"; source: string };
 
-async function resizeImage(file: File, maxWidth: number, maxHeight: number) {
+export async function resizeImage(file: File, maxWidth: number, maxHeight: number) {
   if (file.size > 10 * 1024 * 1024)
     throw new Error("画像は10MB以下のものを選んでください。");
   return new Promise<string>((resolve, reject) => {
@@ -46,7 +45,7 @@ async function resizeImage(file: File, maxWidth: number, maxHeight: number) {
   });
 }
 
-function ImageCropModal({
+export function ImageCropModal({
   source,
   aspect,
   outputWidth,
@@ -244,130 +243,6 @@ function ImageCropModal({
         </footer>
       </section>
     </div>
-  );
-}
-
-export function ComposeView({
-  entry,
-  date,
-  day,
-  onCancel,
-  onSave,
-}: {
-  entry?: Entry;
-  date: string;
-  day: string;
-  onCancel: () => void;
-  onSave: (entry: Entry) => Promise<boolean>;
-}) {
-  const [content, setContent] = useState(entry?.content ?? "");
-  const [image, setImage] = useState(entry?.image ?? "");
-  const [cropSource, setCropSource] = useState<string | null>(null);
-  const [saving, setSaving] = useState(false);
-  const [saveError, setSaveError] = useState("");
-  const saveEntry = async () => {
-    const now = new Date();
-    setSaving(true);
-    setSaveError("");
-    const saved = await onSave({
-      date,
-      day,
-      content: content.trim(),
-      updatedAt: `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`,
-      views: entry?.views ?? 0,
-      image: image.trim() || undefined,
-    });
-    setSaving(false);
-    if (!saved)
-      setSaveError(
-        "保存できませんでした。Supabaseの設定とテーブルを確認してください。",
-      );
-  };
-  const selectImage = async (file: File | undefined) => {
-    if (!file) return;
-    try {
-      setCropSource(await resizeImage(file, 1800, 1200));
-      setSaveError("");
-    } catch (error) {
-      setSaveError(
-        error instanceof Error ? error.message : "画像を処理できませんでした。",
-      );
-    }
-  };
-  return (
-    <>
-      <section className="content-panel compose-panel">
-        <div className="compose-heading">
-          <button className="back-button" onClick={onCancel}>
-            <X size={18} />
-            キャンセル
-          </button>
-        </div>
-        <div className="compose-title-row">
-          <span className="compose-entry-date">
-            {formatDate(parseDateValue(date))
-              .replace("月", "/")
-              .replace("日", "")}
-            （{day}）
-          </span>
-          <button
-            type="button"
-            className="entry-edit-button compose-save-button"
-            disabled={!content.trim() || saving}
-            onClick={() => void saveEntry()}
-          >
-            {saving ? "保存中…" : entry ? "保存" : "公開"}
-          </button>
-        </div>
-        <label className="field-label" htmlFor="body">
-          本文
-        </label>
-        <textarea
-          id="body"
-          className="body-input"
-          value={content}
-          onChange={(event) => setContent(event.target.value)}
-          placeholder="今日あったこと、感じたことを書いてみましょう。"
-        />
-        <div className="compose-image-actions">
-          <label className="image-upload-button" htmlFor="image-file">
-            画像を追加
-          </label>
-          <input
-            id="image-file"
-            type="file"
-            accept="image/*"
-            onChange={(event) => void selectImage(event.target.files?.[0])}
-          />
-          {image && (
-            <button
-              type="button"
-              className="image-adjust-button"
-              onClick={() => setCropSource(image)}
-            >
-              画像の表示範囲を調整
-            </button>
-          )}
-        </div>
-        {saveError && (
-          <p className="compose-save-error" role="alert">
-            {saveError}
-          </p>
-        )}
-      </section>
-      {cropSource && (
-        <ImageCropModal
-          source={cropSource}
-          aspect={1}
-          outputWidth={800}
-          onCancel={() => setCropSource(null)}
-          onUse={(croppedImage) => {
-            setImage(croppedImage);
-            setCropSource(null);
-          }}
-        />
-      )}
-    </>
   );
 }
 
