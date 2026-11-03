@@ -32,11 +32,15 @@ export function RecordsView({
   onAddRecord: (content: string, date?: string) => void;
 }) {
   const todayDate = dateValue(new Date());
+  const earliestRecordDate = records.reduce(
+    (earliest, record) => {
+      const date = record.date ?? record.createdAt.slice(0, 10);
+      return date < earliest ? date : earliest;
+    },
+    todayDate,
+  );
   const [dates, setDates] = useState(() => {
-    const first = new Date();
-    first.setHours(0, 0, 0, 0);
-    first.setDate(first.getDate() - 7);
-    return buildDates(first, 15);
+    return buildDates(new Date(`${earliestRecordDate}T00:00:00`), 15);
   });
   const [drafts, setDrafts] = useState<Record<string, string>>({});
   const todayRef = useRef<HTMLLabelElement | null>(null);
@@ -52,6 +56,18 @@ export function RecordsView({
   }, [records]);
 
   useEffect(() => {
+    setDates((current) => {
+      if (earliestRecordDate >= current[0]) return current;
+      const first = new Date(`${earliestRecordDate}T00:00:00`);
+      const currentFirst = new Date(`${current[0]}T00:00:00`);
+      const days = Math.ceil(
+        (currentFirst.getTime() - first.getTime()) / 86400000,
+      );
+      return [...buildDates(first, days), ...current];
+    });
+  }, [earliestRecordDate]);
+
+  useEffect(() => {
     todayRef.current?.scrollIntoView({ block: "center", inline: "nearest" });
   }, []);
 
@@ -62,6 +78,7 @@ export function RecordsView({
         last.setDate(last.getDate() + 1);
         return [...current, ...buildDates(last, 7)];
       }
+      if (current[0] <= earliestRecordDate) return current;
       const first = new Date(`${current[0]}T00:00:00`);
       first.setDate(first.getDate() - 7);
       requestAnimationFrame(() => {
