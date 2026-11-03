@@ -2239,12 +2239,26 @@ body {
   padding: 6px 0 0;
   display: flex;
   align-items: flex-end;
-  gap: 2px;
-  overflow-x: auto;
-  scrollbar-width: thin;
+  overflow: hidden;
 }
+.record-tab-list {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  /* Past the minimum tab width the strip scrolls, but never shows a bar. */
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+}
+.record-tab-list::-webkit-scrollbar { display: none; }
+/* Tabs share the strip evenly and shrink as more are opened, the way Chrome
+   and Notepad do, so the bar never needs a scrollbar. */
 .record-tab {
-  flex: 0 0 auto;
+  flex: 1 1 0;
+  min-width: 58px;
+  max-width: 200px;
   display: inline-flex;
   align-items: center;
   gap: 2px;
@@ -2263,8 +2277,10 @@ body {
   color: #252525;
 }
 .record-tab-label {
-  max-width: 168px;
+  flex: 1 1 auto;
+  min-width: 0;
   padding: 0 2px;
+  text-align: left;
   border: 0;
   background: none;
   color: inherit;
@@ -2276,7 +2292,8 @@ body {
   cursor: pointer;
 }
 .record-tab-input {
-  width: 132px;
+  flex: 1 1 auto;
+  min-width: 0;
   height: 24px;
   padding: 0 6px;
   border: 1px solid #9daaa6;
@@ -2286,6 +2303,7 @@ body {
   font-weight: 700;
 }
 .record-tab-close {
+  flex: 0 0 auto;
   width: 20px;
   height: 20px;
   display: grid;
@@ -2318,7 +2336,6 @@ body {
 @media (max-width: 767px) {
   :root { --records-tabs-h: 37px; }
   .record-tabs-strip { padding: 5px 0 0; }
-  .record-tab { height: 31px; padding: 0 3px 0 10px; }
-  .record-tab-label { max-width: 120px; }
+  .record-tab { height: 31px; min-width: 52px; max-width: 150px; padding: 0 3px 0 10px; }
   .record-tab-close { opacity: 1; }
 }
