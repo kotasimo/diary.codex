@@ -1416,13 +1416,31 @@ body {
 .records-heading p:last-child { margin: 0; color: #747a75; font-size: 12px; }
 .records-body { padding: 0 0 40px; }
 .records-form {
-  position: relative;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  align-items: stretch;
-  min-height: 290px;
+  gap: 0;
+  min-height: 0;
   padding: 24px 36px;
+}
+.record-day {
+  display: block;
+  padding: 16px 0 22px;
+}
+.record-day time {
+  display: block;
+  margin-bottom: 8px;
+  color: #4d5652;
+  font-size: 15px;
+  font-weight: 600;
+}
+.record-day textarea {
+  display: block;
+  min-height: 52px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  resize: vertical;
 }
 .records-date-column {
   display: flex;
@@ -1469,6 +1487,7 @@ body {
 }
 .records-form select:focus,
 .records-form textarea:focus { border-color: transparent; box-shadow: none; }
+.record-day textarea { flex: none; min-height: 52px; }
 .records-save {
   display: block;
   margin: 12px -12px 24px auto;
@@ -1636,8 +1655,8 @@ body {
   .records-heading h1 { font-size: 22px; }
   .records-heading p:last-child { font-size: 11px; }
   .records-body { padding: 0 0 40px; }
-  .records-form { gap: 8px; min-height: 260px; padding: 18px 16px; }
-  .records-date-column { justify-content: space-between; }
+  .records-form { padding: 10px 16px; }
+  .record-day { padding: 14px 0 20px; }
   .records-save { margin: 10px 16px 18px auto; }
   .records-genres { margin: 18px 0 12px; }
   .life-record { padding: 16px 2px; }
