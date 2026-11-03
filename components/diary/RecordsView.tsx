@@ -45,6 +45,7 @@ export function RecordsView({
   const [drafts, setDrafts] = useState<Record<string, string>>({});
   const todayRef = useRef<HTMLLabelElement | null>(null);
   const formRef = useRef<HTMLDivElement | null>(null);
+  const dateRefs = useRef<Record<string, HTMLLabelElement | null>>({});
 
   useEffect(() => {
     const next: Record<string, string> = {};
@@ -69,6 +70,23 @@ export function RecordsView({
 
   useEffect(() => {
     todayRef.current?.scrollIntoView({ block: "center", inline: "nearest" });
+  }, []);
+
+  useEffect(() => {
+    const selectDate = (event: Event) => {
+      const date = (event as CustomEvent<string>).detail;
+      if (!date) return;
+      setDates((current) =>
+        current.includes(date) ? current : [...current, date].sort(),
+      );
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          dateRefs.current[date]?.scrollIntoView({ block: "start" });
+        });
+      });
+    };
+    window.addEventListener("records:select-date", selectDate);
+    return () => window.removeEventListener("records:select-date", selectDate);
   }, []);
 
   const extendDates = (direction: "past" | "future") => {
@@ -106,7 +124,10 @@ export function RecordsView({
               <label
                 className={`record-day${date === todayDate ? " today" : ""}`}
                 key={date}
-                ref={date === todayDate ? todayRef : undefined}
+                ref={(element) => {
+                  dateRefs.current[date] = element;
+                  if (date === todayDate) todayRef.current = element;
+                }}
               >
                 <time dateTime={date}>{dateLabel(date)}</time>
                 <textarea
