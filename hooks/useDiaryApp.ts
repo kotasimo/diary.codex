@@ -350,10 +350,10 @@ export function useDiaryApp() {
     changeView("detail");
     return true;
   };
-  const addLifeRecord = (genre: string, content: string) => {
+  const addLifeRecord = (content: string) => {
     const record = {
       id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-      genre,
+      genre: "メモ",
       content,
       createdAt: new Date().toISOString(),
     };
