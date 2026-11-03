@@ -1398,12 +1398,15 @@ body {
 .week-range-mobile { display: none; }
 
 .records-page {
+  position: relative;
+  height: calc(100vh - 61px);
   max-width: 760px;
   margin: 0 auto;
 }
 .records-panel {
+  height: 100%;
   max-width: 760px;
-  border: 1px solid #e7e6e1;
+  border: 0;
   background: #fff;
 }
 .records-heading {
@@ -1414,17 +1417,17 @@ body {
 }
 .records-heading h1 { margin: 0 0 6px; font: 700 27px/1.3 var(--serif); }
 .records-heading p:last-child { margin: 0; color: #747a75; font-size: 12px; }
-.records-body { padding: 0 0 40px; }
+.records-body { padding: 0; height: 100%; }
 .records-form {
   display: flex;
   flex-direction: column;
   gap: 0;
-  height: 500px;
+  height: 100%;
   overflow-y: auto;
   overscroll-behavior: contain;
   touch-action: pan-y;
-  border: 1px solid #e7e6e1;
-  border-radius: 10px;
+  border: 0;
+  border-radius: 0;
   background: #fff;
   padding: 24px 36px;
 }
@@ -1495,8 +1498,9 @@ body {
 .records-form textarea:focus { border-color: transparent; box-shadow: none; }
 .record-day textarea { flex: none; width: 100%; height: 52px; min-height: 52px; }
 .records-save {
-  display: block;
-  margin: 12px -12px 24px auto;
+  position: absolute;
+  right: -12px;
+  bottom: 18px;
   min-height: 42px;
   padding: 9px 18px;
 }
@@ -1652,7 +1656,7 @@ body {
     border: 0;
   }
 
-  .records-page { max-width: none; }
+  .records-page { max-width: none; height: calc(100vh - 54px); }
 
   .records-heading {
     padding: 24px 16px 18px;
@@ -1660,10 +1664,10 @@ body {
 
   .records-heading h1 { font-size: 22px; }
   .records-heading p:last-child { font-size: 11px; }
-  .records-body { padding: 0 0 40px; }
-  .records-form { height: 420px; padding: 10px 16px; }
+  .records-body { padding: 0; }
+  .records-form { padding: 10px 16px; }
   .record-day { padding: 14px 0 20px; }
-  .records-save { margin: 10px 16px 18px auto; }
+  .records-save { right: 16px; bottom: 18px; }
   .records-genres { margin: 18px 0 12px; }
   .life-record { padding: 16px 2px; }
 
