@@ -57,9 +57,6 @@ export function RecordsView({
   return (
     <div className="records-page">
       <section className="content-panel records-panel">
-        <header className="records-heading">
-          <h1>記録</h1>
-        </header>
         <div className="records-form">
             {dates.map((date) => (
               <label className="record-day" key={date}>
