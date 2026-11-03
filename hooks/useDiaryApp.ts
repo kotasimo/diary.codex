@@ -423,7 +423,9 @@ export function useDiaryApp() {
       const nextRecords = current.filter(
         (item) => (item.date ?? item.createdAt.slice(0, 10)) !== targetDate,
       );
-      if (content.trim()) nextRecords.unshift(record);
+      // Keep whatever was typed, blank lines included; only a fully cleared
+      // day drops its record. Trimming here wiped newlines as they were typed.
+      if (content) nextRecords.unshift(record);
       saveLifeRecords(activeRecordTabId, nextRecords);
       return nextRecords;
     });
