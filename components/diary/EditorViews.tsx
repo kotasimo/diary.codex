@@ -5,7 +5,7 @@ import { X } from "lucide-react";
 import { ProfileAvatar } from "@/components/diary/AppChrome";
 import type { Profile } from "@/types/diary";
 
-type CropSource = { kind: "avatar" | "header"; source: string };
+type CropSource = { kind: "avatar"; source: string };
 
 async function resizeImage(file: File, maxWidth: number, maxHeight: number) {
   if (file.size > 10 * 1024 * 1024)
@@ -377,67 +377,6 @@ export function ProfileSettingsView({
               {imageError}
             </p>
           )}
-          <section className="profile-header-setting">
-            <div className="profile-setting-label">
-              <strong>ヘッダー画像</strong>
-              <span>日記上部に表示される画像です</span>
-            </div>
-            <div
-              className="profile-header-preview"
-              style={
-                draft.headerImage
-                  ? {
-                      backgroundImage: `linear-gradient(180deg, rgba(38, 66, 78, .08), rgba(38, 66, 78, .36)), url(${draft.headerImage})`,
-                    }
-                  : undefined
-              }
-            >
-              <strong>{draft.diaryTitle.trim() || "日記タイトル"}</strong>
-              <span>{draft.subtitle.trim() || "日記のサブタイトル"}</span>
-            </div>
-            <div className="profile-header-actions">
-              <label className="secondary-button" htmlFor="profile-header-file">
-                画像を選ぶ
-              </label>
-              <input
-                id="profile-header-file"
-                type="file"
-                accept="image/*"
-                onChange={(event) =>
-                  void selectImage(event.target.files?.[0], "header")
-                }
-              />
-              {draft.headerImage && (
-                <button
-                  type="button"
-                  className="profile-image-remove"
-                  onClick={() =>
-                    setDraft((current) => ({
-                      ...current,
-                      headerImage: undefined,
-                    }))
-                  }
-                >
-                  標準画像に戻す
-                </button>
-              )}
-              {draft.headerImage && (
-                <button
-                  type="button"
-                  className="image-adjust-button"
-                  onClick={() =>
-                    setCropSource({
-                      kind: "header",
-                      source: draft.headerImage!,
-                    })
-                  }
-                >
-                  表示範囲を調整
-                </button>
-              )}
-              <span className="profile-image-hint">10MBまで・自動で縮小</span>
-            </div>
-          </section>
           <div className="profile-form-grid">
             <label>
               <span>表示名</span>
@@ -508,15 +447,11 @@ export function ProfileSettingsView({
       {cropSource && (
         <ImageCropModal
           source={cropSource.source}
-          aspect={cropSource.kind === "header" ? 5 : 1}
-          outputWidth={cropSource.kind === "header" ? 1600 : 512}
+          aspect={1}
+          outputWidth={512}
           onCancel={() => setCropSource(null)}
           onUse={(image) => {
-            setDraft((current) =>
-              cropSource.kind === "avatar"
-                ? { ...current, avatar: image }
-                : { ...current, headerImage: image },
-            );
+            setDraft((current) => ({ ...current, avatar: image }));
             setCropSource(null);
           }}
         />

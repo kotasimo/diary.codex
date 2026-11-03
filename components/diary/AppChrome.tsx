@@ -127,27 +127,6 @@ export function Header({
   );
 }
 
-export function DiaryHero({ profile }: { profile: Profile }) {
-  return (
-    <section
-      className="diary-hero"
-      aria-label="日記の紹介"
-      style={
-        profile.headerImage
-          ? {
-              backgroundImage: `linear-gradient(180deg, rgba(38, 66, 78, .08), rgba(38, 66, 78, .36)), url(${profile.headerImage})`,
-            }
-          : undefined
-      }
-    >
-      <div className="diary-hero-copy">
-        <h1>{profile.diaryTitle}</h1>
-        <p>{profile.subtitle}</p>
-      </div>
-    </section>
-  );
-}
-
 export function ProfileCard({
   profile,
   socialEmail,

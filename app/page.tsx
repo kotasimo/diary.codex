@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  DiaryHero,
   Header,
   MiniCalendar,
   ProfileCard,
@@ -72,7 +71,6 @@ export default function HomePage() {
         recordsActive={app.view === "records"}
       />
       <div className="mobile-title">{app.title}</div>
-      {app.view !== "records" && <DiaryHero profile={app.publicProfile} />}
       <main
         className={`app-layout${app.selectedAccount && (app.view === "account" || app.view === "detail") ? " public-account-layout" : ""}`}
       >

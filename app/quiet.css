@@ -10,21 +10,6 @@ body {
   visibility: hidden;
 }
 
-.diary-hero {
-  background:
-    linear-gradient(180deg, rgba(38, 66, 78, .08), rgba(38, 66, 78, .36)),
-    url("https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=1800&q=85")
-    center 58% / cover;
-}
-
-.diary-hero::after {
-  display: block;
-}
-
-.diary-hero-copy {
-  color: #fff;
-}
-
 .header-search,
 .header-post-button { display: none; }
 
@@ -62,12 +47,6 @@ body {
 }
 
 @media (min-width: 0px) {
-  .diary-hero-copy {
-    max-width: 1540px;
-    padding-left: 32px;
-    padding-right: 32px;
-  }
-
   .app-layout {
     width: 100%;
     max-width: 1540px;
@@ -223,21 +202,6 @@ body {
     cursor: pointer;
   }
   .header-post-button:hover { background: #2f3d41; }
-
-  .diary-hero {
-    width: 100%;
-    max-width: none;
-    height: 134px;
-    margin-left: 0;
-  }
-
-  .diary-hero-copy {
-    max-width: none;
-    padding: 16px 56px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-  }
 
   .app-layout {
     width: 100%;
@@ -1272,21 +1236,6 @@ body {
   .crop-frame { margin-top: 14px; }
 }
 
-.diary-hero {
-  height: auto;
-  aspect-ratio: 6.6 / 1;
-  background-position: center 58%;
-  background-size: cover;
-}
-.diary-hero-copy {
-  height: 100%;
-  padding-top: 0;
-  padding-bottom: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
 /* Keep the left rail and the diary canvas as one stable layout group while
    the viewport is resized. */
 .entry-list,
@@ -1596,33 +1545,6 @@ body {
   }
 
   .mobile-title { display: none; }
-
-  .app-shell.view-profile > .diary-hero { display: none; }
-
-  .diary-hero {
-    width: 100%;
-    height: 80px;
-    min-height: 80px;
-    aspect-ratio: auto;
-    background-position: center 58%;
-  }
-
-  .diary-hero-copy {
-    width: 100%;
-    max-width: none;
-    padding: 8px 20px;
-  }
-
-  .diary-hero-copy h1 {
-    margin-bottom: 5px;
-    font-size: clamp(18px, 5.25vw, 21px);
-    line-height: 1.15;
-  }
-
-  .diary-hero-copy p {
-    font-size: 12px;
-    line-height: 1.45;
-  }
 
   .app-layout,
   .app-layout.public-account-layout {
