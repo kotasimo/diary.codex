@@ -1441,6 +1441,7 @@ body {
   font-size: 15px;
   font-weight: 600;
 }
+.record-day.today time { color: #c33d3d; }
 .record-day textarea {
   display: block;
   min-height: 26px;
